@@ -1,10 +1,12 @@
 {
   "project": "pure-wipe",
   "phase": "define",
-  "active_skill": "briefing-synthesis",
-  "active_agent": "@Analyst",
-  "last_completed_step": "briefing-synthesis → Step 4: Roadmap initialized",
+  "active_skill": "project-estimation-and-stack-selection",
+  "active_agent": "@Architect",
+  "last_completed_step": "project-estimation-and-stack-selection → Step 6: Stack decision locked",
   "next_step": "spec-driven-architecture → Step 1 (awaiting user approval)",
   "token_budget_remaining": null,
-  "roadmap_ref": "PROJECT_ROADMAP.md"
+  "roadmap_ref": "PROJECT_ROADMAP.md",
+  "briefing_rerun_date": "2026-04-12",
+  "rerun_correction": "Added missing decap-admin-panel to Feature Components"
 }
