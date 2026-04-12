@@ -94,26 +94,73 @@ Write outputs under `## Time and Effort Estimate`:
 - Effort band (Low/Medium/High)
 - Top 3 effort drivers
 
-### Step 4 — Estimate Vibe-Coding Cost
-Estimate cost for Copilot-assisted execution using:
+### Step 4 — Estimate Cost (Human Benchmark + Agentic Execution)
 
-- `operator_hour_rate_eur` (default 40 EUR/hour unless user provides another rate)
+This step produces **two separate cost models** under `## Cost Estimate`.
+They must never be merged into a single figure.
+
+---
+
+#### A) Human-Developer Benchmark (REFERENCE ONLY)
+
+> ⚠️ **This model does NOT represent the real execution cost under WFO.**
+> It is included as a market-rate reference to show the cost a traditional agency would charge.
+
+Use these parameters:
+- `human_dev_hour_rate_eur` (default 40 EUR/hour — senior developer market rate)
 - `hours_per_day` = 6 productive hours
-- `estimated_hours = time_days * hours_per_day`
-- `execution_cost_eur = estimated_hours * operator_hour_rate_eur`
+- `human_estimated_hours = time_days * hours_per_day`
+- `human_execution_cost_eur = human_estimated_hours * human_dev_hour_rate_eur`
 
-Also write a normalized model against delivery price:
+Write under `### A) Human-Developer Benchmark [REFERENCE — not applicable under WFO]`:
+- Hour rate used (label: "senior dev market rate")
+- Estimated hours
+- Human execution cost
+- Note: `[REFERENCE ONLY — this is the cost a traditional developer would incur, NOT the WFO agentic cost]`
+
+---
+
+#### B) Agentic Execution Cost (REAL WFO COST)
+
+> ✅ **This is the real execution cost of this architecture.**
+> The WFO pipeline uses AI agents, not human coding hours.
+
+Use these parameters:
+- `total_tokens` from Step 2 (expected case)
+- `ai_token_cost_eur_per_1k` = 0.004 EUR (GPT-4o / Claude Sonnet blended rate)
+- `copilot_monthly_eur` = 10 EUR; `sites_per_month` = 4 (pro-rata)
+- `actions_minutes` = 30; `actions_cost_eur_per_min` = 0.008
+- `vps_monthly_eur` = 5 EUR; `sites_active` = 4 (pro-rata)
+- `operator_supervision_hours` = 3 (default — human reviews/approvals only, NOT coding)
+- `operator_hour_rate_eur` (default 40 EUR/hour)
+
+Compute each line:
 
 ```text
-delivery_price_eur = 850
-gross_margin_percent = ((delivery_price_eur - execution_cost_eur) / delivery_price_eur) * 100
+token_cost_eur          = (total_tokens / 1000) * ai_token_cost_eur_per_1k
+copilot_prorata_eur     = copilot_monthly_eur / sites_per_month
+actions_cost_eur        = actions_minutes * actions_cost_eur_per_min
+vps_prorata_eur         = vps_monthly_eur / sites_active
+infra_subtotal_eur      = token_cost_eur + copilot_prorata_eur + actions_cost_eur + vps_prorata_eur
+
+supervision_cost_eur    = operator_supervision_hours * operator_hour_rate_eur
+
+agentic_total_cost_eur  = infra_subtotal_eur + supervision_cost_eur
 ```
 
-Write outputs under `## Cost Estimate (Vibe Coding)`:
-- Hour rate used
-- Estimated hours
-- Estimated execution cost
-- Estimated gross margin % vs 850 EUR
+Compute gross margin against delivery price:
+
+```text
+delivery_price_eur   = 850
+gross_margin_percent = ((delivery_price_eur - agentic_total_cost_eur) / delivery_price_eur) * 100
+```
+
+Write under `### B) Agentic Execution Cost [REAL WFO COST]`:
+- Itemized table: AI tokens, Copilot pro-rata, CI/CD, VPS pro-rata, operator supervision
+- Infra subtotal
+- Supervision cost (label clearly: "operator supervision — reviews and approvals only, not coding")
+- **Agentic total cost**
+- **Gross margin % vs 850 EUR**
 
 If gross margin falls below 85%, add a `RISK` note and list scope cuts.
 
@@ -160,13 +207,19 @@ Update `current_state.json`:
 | "Let's choose the newest .NET no matter what." | Newest is not always safest. The required rule is newest compatible LTS for production stability. |
 | "We'll decide CMS admin later." | Decap is a fixed baseline of the factory model. Delaying this breaks roadmap integrity and content architecture. |
 | "Cost is always 850 EUR, no need to calculate." | Delivery price is fixed; execution cost is variable. Margin must be measured, not assumed. |
+| "The human-dev hours × rate IS the agentic cost." | Wrong. The WFO does not pay for 55 human coding hours. The real cost is AI tokens + infra pro-rata + a few hours of operator supervision. The human benchmark is reference-only. |
+| "I'll just show one combined cost number." | Two models are mandatory. Merging them hides the actual margin advantage of the agentic architecture and produces misleading economics. |
 
 ## Red Flags
 
 - `PROJECT_ROADMAP.md` has no `## Token Estimate` section.
 - .NET recommendation references preview or RC versions.
 - Stack decision omits Decap admin route `/admin/`.
-- Gross margin % is missing or not computed against 850 EUR.
+- `## Cost Estimate` shows only one cost block (human OR agentic) instead of both.
+- Human-developer benchmark is not explicitly labelled `[REFERENCE ONLY]`.
+- Gross margin % computed against the human benchmark instead of the agentic total.
+- Operator supervision hours conflated with coding hours in the agentic block.
+- Agentic cost block missing any of: AI tokens, Copilot pro-rata, CI/CD, VPS pro-rata.
 - Effort estimate omits complexity drivers.
 - `current_state.json` still points to `briefing-synthesis` after estimation completes.
 
@@ -175,7 +228,11 @@ Update `current_state.json`:
 - [ ] `## Estimation Inputs` exists in `PROJECT_ROADMAP.md` with nav/dynamic/integration/blocker counts
 - [ ] `## Token Estimate` exists with best/expected/worst scenarios and formula-driven values
 - [ ] `## Time and Effort Estimate` exists with days, effort band, and 3 effort drivers
-- [ ] `## Cost Estimate (Vibe Coding)` exists with hourly rate, hours, execution cost, and gross margin % vs 850 EUR
+- [ ] `## Cost Estimate` contains **two sub-sections**: `### A) Human-Developer Benchmark` and `### B) Agentic Execution Cost`
+- [ ] Sub-section A is explicitly labelled `[REFERENCE ONLY — not applicable under WFO]`
+- [ ] Sub-section B contains itemized agentic costs: AI tokens, Copilot pro-rata, CI/CD minutes, VPS pro-rata, operator supervision
+- [ ] Operator supervision hours in sub-section B are clearly labelled as reviews/approvals only, NOT coding hours
+- [ ] Gross margin % computed against **agentic total** (sub-section B), not human benchmark
 - [ ] `## Stack Decision` exists with `target_framework`, `decision_basis`, and `fallback_framework`
 - [ ] `## Stack Decision` explicitly states Decap CMS admin, `/admin/`, and `wwwroot/admin/config.yml`
 - [ ] Phase 2 roadmap tasks include Decap setup tasks if they were missing before this skill
