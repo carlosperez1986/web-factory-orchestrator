@@ -4,7 +4,7 @@ description: >
   Produces execution estimates (tokens, time, effort, and vibe-coding cost)
   and recommends the best .NET target framework for the project while enforcing
   Decap CMS as the admin baseline. Use after briefing-synthesis has generated
-  PROJECT_ROADMAP.md and before spec-driven-architecture starts.
+  PROJECT_ROADMAP-{project-name}.md and before spec-driven-architecture starts.
 owner: "@Architect"
 phase: "define"
 ---
@@ -13,10 +13,10 @@ phase: "define"
 
 ## Overview
 Converts the initial roadmap into an execution forecast and stack decision package.
-Produces a quantified estimate section in `PROJECT_ROADMAP.md` and locks the recommended .NET target framework plus Decap admin baseline for subsequent phases.
+Produces a quantified estimate section in `PROJECT_ROADMAP-{project-name}.md` and locks the recommended .NET target framework plus Decap admin baseline for subsequent phases.
 
 ## When to Use
-- `briefing-synthesis` is complete and `PROJECT_ROADMAP.md` exists.
+- `briefing-synthesis` is complete and `PROJECT_ROADMAP-{project-name}.md` exists.
 - The Orchestrator needs a realistic prediction for token/time/effort before Phase 1 approval.
 - **NOT for:** detailed sprint planning of implementation tasks — use `spec-driven-architecture` instead.
 
@@ -24,20 +24,20 @@ Produces a quantified estimate section in `PROJECT_ROADMAP.md` and locks the rec
 
 ```text
 Requires: @Analyst has completed `briefing-synthesis`.
-GO signal must be present in PROJECT_ROADMAP.md:
+GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 [✅ GO] @Analyst → @Architect | briefing-synthesis DONE | YYYY-MM-DD
 ```
 
 ## Process
 
 ### Step 1 — Read Scope Signals
-Read `PROJECT_ROADMAP.md` and extract these inputs:
+Read `current_state.json` to obtain `{project-name}` (the `project` field). Then read `PROJECT_ROADMAP-{project-name}.md` and extract these inputs:
 - Total navigation items
 - Count of dynamic pages/components
 - Count of integrations or external dependencies
 - Count of blockers or clarifications pending
 
-Write the extracted values under `## Estimation Inputs` in `PROJECT_ROADMAP.md`.
+Write the extracted values under `## Estimation Inputs` in `PROJECT_ROADMAP-{project-name}.md`.
 
 ### Step 2 — Estimate Tokens
 Estimate token consumption per phase using this baseline model:
@@ -60,7 +60,7 @@ total_tokens = 37,000
              + (blockers * 1,000)
 ```
 
-Write outputs under `## Token Estimate`:
+Write outputs under `## Token Estimate` in `PROJECT_ROADMAP-{project-name}.md`:
 - Best case (0.85 * total_tokens)
 - Expected case (1.00 * total_tokens)
 - Worst case (1.25 * total_tokens)
@@ -89,7 +89,7 @@ Effort bands:
 - Medium: > 5.5 and <= 8.0 days
 - High: > 8.0 days
 
-Write outputs under `## Time and Effort Estimate`:
+Write outputs under `## Time and Effort Estimate` in `PROJECT_ROADMAP-{project-name}.md`:
 - Estimated days
 - Effort band (Low/Medium/High)
 - Top 3 effort drivers
@@ -109,7 +109,7 @@ delivery_price_eur = 850
 gross_margin_percent = ((delivery_price_eur - execution_cost_eur) / delivery_price_eur) * 100
 ```
 
-Write outputs under `## Cost Estimate (Vibe Coding)`:
+Write outputs under `## Cost Estimate (Vibe Coding)` in `PROJECT_ROADMAP-{project-name}.md`:
 - Hour rate used
 - Estimated hours
 - Estimated execution cost
@@ -125,13 +125,13 @@ Determine the target framework with this decision order:
 3. If SDK inspection is unavailable, set `target_framework = pending-confirmation` and propose a safe LTS candidate in roadmap notes.
 4. Never recommend preview SDKs for production.
 
-Write under `## Stack Decision`:
+Write under `## Stack Decision` in `PROJECT_ROADMAP-{project-name}.md`:
 - `target_framework`
 - `decision_basis` (compatibility, hosting, SDK availability)
 - `fallback_framework`
 
 ### Step 6 — Enforce Decap Admin Baseline
-Write/confirm these baseline requirements under `## Stack Decision`:
+Write/confirm these baseline requirements under `## Stack Decision` in `PROJECT_ROADMAP-{project-name}.md`:
 - Admin system: `Decap CMS`
 - Admin route: `/admin/`
 - Required config path: `wwwroot/admin/config.yml`
@@ -163,7 +163,7 @@ Update `current_state.json`:
 
 ## Red Flags
 
-- `PROJECT_ROADMAP.md` has no `## Token Estimate` section.
+- `PROJECT_ROADMAP-{project-name}.md` has no `## Token Estimate` section.
 - .NET recommendation references preview or RC versions.
 - Stack decision omits Decap admin route `/admin/`.
 - Gross margin % is missing or not computed against 850 EUR.
@@ -172,7 +172,7 @@ Update `current_state.json`:
 
 ## Verification
 
-- [ ] `## Estimation Inputs` exists in `PROJECT_ROADMAP.md` with nav/dynamic/integration/blocker counts
+- [ ] `## Estimation Inputs` exists in `PROJECT_ROADMAP-{project-name}.md` with nav/dynamic/integration/blocker counts
 - [ ] `## Token Estimate` exists with best/expected/worst scenarios and formula-driven values
 - [ ] `## Time and Effort Estimate` exists with days, effort band, and 3 effort drivers
 - [ ] `## Cost Estimate (Vibe Coding)` exists with hourly rate, hours, execution cost, and gross margin % vs 850 EUR

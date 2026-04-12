@@ -26,7 +26,7 @@ The only human entry point is `@Orchestrator`. All other agents (@Analyst, @Arch
 - **No SQL.** No Entity Framework. No SQLite. No PostgreSQL. No exceptions.
 - **No custom CSS** for any component Bootstrap 5 covers natively.
 - **No agent starts a skill** without reading its `SKILL.md` file first.
-- **No task is DONE** without evidence written in `PROJECT_ROADMAP.md`.
+- **No task is DONE** without evidence written in `PROJECT_ROADMAP-{project-name}.md`.
 - **No code is shipped** without `@Auditor` sign-off.
 - **No Phase 2** begins without human operator approval of the Phase 1 roadmap.
 
@@ -47,7 +47,7 @@ Load a skill only when the current step requires it. Never load all skills at on
 ```
 inbox/                    ← Drop client briefings here
 current_state.json        ← Orchestrator memory, updated after every skill step
-PROJECT_ROADMAP.md        ← Auto-generated, contains GO signal handover log
+PROJECT_ROADMAP-{project-name}.md  ← Auto-generated per project; one file per client; contains GO signal handover log
 skills/                   ← One SKILL.md per subdirectory
 blueprints/infra/         ← Nginx, Systemd, GitHub Actions templates
 blueprints/code/          ← .NET 9 boilerplate, ContentService.cs
