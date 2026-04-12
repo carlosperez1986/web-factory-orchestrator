@@ -180,6 +180,8 @@ If the repository already contains a working application:
 ```bash
 cp -r blueprints/code/Program.cs.template               ./{project-name}/Program.cs
 cp -r blueprints/code/Startup.cs.template               ./{project-name}/Startup.cs
+mkdir -p ./{project-name}/evidence
+echo "# Evidence — see WFO evidence/README.md for convention" > ./{project-name}/evidence/README.md
 cp -r blueprints/code/Models/                            ./{project-name}/Models/
 cp -r blueprints/code/Services/ContentService.cs        ./{project-name}/Services/
 cp -r blueprints/code/Pages/                             ./{project-name}/Pages/

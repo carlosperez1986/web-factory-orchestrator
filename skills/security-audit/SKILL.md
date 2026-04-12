@@ -71,7 +71,26 @@ Validate key auth and externally reachable surfaces:
 - public/admin route expectations
 - reverse proxy assumptions and forwarded headers alignment
 
-### Step 5 — Deployment Hardening Review
+### Step 5 — Evidence File Verification
+Before reviewing deployment artifacts, validate the Task Registry evidence:
+
+```
+For each row in PROJECT_ROADMAP-{project-name}.md ## Task Registry where Status = "done":
+  1. Read the "Evidence Required" column value (file path relative to client repo root)
+  2. Check: does that file EXIST in the client repo?
+  3. Check: is the file NON-EMPTY?
+  4. For nginx-syntax.log: does content include the string "syntax is ok"?
+  5. For security-audit-report.md: does content include "## Security Audit Findings"?
+  6. For staging-smoke.md: does content include "HTTP 200" for all checked routes?
+  If any check FAILS:
+    - Reset that task's Status to "pending" in the Task Registry
+    - Log the failure: "EVIDENCE MISSING: TASK-NNN — {file path} not found or empty"
+    - DO NOT proceed to GO signal for the affected phase
+```
+
+Write a summary of evidence checks to `evidence/security-audit-report.md` in the client repo.
+
+### Step 6 — Deployment Hardening Review
 Inspect deployment artifacts:
 - workflow deploy steps
 - service definitions
@@ -80,7 +99,7 @@ Inspect deployment artifacts:
 
 Flag legacy/conflicting deployment models.
 
-### Step 6 — Produce Findings and Remediation Plan
+### Step 7 — Produce Findings and Remediation Plan
 Write findings to roadmap under `## Security Audit Findings` grouped by:
 - Critical
 - High
@@ -93,7 +112,7 @@ For each finding include:
 - remediation action
 - required owner
 
-### Step 7 — Go/No-Go Decision and State Update
+### Step 8 — Go/No-Go Decision and State Update
 Decision rule:
 - any unresolved Critical finding => `NO-GO`
 - unresolved High findings => `NO-GO` unless explicit user exception is recorded
@@ -131,6 +150,9 @@ Update `current_state-{project-name}.json`:
 
 ## Verification
 
+- [ ] Evidence file verification ran — `evidence/security-audit-report.md` exists and is non-empty
+- [ ] All Task Registry rows with Status `done` have valid, non-empty evidence files
+- [ ] Any failed evidence checks are logged and affected tasks reset to `pending`
 - [ ] `## Security Audit Findings` exists in roadmap with severity groups
 - [ ] secrets/config audit completed with explicit evidence
 - [ ] dependency risk review completed

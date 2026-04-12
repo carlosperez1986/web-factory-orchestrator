@@ -93,16 +93,26 @@ Write the manifest under `## Feature Components` in `PROJECT_ROADMAP-{project-na
 
 ### Step 4 — Initialize the Project Roadmap
 Using `blueprints/code/roadmap-template.md` as the base structure, generate
-`PROJECT_ROADMAP-{project-name}.md` in the project root with the following phases fully populated:
+`PROJECT_ROADMAP-{project-name}.md` in the project root.
 
-- **Phase 1 — Define/Specs:** Task-list owned by `@Architect` (one task per Razor Page defined in sitemap).
-- **Phase 2 — Build:** Task-list owned by `@Developer` (models + services + Decap schema/admin config) and `@FrontendUI` (components + layout).
-- **Phase 3 — Audit/Deploy:** Task-list owned by `@Auditor` (security scan) and `@DevOps` (Nginx + Systemd provisioning).
+**Task Registry rules (non-negotiable):**
+- Every task must have a unique, immutable ID in the format `TASK-NNN` (three zero-padded digits).
+- IDs are assigned sequentially and never reused if a task is deleted.
+- Phase 1 tasks: `TASK-001` – `TASK-019`. Phase 2: `TASK-020` – `TASK-029`. Phase 3: `TASK-030` – `TASK-049`.
+- The **Evidence Required** column must contain the file path (relative to client repo root) that
+  `@Auditor` will verify before marking the task `done`. Never leave Evidence Required blank — if no
+  file is produced, the evidence is a section in `evidence/spec-{slug}.md` or `evidence/models-review.md`.
 
-Each task entry must follow the format:
-```text
-- [ ] [Task description] | Owner: @AgentRole | Depends on: [previous task or NONE]
+Task Registry format:
+```markdown
+| ID | Task | Phase | Owner | Status | Evidence Required |
+|----|------|-------|-------|--------|-------------------|
+| TASK-001 | Define Razor Page spec: {Page} | Phase 1 | @Orchestrator | pending | `evidence/spec-{slug}.md` |
 ```
+
+Populate all three phases from the approved sitemap and feature components. Owner is always `@Orchestrator`
+(not a persona name). Include all tasks from the roadmap-template as a baseline, then add project-specific
+tasks derived from the detected Feature Components.
 
 ### Step 5 — Update current_state-{project-name}.json
 Write the following fields to `current_state-{project-name}.json` in the project root (create file with slug-based name):
