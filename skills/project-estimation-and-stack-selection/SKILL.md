@@ -161,13 +161,8 @@ Write under `### B) Agentic Execution Cost [REAL WFO COST]`:
 - Supervision cost (label clearly: "operator supervision — reviews and approvals only, not coding")
 - **Agentic total cost**
 - **Gross margin % vs 850 EUR**
-Write outputs under `## Cost Estimate (Vibe Coding)` in `PROJECT_ROADMAP-{project-name}.md`:
-- Hour rate used
-- Estimated hours
-- Estimated execution cost
-- Estimated gross margin % vs 850 EUR
 
-If gross margin falls below 85%, add a `RISK` note and list scope cuts.
+If gross margin on the agentic model falls below 85%, add a `RISK` note and list potential scope cuts.
 
 ### Step 5 — Select Best .NET Target Framework
 Determine the target framework with this decision order:
