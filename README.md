@@ -8,6 +8,28 @@
 
 You provide a PDF. The **Master Orchestrator** takes over. It reads the requirements, triggers the *Definition Phase* to map out the architecture, creates a step-by-step `PROJECT_ROADMAP.md`, and then delegates tasks to its specialized personas (Developer, UI, DevOps, SEO). It forces strict adherence to established blueprints (Bootstrap 5, Decap CMS, Systemd, Nginx) avoiding hallucinations, zero-coding UI from scratch, and manual server configurations.
 
+## 🗂️ State Management
+
+An Orchestrator without memory is just a chat window. The WFO maintains a `current_state.json` file at the project root to persist execution context across sessions — no conversation history required.
+
+```json
+{
+  "project": "client-name-slug",
+  "phase": "build",
+  "active_skill": "project_scaffolding",
+  "active_agent": "@Architect",
+  "last_completed_step": "spec_driven_architecture → DONE",
+  "next_step": "project_scaffolding → Step 1: Init GitHub repo",
+  "token_budget_remaining": 85000,
+  "roadmap_ref": "PROJECT_ROADMAP.md#step-3"
+}
+```
+
+**Rules:**
+- The Orchestrator **must** update `current_state.json` after every completed skill step.
+- On session resume, the Orchestrator **reads `current_state.json` first** before any other action.
+- `token_budget_remaining` is a soft ceiling. When < 10 000, the Orchestrator emits a `⚠️ TOKEN WARNING` and suspends non-critical context.
+
 ## 🧠 The Master Orchestrator & The Agentic Team
 
 You only talk to the **@Orchestrator**. The Orchestrator automatically summons the following personas based on the context and the required skill:
@@ -57,6 +79,16 @@ To ensure deterministic behavior across the agentic team, every skill in the `/s
 └─────────────────────────────────────────────┘ 
 ```
 
+**Handover Requirement:** No agent may begin executing a skill without an explicit `GO` signal written by the previous agent owner into `PROJECT_ROADMAP.md`. The `GO` entry must include: the completed skill name, a one-sentence context summary, and the receiving agent's name. Agents that start work without a `GO` signal are considered to be operating outside the sanctioned workflow and their output is invalid.
+
+```text
+ <!-- Example handover entry in PROJECT_ROADMAP.md -->
+[✅ GO] @Architect → @Developer
+Skill completed: spec_driven_architecture
+Context: PRD approved. 3 Razor Pages defined (Home, Services, Contact).
+Handover to: @Developer → Begin project_scaffolding
+```
+
 ## 🧠 Core Agentic Design Principles (The WFO Directives)
 
 To prevent AI laziness, hallucination, and token waste, the Master Orchestrator and all sub-agents MUST operate under these strict design choices:
@@ -65,6 +97,18 @@ To prevent AI laziness, hallucination, and token waste, the Master Orchestrator 
 - **Anti-rationalization:** AI agents are prone to laziness. Every skill includes a list of common excuses (e.g., "I'll add the UI library later", "I'll assume the Nginx config is fine") with documented counter-arguments forcing immediate execution.
 - **Verification is non-negotiable:** Every skill ends with hard evidence requirements. "It seems right" or "The code looks good" is never sufficient. We require proof: CLI output, passing build logs, or exact JSON schema validation.
 - **Progressive disclosure:** The Master Orchestrator only loads `SKILL.md` files when explicitly needed. Supporting templates (from `/blueprints`) are fetched only during the execution phase, keeping API token usage minimal and context windows clean.
+
+### ⛔ Hard Constraints (Non-Negotiable)
+
+These are absolute prohibitions baked into every agent's operating context. Violation is grounds for immediate task rollback.
+
+| Constraint | Rule | Rationale |
+|---|---|---|
+| **No SQL / No ORM** | `Entity Framework`, `SQLite`, `PostgreSQL` — banned. Git-based JSON/MD files are the only data layer. | Eliminates infra complexity and maintains the 850€/web margin. |
+| **No heavy JS** | If Bootstrap 5 or native browser APIs can do it, no external JS library is permitted. | Swiper.js and AOS are whitelisted. Everything else requires explicit `@Architect` approval. |
+| **Auditor gate is mandatory** | Every component, page, and config file **must** pass `security_audit` before it is marked `DONE`. | "It looks fine" is not a delivery standard. |
+| **No custom CSS for standard components** | `@FrontendUI` is forbidden from writing custom CSS for any component that Bootstrap 5 natively covers. | Prevents brand drift and unmaintainable overrides. |
+| **No halted context** | The Orchestrator must never say "I'll continue in the next message." All work for a given step is completed atomically. | Prevents state drift and partial deliverables. |
 
 ## 🛠️ Skills Dictionary
 
@@ -96,6 +140,46 @@ The Orchestrator detects the situation and applies the exact skill required.
 | `vps_provisioning` | Generates Nginx/Systemd files and pushes the deployment workflow to the target VPS. | The code is ready for the Debian 11 server. | `@DevOps` |
 
 
+## � Project Structure
+
+```text
+web-factory-orchestrator/
+├── inbox/                          # Drop client PDFs/briefings here
+├── current_state.json              # Live execution state (Orchestrator memory)
+├── PROJECT_ROADMAP.md              # Auto-generated per project; contains handover log
+│
+├── skills/                         # One directory per skill, one SKILL.md per dir
+│   ├── briefing_synthesis/
+│   ├── spec_driven_architecture/
+│   ├── project_scaffolding/
+│   ├── integrate_ui_component/
+│   ├── decap_cms_config/
+│   ├── security_audit/
+│   └── vps_provisioning/
+│
+├── blueprints/                     # Read-only reference templates; never edited manually
+│   ├── infra/                      #   Nginx vhost templates, Systemd unit files,
+│   │                               #   GitHub Actions CI/CD YAMLs
+│   ├── code/                       #   .NET 9 Clean Architecture boilerplate,
+│   │                               #   ContentService.cs, BaseController.cs
+│   └── ui/                         #   Bootstrap 5 base layout, Swiper.js wrappers,
+│                                   #   StitchWithGoogle standard section templates
+│
+├── docs/
+│   └── skill-anatomy.md            # Format spec for writing new skills
+│
+└── agents/                         # Persona definitions for Copilot / Cursor
+    ├── orchestrator.md
+    ├── analyst.md
+    ├── architect.md
+    ├── developer.md
+    ├── frontend-ui.md
+    ├── auditor.md
+    └── devops.md
+```
+
+**Blueprint loading rule:** Agents reference files in `/blueprints` by path only. They do not read blueprint files until the exact step that requires them. This keeps context windows lean.
+
 ## 🚀 Usage: The "Vibe Coding" Trigger
 
 Open your AI assistant (Cursor / Copilot Chat) inside this repository and fire this exact prompt:
@@ -103,7 +187,9 @@ Open your AI assistant (Cursor / Copilot Chat) inside this repository and fire t
 ```text
 @workspace I have uploaded a new client PDF in `/inbox`. 
 You are the Master Orchestrator. 
-1. Use `briefing_synthesis` to understand the project.
-2. Coordinate with @Architect to use `spec_driven_architecture`.
-3. Generate a step-by-step `PROJECT_ROADMAP.md`.
+1. Read `current_state.json` — if a project is in progress, resume it.
+2. Otherwise, use `briefing_synthesis` to understand the project.
+3. Coordinate with @Architect to use `spec_driven_architecture`.
+4. Generate a step-by-step `PROJECT_ROADMAP.md`.
 Wait for my approval before moving to Phase 2 (Build).
+```
