@@ -1,10 +1,10 @@
 ---
 name: briefing-synthesis
 description: >
-  Produces a structured PROJECT_ROADMAP.md and a sitemap JSON from a raw client
+  Produces a structured PROJECT_ROADMAP-{project-name}.md and a sitemap JSON from a raw client
   briefing (PDF or text). Use when a briefing is provided in chat text, via a
   PDF attachment (when supported), or as /inbox/briefing.md or /inbox/briefing.txt,
-  and no PROJECT_ROADMAP.md exists yet in the project root.
+  and no PROJECT_ROADMAP-{project-name}.md exists yet in the project root.
 owner: "@Analyst"
 phase: "define"
 ---
@@ -13,7 +13,7 @@ phase: "define"
 
 ## Overview
 Transforms a raw client briefing into a structured, agent-executable project plan.
-Produces a sitemap JSON, a feature component list, and a `PROJECT_ROADMAP.md` that
+Produces a sitemap JSON, a feature component list, and a `PROJECT_ROADMAP-{project-name}.md` that
 the Orchestrator uses to sequence all subsequent skill executions.
 
 ## When to Use
@@ -32,13 +32,22 @@ Requires: Human operator has provided a client briefing as PDF, chat text,
 or /inbox/briefing.md|briefing.txt.
 No GO signal from a previous agent is needed.
 The Orchestrator activates this skill when there is unprocessed briefing input
-and PROJECT_ROADMAP.md does not yet exist in the project root.
+and no PROJECT_ROADMAP-{project-name}.md exists yet in the project root.
 ```
 
 ## Process
 
-### Step 1 — Extract Business Intent
-Read the full contents of the file in `/inbox`. Scan for the following Business Motive signals:
+### Step 1 — Extract Project Name and Business Intent
+Read the full contents of the file in `/inbox`.
+
+**First, derive the `{project-name}` slug:**
+- Find the client or brand name in the briefing (header, first paragraph, or document subject).
+- Slugify it: lowercase, replace spaces and special characters with hyphens, strip accents.
+- Example: "Pure Wipe S.L." → `pure-wipe`
+- This slug becomes `{project-name}` and is used for all file naming from this point forward.
+- The roadmap will be created as `PROJECT_ROADMAP-{project-name}.md`.
+
+Then scan for the following Business Motive signals:
 
 | Motive | Signal Keywords |
 |---|---|
@@ -46,7 +55,7 @@ Read the full contents of the file in `/inbox`. Scan for the following Business 
 | **Product Catalog** | "list of products", "catalog", "our work", "portfolio", "services" |
 | **Brand Info** | "about us", "mission", "history", "team", "who we are" |
 
-Write the detected motives as a flat list in `PROJECT_ROADMAP.md` under a `## Detected Motives` heading before proceeding to Step 2. Do not infer — only record what is evidenced in the briefing. If the briefing is ambiguous, ask the human operator one focused clarifying question before continuing.
+Write the detected motives as a flat list in `PROJECT_ROADMAP-{project-name}.md` under a `## Detected Motives` heading before proceeding to Step 2. Do not infer — only record what is evidenced in the briefing. If the briefing is ambiguous, ask the human operator one focused clarifying question before continuing.
 
 ### Step 2 — Define the Navigation Sitemap
 Apply these routing rules to the detected motives:
@@ -58,7 +67,7 @@ Apply these routing rules to the detected motives:
 | **C** | Always | `Inicio` as the root page (slug: `/`) |
 | **D** | Always | Maximum 7 navigation items total |
 
-Output the sitemap as a JSON object and write it into `PROJECT_ROADMAP.md` under `## Sitemap`. Example:
+Output the sitemap as a JSON object and write it into `PROJECT_ROADMAP-{project-name}.md` under `## Sitemap`. Example:
 
 ```json
 {
@@ -81,11 +90,11 @@ Based on the sitemap, produce a feature component manifest. Apply these rules:
 | `marketing-seo-pack` | Every project — AIO (AI Optimization) is always required |
 | `dynamic-content-grid` | Product Catalog motive detected |
 
-Write the manifest under `## Feature Components` in `PROJECT_ROADMAP.md`.
+Write the manifest under `## Feature Components` in `PROJECT_ROADMAP-{project-name}.md`.
 
 ### Step 4 — Initialize the Project Roadmap
 Using `blueprints/code/roadmap-template.md` as the base structure, generate
-`PROJECT_ROADMAP.md` in the project root with the following phases fully populated:
+`PROJECT_ROADMAP-{project-name}.md` in the project root with the following phases fully populated:
 
 - **Phase 1 — Define/Specs:** Task-list owned by `@Architect` (one task per Razor Page defined in sitemap).
 - **Phase 2 — Build:** Task-list owned by `@Developer` (models + services + Decap schema/admin config) and `@FrontendUI` (components + layout).
@@ -108,7 +117,7 @@ Write the following fields to `current_state.json` in the project root:
   "last_completed_step": "briefing-synthesis → Step 4: Roadmap initialized",
   "next_step": "project-estimation-and-stack-selection → Step 1",
   "token_budget_remaining": null,
-  "roadmap_ref": "PROJECT_ROADMAP.md"
+  "roadmap_ref": "PROJECT_ROADMAP-{project-name}.md"
 }
 ```
 
@@ -117,7 +126,7 @@ Write the following fields to `current_state.json` in the project root:
 | Rationalization | Reality |
 |---|---|
 | "The PDF is vague, I'll just create a generic Home/About/Contact." | Vague PDFs require a clarifying question, not a generic template. Ask first, then generate. |
-| "I'll create the roadmap after doing some research." | No. `PROJECT_ROADMAP.md` is the prerequisite for every other skill. It must exist before any @Architect or @Developer task begins. |
+| "I'll create the roadmap after doing some research." | No. `PROJECT_ROADMAP-{project-name}.md` is the prerequisite for every other skill. It must exist before any @Architect or @Developer task begins. |
 | "The client mentioned a database, but Git-based CMS can probably handle it." | A SQL or ORM requirement is a project stopper. Flag it immediately in the roadmap as a BLOCKER and notify the human operator. Do not silently work around it. |
 | "More than 7 nav items makes the site richer." | A site with more than 7 nav items exceeds the 850€ scope model. Flag it as out-of-scope and propose a Phase 2 expansion instead. |
 | "I'll skip current_state.json, it's just metadata." | The Orchestrator reads `current_state.json` on session resume. Skipping it forces re-reading the full chat history, wasting tokens and risking state drift. |
@@ -128,24 +137,24 @@ Write the following fields to `current_state.json` in the project root:
 - Sitemap JSON contains more than 7 items — scope creep, flag immediately.
 - No Lead Generation motive identified on a site for a local business — likely missed a signal, re-scan.
 - A page template is listed as `"template": "custom"` — custom templates are prohibited; use only `home`, `about`, `contact`, `services`, `catalog`, `blog`.
-- `PROJECT_ROADMAP.md` is generated without the `## Sitemap` JSON block — Step 2 was skipped.
-- `PROJECT_ROADMAP.md` is generated without Decap admin/config tasks in Phase 2 — baseline stack is incomplete.
+- `PROJECT_ROADMAP-{project-name}.md` is generated without the `## Sitemap` JSON block — Step 2 was skipped.
+- `PROJECT_ROADMAP-{project-name}.md` is generated without Decap admin/config tasks in Phase 2 — baseline stack is incomplete.
 - `current_state.json` is missing or not updated after the skill completes — session resume will fail.
 - Any mention of `Entity Framework`, `SQL`, `PostgreSQL`, or `SQLite` in the briefing — hard blocker, do not proceed.
 
 ## Verification
 
 After all steps are complete, `@Analyst` writes evidence for each item into
-`PROJECT_ROADMAP.md` and updates `current_state.json` before the human operator
+`PROJECT_ROADMAP-{project-name}.md` and updates `current_state.json` before the human operator
 is asked to approve the roadmap.
 
-- [ ] `/inbox` file was fully read — evidence: first 3 detected Business Motive signals listed under `## Detected Motives` in `PROJECT_ROADMAP.md`
-- [ ] Sitemap JSON is present under `## Sitemap` in `PROJECT_ROADMAP.md` — validate: `nav` array has ≥ 1 and ≤ 7 items
+- [ ] `/inbox` file was fully read — evidence: first 3 detected Business Motive signals listed under `## Detected Motives` in `PROJECT_ROADMAP-{project-name}.md`
+- [ ] Sitemap JSON is present under `## Sitemap` in `PROJECT_ROADMAP-{project-name}.md` — validate: `nav` array has ≥ 1 and ≤ 7 items
 - [ ] All routing rules (A–D) were evaluated — evidence: comment next to each nav item indicating which rule triggered it
 - [ ] Feature component manifest is present under `## Feature Components` — confirm `json-content-service` and `marketing-seo-pack` are always included
 - [ ] Feature component manifest is present under `## Feature Components` — confirm `json-content-service`, `decap-admin-panel`, and `marketing-seo-pack` are always included
-- [ ] `PROJECT_ROADMAP.md` exists in the project root — evidence: `Get-ChildItem PROJECT_ROADMAP.md` output
-- [ ] All three phases (Define, Build, Deploy) are populated in `PROJECT_ROADMAP.md` with at least one `- [ ]` task each
+- [ ] `PROJECT_ROADMAP-{project-name}.md` exists in the project root — evidence: `Get-ChildItem PROJECT_ROADMAP-{project-name}.md` output
+- [ ] All three phases (Define, Build, Deploy) are populated in `PROJECT_ROADMAP-{project-name}.md` with at least one `- [ ]` task each
 - [ ] Phase 2 includes Decap admin tasks — evidence: task lines for `/admin/`, Decap `config.yml`, and content collections
 - [ ] `current_state.json` updated with `last_completed_step` pointing to this skill — evidence: paste the JSON block
-- [ ] Human operator has been shown the roadmap and asked for approval with the exact prompt: `"Review PROJECT_ROADMAP.md. Reply 'Proceed' to begin Phase 1, or provide corrections."`
+- [ ] Human operator has been shown the roadmap and asked for approval with the exact prompt: `"Review PROJECT_ROADMAP-{project-name}.md. Reply 'Proceed' to begin Phase 1, or provide corrections."`
