@@ -209,7 +209,7 @@ Observable signs that the skill is being violated. Used by `@Auditor` during rev
 - A GO signal is written before the Verification checklist is 100% ticked
 - An agent references a blueprint "the standard way" without citing the exact file path
 - Custom CSS appears in any output from `@FrontendUI`
-- A `current_state.json` entry is missing `last_completed_step` after a step transition
+- A `current_state-{project-name}.json` entry is missing `last_completed_step` after a step transition
 
 Skill-specific red flags belong in each individual `SKILL.md`, not here.
 

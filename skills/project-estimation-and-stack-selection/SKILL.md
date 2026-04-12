@@ -5,7 +5,6 @@ description: >
   and recommends the best .NET target framework for the project while enforcing
   Decap CMS as the admin baseline. Use after briefing-synthesis has generated
   PROJECT_ROADMAP-{project-name}.md and before spec-driven-architecture starts.
-owner: "@Architect"
 phase: "define"
 ---
 
@@ -23,15 +22,15 @@ Produces a quantified estimate section in `PROJECT_ROADMAP-{project-name}.md` an
 ## Handover Requirement
 
 ```text
-Requires: @Analyst has completed `briefing-synthesis`.
+Requires: briefing-synthesis has completed.
 GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
-[✅ GO] @Analyst → @Architect | briefing-synthesis DONE | YYYY-MM-DD
+[✅ GO] briefing-synthesis | DONE | YYYY-MM-DD
 ```
 
 ## Process
 
 ### Step 1 — Read Scope Signals
-Read `current_state.json` to obtain `{project-name}` (the `project` field). Then read `PROJECT_ROADMAP-{project-name}.md` and extract these inputs:
+Read `current_state-{project-name}.json` to obtain the `project` field (which is `{project-name}`). Then read `PROJECT_ROADMAP-{project-name}.md` and extract these inputs:
 - Total navigation items
 - Count of dynamic pages/components
 - Count of integrations or external dependencies
@@ -186,8 +185,8 @@ Write/confirm these baseline requirements under `## Stack Decision` in `PROJECT_
 
 If roadmap tasks are missing Decap setup, append missing tasks in Phase 2 before completion.
 
-### Step 7 — Update current_state.json
-Update `current_state.json`:
+### Step 7 — Update current_state-{project-name}.json
+Update `current_state-{project-name}.json`:
 
 ```json
 {
@@ -221,7 +220,7 @@ Update `current_state.json`:
 - Operator supervision hours conflated with coding hours in the agentic block.
 - Agentic cost block missing any of: AI tokens, Copilot pro-rata, CI/CD, VPS pro-rata.
 - Effort estimate omits complexity drivers.
-- `current_state.json` still points to `briefing-synthesis` after estimation completes.
+- `current_state-{project-name}.json` still points to `briefing-synthesis` after estimation completes.
 
 ## Verification
 
@@ -236,5 +235,5 @@ Update `current_state.json`:
 - [ ] `## Stack Decision` exists with `target_framework`, `decision_basis`, and `fallback_framework`
 - [ ] `## Stack Decision` explicitly states Decap CMS admin, `/admin/`, and `wwwroot/admin/config.yml`
 - [ ] Phase 2 roadmap tasks include Decap setup tasks if they were missing before this skill
-- [ ] `current_state.json` updated to this skill and `next_step` set to `spec-driven-architecture`
+- [ ] `current_state-{project-name}.json` updated to this skill and `next_step` set to `spec-driven-architecture`
 - [ ] Human operator sees the estimate summary and is asked: `"Approve estimation and stack decision? Reply 'Proceed' or provide adjustments."`

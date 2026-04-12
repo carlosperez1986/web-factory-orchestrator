@@ -33,8 +33,8 @@ The only human entry point is `@Orchestrator`. All other agents (@Analyst, @Arch
 ## Session Resume
 
 Every session in this workspace must begin with:
-1. Check if `current_state.json` exists in the root.
-2. If yes: read it and report the active project state before doing anything else.
+1. Check if any `current_state-*.json` files exist in the root (one per active project).
+2. If yes: list all active projects and ask which to resume, or auto-detect from context.
 3. If no: wait for the user to provide a briefing or PDF.
 
 ## Skill Loading
@@ -42,16 +42,27 @@ Every session in this workspace must begin with:
 Skills are in `skills/<skill-name>/SKILL.md`.  
 Load a skill only when the current step requires it. Never load all skills at once.
 
+## Historical Documentation
+
+This repository maintains a step-by-step historical log for future long-form writing.
+
+Rules:
+1. After any meaningful change to agents, skills, orchestration rules, architecture, or workflow design, append a new chronological entry to `docs/wfo-process-history.md`.
+2. Each entry must record: what changed, why it was needed, architectural impact, files touched, and article notes.
+3. Do not write the Medium or LinkedIn article here; only maintain reusable source material and historical traceability.
+4. When a new skill is created, update both the chronological log and the `Skill Scope Notes` section in `docs/wfo-process-history.md`.
+
 ## File Structure Reference
 
 ```
 inbox/                    ← Drop client briefings here
-current_state.json        ← Orchestrator memory, updated after every skill step
-PROJECT_ROADMAP-{project-name}.md  ← Auto-generated per project; one file per client; contains GO signal handover log
+current_state-{project-name}.json       ← Live state per project; one file per active client; updated after each skill
+PROJECT_ROADMAP-{project-name}.md      ← Auto-generated per project; one file per client; contains GO signal handover log
 skills/                   ← One SKILL.md per subdirectory
 blueprints/infra/         ← Nginx, Systemd, GitHub Actions templates
 blueprints/code/          ← .NET 9 boilerplate, ContentService.cs
 blueprints/ui/            ← Bootstrap 5 layout, Swiper.js wrappers
 .github/agents/           ← Custom Copilot agent definitions
 docs/skill-anatomy.md     ← Spec for writing new skills
+docs/wfo-process-history.md ← Editorial source log for future Medium/LinkedIn articles
 ```

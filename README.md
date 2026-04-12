@@ -2,48 +2,73 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Web Factory Orchestrator** is a centralized, single-agent entry point for autonomous web ecosystem generation. It uses a master Orchestrator AI to read business requirements (PDFs/briefings), dynamically detect the required skills, and manage a team of specialized sub-agents to build and deploy .NET 9 / Linux VPS platforms.
+**Web Factory Orchestrator** is a single-agent, skills-driven system for autonomous web platform generation. One Orchestrator AI reads business requirements (PDFs/briefings), loads skills on demand, and executes the full pipeline — from briefing to deployed .NET 9 / Linux VPS platform — without delegating to agent personas.
 
 ## tl;dr
 
-You provide a PDF. The **Master Orchestrator** takes over. It reads the requirements, triggers the *Definition Phase* to map out the architecture, creates a step-by-step `PROJECT_ROADMAP.md`, and then delegates tasks to its specialized personas (Developer, UI, DevOps, SEO). It forces strict adherence to established blueprints (Bootstrap 5, Decap CMS, Systemd, Nginx) avoiding hallucinations, zero-coding UI from scratch, and manual server configurations.
+You provide a PDF. The **Master Orchestrator** takes over. It reads the requirements, runs `briefing-synthesis` to map out the architecture, creates a step-by-step `PROJECT_ROADMAP-{project-name}.md`, then executes each skill in sequence (`spec-driven-architecture`, `content-service-and-data-wiring`, `integrate-ui-component`, `seo-aio-optimization`). Only the security gate is delegated to a restricted `@Auditor` subagent. Strict adherence to established blueprints (Bootstrap 5, Decap CMS, Systemd, Nginx) is enforced by the skills themselves — not by agent personas.
+
+## 📖 Documentation
+
+New to WFO? Start here:
+- **[Architecture Overview](docs/architecture-overview.md)** — System design, central hub vs distributed repos, Phase 1–3 pipeline
+- **[Visual Flowcharts](docs/wfo-flowcharts.md)** — Mermaid diagrams of session start, repo creation, multi-skill pipeline
+- **[Internal Agent Diagram (.drawio)](docs/wfo-orchestrator-internal-agents.drawio)** — Draw.io diagram of Orchestrator, Architect, DeliveryManager, and artifact-based collaboration
+- **[Full User-Agent Flow (.drawio)](docs/wfo-full-flow-user-agent.drawio)** — End-to-end draw.io flow: user interaction, orchestration, skills, task creation, execution, and deploy
+- **[Quickstart & Runbook](docs/wfo-quickstart.md)** — 2-minute intro, multi-project management, troubleshooting
+- **[Skill and Agent Roadmap](docs/wfo-skill-agent-roadmap.md)** — Missing skills/agents, execution prerequisites, GitHub Projects model
+- **[Process History](docs/wfo-process-history.md)** — Chronological build log for future Medium/LinkedIn writing
+- **[Skill Anatomy](docs/skill-anatomy.md)** — How to write new SKILL.md files
+
+For developers:
+- Each skill is documented in `skills/<skill-name>/SKILL.md`
+  - Current: `briefing-synthesis`, `project-estimation-and-stack-selection`, `project-scaffolding`, `spec-driven-architecture`, `github-project-bootstrap`, `content-service-and-data-wiring`, `integrate-ui-component`, `seo-aio-optimization`, `security-audit`
+  - Planned: `content-model-and-decap-design`, `repo-adoption-assessment`, `implementation-batch-planning`, `vps-provisioning`, `release-and-postdeploy-verification`
+
+Execution history should live in each client repository through GitHub Issues + one GitHub Project board per website. The roadmap remains the design source of truth; the board is the delivery history.
 
 ## 🗂️ State Management
 
-An Orchestrator without memory is just a chat window. The WFO maintains a `current_state.json` file at the project root to persist execution context across sessions — no conversation history required.
+An Orchestrator without memory is just a chat window. The WFO maintains a `current_state-{project-name}.json` file at the project root to persist execution context across sessions — no conversation history required. This allows the orchestrator to manage multiple projects concurrently.
 
 ```json
 {
   "project": "client-name-slug",
   "phase": "build",
   "active_skill": "project_scaffolding",
-  "active_agent": "@Architect",
+  "active_agent": "@Orchestrator",
   "last_completed_step": "spec_driven_architecture → DONE",
   "next_step": "project_scaffolding → Step 1: Init GitHub repo",
   "token_budget_remaining": 85000,
-  "roadmap_ref": "PROJECT_ROADMAP.md#step-3"
+  "roadmap_ref": "PROJECT_ROADMAP-client-name-slug.md#step-3"
 }
 ```
 
-**Rules:**
-- The Orchestrator **must** update `current_state.json` after every completed skill step.
-- On session resume, the Orchestrator **reads `current_state.json` first** before any other action.
+**Rules (Multi-Project Support):**
+- The Orchestrator **must** update `current_state-{project-name}.json` after every completed skill step.
+- On session resume, the Orchestrator **reads `current_state-{project-name}.json` first** before any other action.
+- File naming: each project gets one state file, e.g. `current_state-pure-wipe.json`, `current_state-acme-corp.json`.
+- The Orchestrator can manage multiple projects concurrently — read all `current_state-*.json` files and ask which project to resume.
 - `token_budget_remaining` is a soft ceiling. When < 10 000, the Orchestrator emits a `⚠️ TOKEN WARNING` and suspends non-critical context.
 
-## 🧠 The Master Orchestrator & The Agentic Team
+## 🧠 The Master Orchestrator
 
-You only talk to the **@Orchestrator**. The Orchestrator automatically summons the following personas based on the context and the required skill:
+You only talk to the **@Orchestrator**. The Orchestrator executes every skill directly — loading each `SKILL.md` on demand and following it step by step. There are no intermediate agent personas. The only exception is `@Auditor`, which runs with restricted tools (read + search + execute, no file edits) as a security gate before deployment.
 
-| Persona | Domain | Responsibility |
+**Skills executed by @Orchestrator:**
+
+| Phase | Skill | Purpose |
 | :--- | :--- | :--- |
-| **🕵️ @Analyst** | Business Intel | Extracts entities, routes, and logic from raw briefings/PDFs. |
-| **📐 @Architect** | System Design | Enforces .NET 8 standards, Git-based CMS structures, and API contracts. |
-| **💻 @Developer** | Software Eng | Generates clean, modular C# code and Razor components. |
-| **🎨 @Designer** | Visual Identity | Bridges Figma/StitchWithGoogle assets into technical UI specs. |
-| **🧱 @FrontendUI** | UI Assembly | Integrates Bootstrap 5, Swiper.js, AOS. *Strictly forbidden to write custom CSS for standard components.* |
-| **📈 @MarketingSEO**| AIO & Semantics | Implements Schema.org and LLM-friendly content structures. |
-| **🛡️ @Auditor** | Quality & Sec | Validates Nginx hardening, SSL integrity, and code security before deployment. |
-| **🚀 @DevOps** | Infrastructure | Executes VPS provisioning (Systemd, Nginx) and configures CI/CD. |
+| define | `briefing-synthesis` | Extract business intent, sitemap, roadmap skeleton |
+| define | `project-estimation-and-stack-selection` | Token/time/cost estimate and stack decision |
+| define | `spec-driven-architecture` | Convert roadmap into implementation-ready spec |
+| build | `project-scaffolding` | Create or adopt repository, .NET scaffold, Decap seed |
+| build | `github-project-bootstrap` | GitHub Issues + Project board from roadmap/spec |
+| build | `content-service-and-data-wiring` | File-based models, services, Razor PageModel bindings |
+| build | `integrate-ui-component` | Bootstrap-first page assembly from contracts |
+| build | `seo-aio-optimization` | Metadata, Schema.org, internal linking, AIO structure |
+| deploy | `security-audit` | Pre-deploy security gate (delegated to `@Auditor`) |
+| deploy | `vps-provisioning` | Nginx, Systemd, SSL provisioning |
 
 ## 🤝 Contributing & Skill Creation
 
@@ -145,7 +170,7 @@ The Orchestrator detects the situation and applies the exact skill required.
 ```text
 web-factory-orchestrator/
 ├── inbox/                          # Drop client PDFs/briefings here
-├── current_state.json              # Live execution state (Orchestrator memory)
+├── current_state-{project-name}.json        # Live execution state per project (Orchestrator memory)
 ├── PROJECT_ROADMAP.md              # Auto-generated per project; contains handover log
 │
 ├── skills/                         # One directory per skill, one SKILL.md per dir
@@ -187,7 +212,7 @@ Open your AI assistant (Cursor / Copilot Chat) inside this repository and fire t
 ```text
 @workspace I have uploaded a new client PDF in `/inbox`. 
 You are the Master Orchestrator. 
-1. Read `current_state.json` — if a project is in progress, resume it.
+1. Read `current_state-{project-name}.json` — if a project is in progress, resume it. Match by `{project-name}` slug.
 2. Otherwise, use `briefing_synthesis` to understand the project.
 3. Coordinate with @Architect to use `spec_driven_architecture`.
 4. Generate a step-by-step `PROJECT_ROADMAP.md`.

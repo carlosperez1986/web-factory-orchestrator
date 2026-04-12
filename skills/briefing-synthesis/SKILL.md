@@ -5,7 +5,6 @@ description: >
   briefing (PDF or text). Use when a briefing is provided in chat text, via a
   PDF attachment (when supported), or as /inbox/briefing.md or /inbox/briefing.txt,
   and no PROJECT_ROADMAP-{project-name}.md exists yet in the project root.
-owner: "@Analyst"
 phase: "define"
 ---
 
@@ -105,15 +104,15 @@ Each task entry must follow the format:
 - [ ] [Task description] | Owner: @AgentRole | Depends on: [previous task or NONE]
 ```
 
-### Step 5 — Update current_state.json
-Write the following fields to `current_state.json` in the project root:
+### Step 5 — Update current_state-{project-name}.json
+Write the following fields to `current_state-{project-name}.json` in the project root (create file with slug-based name):
 
 ```json
 {
   "project": "<client-name-slug>",
   "phase": "define",
   "active_skill": "briefing-synthesis",
-  "active_agent": "@Analyst",
+  "active_agent": "@Orchestrator",
   "last_completed_step": "briefing-synthesis → Step 4: Roadmap initialized",
   "next_step": "project-estimation-and-stack-selection → Step 1",
   "token_budget_remaining": null,
@@ -129,7 +128,7 @@ Write the following fields to `current_state.json` in the project root:
 | "I'll create the roadmap after doing some research." | No. `PROJECT_ROADMAP-{project-name}.md` is the prerequisite for every other skill. It must exist before any @Architect or @Developer task begins. |
 | "The client mentioned a database, but Git-based CMS can probably handle it." | A SQL or ORM requirement is a project stopper. Flag it immediately in the roadmap as a BLOCKER and notify the human operator. Do not silently work around it. |
 | "More than 7 nav items makes the site richer." | A site with more than 7 nav items exceeds the 850€ scope model. Flag it as out-of-scope and propose a Phase 2 expansion instead. |
-| "I'll skip current_state.json, it's just metadata." | The Orchestrator reads `current_state.json` on session resume. Skipping it forces re-reading the full chat history, wasting tokens and risking state drift. |
+| "I'll skip current_state-{project-name}.json, it's just metadata." | The Orchestrator reads `current_state-{project-name}.json` on session resume. Skipping it forces re-reading the full chat history, wasting tokens and risking state drift. |
 | "We'll decide admin panel later." | Decap CMS admin is mandatory by default. Include `/admin/` and related build tasks in the initial roadmap. |
 
 ## Red Flags
@@ -139,13 +138,13 @@ Write the following fields to `current_state.json` in the project root:
 - A page template is listed as `"template": "custom"` — custom templates are prohibited; use only `home`, `about`, `contact`, `services`, `catalog`, `blog`.
 - `PROJECT_ROADMAP-{project-name}.md` is generated without the `## Sitemap` JSON block — Step 2 was skipped.
 - `PROJECT_ROADMAP-{project-name}.md` is generated without Decap admin/config tasks in Phase 2 — baseline stack is incomplete.
-- `current_state.json` is missing or not updated after the skill completes — session resume will fail.
+- `current_state-{project-name}.json` is missing or not updated after the skill completes — session resume will fail.
 - Any mention of `Entity Framework`, `SQL`, `PostgreSQL`, or `SQLite` in the briefing — hard blocker, do not proceed.
 
 ## Verification
 
-After all steps are complete, `@Analyst` writes evidence for each item into
-`PROJECT_ROADMAP-{project-name}.md` and updates `current_state.json` before the human operator
+After all steps are complete, the Orchestrator writes evidence for each item into
+`PROJECT_ROADMAP-{project-name}.md` and updates `current_state-{project-name}.json` before the human operator
 is asked to approve the roadmap.
 
 - [ ] `/inbox` file was fully read — evidence: first 3 detected Business Motive signals listed under `## Detected Motives` in `PROJECT_ROADMAP-{project-name}.md`
@@ -156,5 +155,5 @@ is asked to approve the roadmap.
 - [ ] `PROJECT_ROADMAP-{project-name}.md` exists in the project root — evidence: `Get-ChildItem PROJECT_ROADMAP-{project-name}.md` output
 - [ ] All three phases (Define, Build, Deploy) are populated in `PROJECT_ROADMAP-{project-name}.md` with at least one `- [ ]` task each
 - [ ] Phase 2 includes Decap admin tasks — evidence: task lines for `/admin/`, Decap `config.yml`, and content collections
-- [ ] `current_state.json` updated with `last_completed_step` pointing to this skill — evidence: paste the JSON block
+- [ ] `current_state-{project-name}.json` updated with `last_completed_step` pointing to this skill — evidence: paste the JSON block
 - [ ] Human operator has been shown the roadmap and asked for approval with the exact prompt: `"Review PROJECT_ROADMAP-{project-name}.md. Reply 'Proceed' to begin Phase 1, or provide corrections."`
