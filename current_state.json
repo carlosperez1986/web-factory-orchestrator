@@ -1,0 +1,10 @@
+{
+  "project": "pure-wipe",
+  "phase": "define",
+  "active_skill": "briefing-synthesis",
+  "active_agent": "@Analyst",
+  "last_completed_step": "briefing-synthesis → Step 4: Roadmap initialized",
+  "next_step": "spec-driven-architecture → Step 1 (awaiting user approval)",
+  "token_budget_remaining": null,
+  "roadmap_ref": "PROJECT_ROADMAP.md"
+}
