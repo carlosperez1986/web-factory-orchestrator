@@ -58,6 +58,11 @@ After roadmap and estimation are presented:
 
 **When user says "Proceed" after Phase 1:**
 
+**Mandatory policy for client repository scope:**
+- Target repository is `project-code-only`.
+- Do not place WFO orchestrator internals in client repo (`skills/`, `.github/agents/`, `current_state-*.json`, `PROJECT_ROADMAP-*.md`, hub docs).
+- Keep orchestration/state files in the hub workspace only.
+
 1. **Detect existing GitHub repository:**
    - Ask: *"Does a GitHub repository already exist for {project-name}?"*
    - If user replies "yes, use this URL": `https://github.com/user/project-name`
@@ -66,43 +71,49 @@ After roadmap and estimation are presented:
    - If user replies "no" or "create new":
      - Proceed to project-scaffolding skill
 
+    **GitHub MCP Credential Readiness (required before Step 2):**
+    Ask and confirm:
+    - MCP GitHub server is configured and reachable.
+    - PAT exists and is loaded in MCP input.
+    - Minimal token scopes are present:
+       - `repo` (required to create private repos and push code)
+       - `workflow` (required to create/update `.github/workflows/*`)
+    - If target is a GitHub Organization: account/token must be authorized to create repositories in that org.
+
+    If any item is missing:
+    - Set `repo_status: "blocked-missing-permissions"` in `current_state-{project-name}.json`
+    - Emit `BLOCKER`
+    - Ask user to update token scopes/organization permissions
+    - Do not continue to repo bootstrap until confirmed
+
 2. **Delegate to `project-scaffolding` skill:**
    - Read the full skill definition at `skills/project-scaffolding/SKILL.md`.
-   - If repo doesn't exist: skill creates it via `gh repo create {project-name} --private`
-   - If repo exists: skill clones it locally
+   - If repo doesn't exist: skill creates it via MCP GitHub server (same authenticated account), private and empty.
+   - If repo exists: skill may clone it locally for scaffold execution.
+   - Human clone is optional and can be done later using the returned `repo_url`.
    - Execute skill **exactly as written** — all 10 steps
-   - Skill will copy state/roadmap files to repo, initialize .NET scaffold, seed Decap CMS, and push initial commit
+   - Skill will initialize .NET scaffold, seed Decap CMS, and push initial commit (project-code-only scope)
 
-   **GitHub Auth Failure Protocol:**
-   If `gh repo create` fails with any auth error (`GITHUB_TOKEN is invalid`, `authentication required`, `401`, or similar):
-   - Set `repo_status: "pending-manual-creation"` in `current_state-{project-name}.json`
-   - Do NOT abort. Ask the user:
+   **GitHub MCP/Network Failure Protocol (Blocking):**
+   If MCP repository creation fails OR `git ls-remote --heads origin` fails with auth/network/proxy error (`authentication required`, `401`, `403`, timeout, DNS):
+   - Set `repo_status: "blocked-github-mcp"` (or `blocked-github-communication` when remote check fails) in `current_state-{project-name}.json`
+   - Emit `BLOCKER` and stop workflow immediately.
+   - Do NOT proceed to any later skill until connectivity is resolved.
+   - Ask the user:
 
    ```
-   ⚠️ GitHub auth failed — I cannot create the repository automatically.
+   ⚠️ GitHub MCP communication blocked — repository bootstrap is blocked.
 
-   You have two options:
+   This flow is MCP-only and fully automatic.
+   Restore MCP GitHub connectivity/authentication and retry.
 
-   OPTION A — Provide a Personal Access Token (PAT):
-   1. Go to: https://github.com/settings/tokens
-   2. Click "Generate new token (classic)"
-   3. Set scopes: ✅ repo   ✅ workflow
-   4. Copy the token (only shown once)
-   5. Paste it here and I will configure the MCP GitHub server.
-
-   OPTION B — Create the repo manually:
-   1. Go to https://github.com/new
-   2. Name it exactly: {project-name}
-   3. Set visibility: Private
-   4. Do NOT initialize with README (leave empty)
-   5. Copy the clone URL and paste it here.
-
-   Which option do you prefer? (A / B)
+   Workflow resumes only after BOTH checks pass:
+   1. MCP repository creation succeeds
+   2. `git ls-remote --heads origin` succeeds
    ```
 
-   - If user chooses **Option A**: save the PAT input securely and proceed with MCP GitHub server (`@modelcontextprotocol/server-github`); do not write the PAT to any file.
-   - If user chooses **Option B**: set `repo_url` from user input, update `repo_status: "manual"`, continue with Step 3 (clone).
-   - Scaffold files created locally in `{project-name}/` within the hub remain valid — do not regenerate them.
+   - No manual fallback branch is allowed in this workflow.
+   - Do not continue until communication check passes.
 
 3. **Monitor completion:**
    - Wait for `project-scaffolding` to complete all steps

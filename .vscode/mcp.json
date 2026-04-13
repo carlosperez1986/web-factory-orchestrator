@@ -3,7 +3,7 @@
     {
       "id": "github-pat",
       "type": "promptString",
-      "description": "GitHub Personal Access Token (scope: repo, workflow)",
+      "description": "GitHub Personal Access Token (minimum scopes: repo, workflow; org repos also require org create-repository permission)",
       "password": true
     }
   ],

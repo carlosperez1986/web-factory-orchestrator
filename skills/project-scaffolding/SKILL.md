@@ -13,12 +13,16 @@ phase: "build"
 ## Overview
 Orchestrates the creation of a per-project GitHub repository and populates it with:
 - .NET 9 Razor Pages project skeleton from blueprints
-- Project state and roadmap files (copied from hub)
 - Decap CMS admin schema structure (`wwwroot/admin/config.yml`)
 - CI/CD pipeline scaffolding (GitHub Actions)
 - Initial commit to bootstrap the build workflow
 
 This skill bridges Phase 1 (analysis in central hub) to Phase 2 (development in client repo).
+
+**Repository scope policy (default, non-negotiable):**
+- Client repository is `project-code-only`.
+- Do NOT copy WFO hub files into the client repo (no `skills/`, no `.github/agents/`, no orchestrator docs, no `current_state-*.json`, no `PROJECT_ROADMAP-*.md`).
+- WFO orchestration/state artifacts remain in the hub repository only.
 
 ## Blueprint Enforcement Mode (Non-Negotiable)
 
@@ -86,29 +90,93 @@ If the user explicitly says the repo already has working code or CI/CD, treat it
 
 ### Step 2 — Create New Repository (If Missing)
 
+**Credential pre-check (required, blocking):**
+
+Before repository bootstrap, verify GitHub MCP credentials and permissions:
+- MCP GitHub server configured and reachable
+- PAT present in MCP input
+- Minimal token scopes:
+  - `repo` (private repo create + push)
+  - `workflow` (create/update GitHub Actions workflow files)
+- If repository owner is a GitHub Organization, confirm create-repository permission in that org
+
+If any item is missing, set:
+
+```json
+"repo_status": "blocked-missing-permissions"
+```
+
+Emit `BLOCKER` and stop pipeline until user updates credentials/permissions.
+
 **Confirm with user (required):**
 
 ```
 "Repository for {project-name}: DOES NOT EXIST YET.
 
-I will run:
-  gh repo create {project-name} --private --clone
+I will run automatic MCP repository bootstrap with the current GitHub account.
 
 This will:
 1. Create a PRIVATE repository on github.com/{username}/{project-name}
-2. Clone it locally to ./{project-name}/
+2. Expose the clone URL for optional human clone
 
 Confirm? (yes/no)"
 ```
 
+If user confirms but permissions are still missing, ask exactly:
+
+```
+GitHub MCP is missing required permissions.
+
+Minimum required scopes:
+1. repo
+2. workflow
+
+If targeting an organization repo, also ensure your account/token can create repos in that organization.
+
+Reply "updated" once permissions are fixed to retry bootstrap.
+```
+
 **Only proceed if user replies "yes" or "confirm".**
 
-**Execute creation:**
+**Execute creation (MCP-only, automatic):**
 
 ```bash
-gh repo create {project-name} --private --clone
-# Waits for repo to be ready on GitHub
-# Clones locally
+# Use MCP GitHub server with current authenticated account
+# Create: private repo named {project-name}, empty (no README)
+# Return repo_url so a human can clone later if needed
+# Agent-side local clone is internal/optional and only used when required by subsequent scaffold steps
+```
+
+If MCP server is unavailable/misconfigured/auth-failed, set:
+
+```json
+"repo_status": "blocked-github-mcp"
+```
+
+Emit `BLOCKER` and stop the pipeline immediately. Do not continue to Step 3+.
+
+**Blocking GitHub Communication Gate (hard stop):**
+
+Immediately after create/clone, verify GitHub communication and push capability.
+
+```bash
+cd ./{project-name}/
+git remote -v
+git ls-remote --heads origin
+```
+
+If any command returns network/proxy/auth error (403/401/timeout/DNS), set:
+
+```json
+"repo_status": "blocked-github-communication"
+```
+
+Then stop the pipeline with `BLOCKER` and do not continue to Step 3+.
+
+Resume only after a successful check:
+
+```bash
+git ls-remote --heads origin
 ```
 
 **Capture repo URL and update state:**
@@ -118,11 +186,11 @@ gh repo create {project-name} --private --clone
 "repo_created_at": "YYYY-MM-DD HH:MM:SS (UTC)"
 ```
 
-**If `gh repo create` fails:**
-- Check GitHub auth: `gh auth status`
-- Check network: `gh repo view`
-- Ask user to create repo manually and provide clone URL in next session
-- Set `repo_status: "pending-manual-creation"`
+**If repository creation fails (MCP path):**
+- Set `repo_status: "blocked-github-mcp"`
+- Emit `BLOCKER` and stop pipeline (no manual fallback path in this workflow)
+- Require MCP connectivity/auth restoration
+- Resume only after MCP create succeeds and `git ls-remote` succeeds
 
 ### Step 3 — Clone Existing Repository (If Exists)
 
@@ -156,24 +224,28 @@ Write an `## Existing Repo Assessment` section into `PROJECT_ROADMAP-{project-na
 - whether deployment uses root domain or shared subpath,
 - gaps vs WFO baseline.
 
-### Step 4 — Copy Project State and Roadmap Files
+### Step 4 — Enforce Project-Only Repository Boundary
 
-**Copy from hub (workspace root) to repo:**
+Client repo must contain only deliverable project code and deployment artifacts.
+
+**Forbidden in client repo:**
+- `skills/**`
+- `.github/agents/**`
+- orchestrator-only documentation
+- `current_state-*.json`
+- `PROJECT_ROADMAP-*.md`
+
+**Verification (required):**
 
 ```bash
-# From workspace root
-cp PROJECT_ROADMAP-{project-name}.md ./{project-name}/
-cp current_state-{project-name}.json ./{project-name}/
+cd ./{project-name}/
+test ! -d skills
+test ! -d .github/agents
+ls current_state-*.json 2>/dev/null && exit 1 || true
+ls PROJECT_ROADMAP-*.md 2>/dev/null && exit 1 || true
 ```
 
-**Verify files exist in repo:**
-
-```bash
-ls -la ./{project-name}/current_state-{project-name}.json
-ls -la ./{project-name}/PROJECT_ROADMAP-{project-name}.md
-```
-
-**Expected output:** Both files present and readable.
+If any forbidden artifact is found, stop with `BLOCKER` and remove before continuing.
 
 ### Step 5 — Initialize .NET Project Scaffold from Blueprints
 
