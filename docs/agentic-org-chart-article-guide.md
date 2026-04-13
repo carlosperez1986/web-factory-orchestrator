@@ -308,6 +308,9 @@ Operational artifact:
 
 ## Minimal Diagram Pack for the Article
 
+Ready-to-use versions of these diagrams are available in:
+- `docs/agentic-executive-diagrams.md`
+
 - Layered org chart (5 planes)
 - Artifact flow (contract -> roadmap -> build -> evidence -> gate)
 - State lifecycle (define -> build -> assurance -> release)

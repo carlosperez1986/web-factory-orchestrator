@@ -19,6 +19,7 @@ New to WFO? Start here:
 - **[Main Orchestrator Manual](docs/main-orchestrator.md)** — deterministic command menu and fallback behavior for weak prompts
 - **[Agentic Business Milestones](docs/agentic-business-milestones.md)** — high-level implementation milestones to reuse this logic in any business domain
 - **[Agentic Org Chart Article Guide](docs/agentic-org-chart-article-guide.md)** — concepts, layered org chart, and publication structure for writing the agentic model article
+- **[Agentic Executive Diagrams](docs/agentic-executive-diagrams.md)** — board-ready diagrams for operating model, capability triage, and governance loop
 - **[Agentic Knowledge Base Schema](docs/agentic-knowledge-base-schema.md)** — canonical KB schema for skills, agents, gates, and capability-gap decisions
 - **[Skill and Agent Roadmap](docs/wfo-skill-agent-roadmap.md)** — Missing skills/agents, execution prerequisites, GitHub Projects model
 - **[Process History](docs/wfo-process-history.md)** — Chronological build log for future Medium/LinkedIn writing
