@@ -721,6 +721,36 @@ Files:
 
 ---
 
+---
+
+## Entry 2026-04-13 — purewide3.0: First Full Pipeline Execution (Autonomous Mode)
+
+**What changed:** Executed the full WFO pipeline end-to-end for project `purewide3` in a single autonomous session, skipping all human approval gates per operator instruction.
+
+**Why it was needed:** Operator requested a second project site ("purewide3.0") cloned from the Pure Wipes homepage design, with the agent making all decisions autonomously. This validated the pipeline as a batch operation, not just a step-by-step human-gated flow.
+
+**Architectural impact:**
+- Confirmed: all Phase 1 and Phase 2 pipeline artifacts can be generated in a single agent session when the operator grants autonomy.
+- Confirmed: the `PATH_BASE` environment variable injection in `Program.cs` enables shared-domain VPS topology without code changes.
+- Identified: GitHub REST API is blocked by sandbox DNS proxy — repo creation requires a manual step or MCP GitHub server. Same blocker as `pure-wipe` project.
+
+**Files touched:**
+- `current_state-purewide3.json` — live state for new project
+- `PROJECT_ROADMAP-purewide3.md` — Phase 1 roadmap
+- `STRATEGY_CONTRACT-purewide3.json` — strategy artifact
+- `IMPLEMENTATION_SPEC-purewide3.md` — technical spec
+- `DESIGN_STYLE_CONTRACT-purewide3.md` — design tokens from Stitch + screenshot
+- `evidence/sitemap-purewide3.json` — 6-page sitemap
+- `evidence/feature-components-purewide3.json` — 5 components
+- `purewide3/` — full .NET 9 scaffold (31 files, all content, CI/CD)
+
+**Article notes:**
+- This demonstrates WFO's "fire and forget" capability: one operator message → full deliverable.
+- The sandbox API restriction is a real-world friction point worth writing about — how to design pipelines for constrained environments.
+- The design contract was generated directly from a Stitch project ID + a screenshot, showing the visual ingestion pathway.
+
+---
+
 ## Future Entries To Add
 
 When new skills or agents are created, append entries for:
