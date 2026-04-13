@@ -104,6 +104,12 @@ What to include:
 Reference:
 - `docs/agentic-knowledge-base-schema.md`
 
+Files that interact:
+- `docs/agentic-knowledge-base-schema.md`
+- `skills/*/SKILL.md`
+- `.github/agents/*.agent.md`
+- `docs/capability-index.md` (when present)
+
 ### 1) Operating Playbook
 The operating playbook is the organization-level contract for how work starts, flows, and stops.
 
@@ -111,6 +117,12 @@ What to include in the article:
 - `README.md` as strategic orientation
 - `main-orchestrator.md` as deterministic command model
 - explicit user/approval gates
+
+Files that interact:
+- `README.md`
+- `docs/main-orchestrator.md`
+- `.github/agents/orchestrator.agent.md`
+- `current_state-{initiative}.json`
 
 ### 2) Session Mining (or Session Minning in informal usage)
 Session mining means extracting durable state from chat/session context so execution can resume without ambiguity.
@@ -123,6 +135,12 @@ What to include:
 Key artifact:
 - `current_state-{initiative}.json`
 
+Files that interact:
+- `current_state-{initiative}.json`
+- `PROJECT_ROADMAP-{initiative}.md`
+- `.github/agents/orchestrator.agent.md`
+- `docs/main-orchestrator.md`
+
 ### 3) Skills
 Skills are deterministic workflows with explicit IO.
 
@@ -130,6 +148,12 @@ What to include:
 - each skill has trigger, inputs, outputs, red flags, verification
 - skills are modular and composable
 - skills should be capability-based, not persona-based
+
+Files that interact:
+- `skills/*/SKILL.md`
+- `docs/skill-anatomy.md`
+- `docs/agentic-knowledge-base-schema.md`
+- `PROJECT_ROADMAP-{initiative}.md`
 
 ### 4) Agents
 Agents are control roles, not job titles.
@@ -144,6 +168,12 @@ What to add for article depth:
 - when only workflow logic changes, create/extend a skill first
 - create a new agent only when role isolation or tool policy isolation is needed
 
+Files that interact:
+- `.github/agents/orchestrator.agent.md`
+- `.github/agents/*.agent.md`
+- `skills/capability-gap-assessment/SKILL.md`
+- `evidence/capability-gap-{request-id}.json`
+
 ### 5) Contracts and Spec-Driven Architecture
 Contracts connect strategy and execution.
 
@@ -155,6 +185,12 @@ What to include:
 Key artifact:
 - `STRATEGY_CONTRACT-{initiative}.json`
 
+Files that interact:
+- `STRATEGY_CONTRACT-{initiative}.json`
+- `IMPLEMENTATION_SPEC-{initiative}.md`
+- `PROJECT_ROADMAP-{initiative}.md`
+- `skills/spec-driven-architecture/SKILL.md`
+
 ### 6) Blueprints
 Blueprints are reusable implementation templates.
 
@@ -162,6 +198,12 @@ What to include:
 - blueprint-first execution prevents reinvention
 - token substitution is allowed
 - ad hoc logic generation should be blocked when blueprint is missing
+
+Files that interact:
+- `blueprints/**`
+- `skills/project-scaffolding/SKILL.md`
+- `skills/content-service-and-data-wiring/SKILL.md`
+- generated repo scaffold files
 
 ### 7) Evidence
 Evidence is the physical proof that a task was completed.
@@ -176,6 +218,12 @@ Examples:
 - `evidence/security-audit-report.md`
 - workflow run URL or build log artifact
 
+Files that interact:
+- `evidence/**`
+- `PROJECT_ROADMAP-{initiative}.md`
+- `STRATEGY_CONTRACT-{initiative}.json`
+- `current_state-{initiative}.json`
+
 ### 8) Gates
 Gates are hard decision points with GO/BLOCKED outcomes.
 
@@ -183,6 +231,12 @@ What to include:
 - no phase transition without gate approval
 - no task closure without evidence
 - quality/security/compliance gates should fail closed
+
+Files that interact:
+- `PROJECT_ROADMAP-{initiative}.md`
+- `evidence/quality-gate-{initiative}.md`
+- `evidence/risk-gate-{initiative}.md`
+- `evidence/compliance-gate-{initiative}.md`
 
 ## Agentic Org Chart (Layered Model)
 
