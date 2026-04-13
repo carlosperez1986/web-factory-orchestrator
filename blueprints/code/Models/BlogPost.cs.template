@@ -1,0 +1,17 @@
+namespace {{PROJECT_NAME}}.Models;
+
+/// {{PROJECT_NAME}} — BlogPost model
+/// ── Fixed schema: required for blog functionality
+/// ── Supports frontmatter parsing (YAML) + markdown body
+/// ── Do NOT modify — generated from blueprint
+
+public class BlogPost
+{
+    public string Slug { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public DateTime Date { get; set; }
+    public string Image { get; set; } = string.Empty;
+    public string SeoDescription { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    public string ContentHtml { get; set; } = string.Empty;
+}

@@ -175,62 +175,131 @@ ls -la ./{project-name}/PROJECT_ROADMAP-{project-name}.md
 
 **Expected output:** Both files present and readable.
 
-### Step 5 — Initialize .NET 9 Project Scaffold
+### Step 5 — Initialize .NET Project Scaffold from Blueprints
 
-**Important:** This step only performs a full scaffold copy for NEW repositories.
+**⚠️ Critical:** This step ONLY performs copy-and-substitute using `/blueprints/code/**` templates.  
+**No custom code generation allowed.** Every file must be templated at source.
 
-If the repository already contains a working application:
+**Adoption-Mode Exception:** If the repository already contains working application code:
 - do NOT replace `Program.cs`, `.csproj`, `Pages/`, `Models/`, `Services/`, or `.github/workflows/` by default,
-- compare the live structure against WFO blueprints,
+- compare the live structure against WFO blueprints (see `blueprints/BLUEPRINT_INVENTORY.md`),
 - only add missing baseline artifacts,
 - record all deviations in the roadmap,
-- if modernization is needed (for example .NET 8 to .NET 9), propose it as a later roadmap task instead of silently rewriting the project.
+- if modernization is needed (e.g., .NET 8 → .NET 9), propose it as a later roadmap task instead of silently rewriting.
 
-If the repository is new:
-- copy only from `/blueprints/code/**`,
-- perform only token substitution (`{{PROJECT_NAME}}`, `{{DOTNET_VERSION}}`),
-- do not add hand-written logic outside blueprint scope.
+**For New Repositories (Standard Path):**
 
-**Copy .NET boilerplate from blueprints:**
+Use `blueprints/BLUEPRINT_INVENTORY.md` as the authoritative copy guide.
 
-```bash
-cp blueprints/code/Program.cs.template            ./{project-name}/Program.cs
-cp blueprints/code/.csproj.template               ./{project-name}/{project-name}.csproj
-mkdir -p ./{project-name}/Services
-cp blueprints/code/Services/ContentService.cs     ./{project-name}/Services/ContentService.cs
-mkdir -p ./{project-name}/Models
-mkdir -p ./{project-name}/Pages/Shared
-mkdir -p ./{project-name}/evidence
-echo "# Evidence — see WFO evidence/README.md for convention" > ./{project-name}/evidence/README.md
-cp    blueprints/code/.gitignore                  ./{project-name}/.gitignore
-```
-
-> `.NET 9 uses minimal hosting — there is no Startup.cs.` All wiring is in `Program.cs`.
-> `Models/` and `Pages/` are seeded as empty folders; the `spec-driven-architecture` and
-> `content-service-and-data-wiring` skills generate the actual files per project.
-
-**Template substitutions (required):**
-
-In `.csproj`:
-- Replace `{{PROJECT_NAME}}` with `{project-name}` (title-cased for namespace)
-- Replace `{{DOTNET_VERSION}}` with target framework from roadmap (e.g., `net9.0`)
-
-In `Program.cs`:
-- Replace `{{PROJECT_NAME}}` with namespace
-- Ensure `app.MapRazorPages()` is configured
-
-**Verify .NET project structure:**
+**5A - Directory Structure:**
 
 ```bash
-cd ./{project-name}/
-dotnet --version                # Must satisfy target framework used by the repo or roadmap
-dotnet build --dry-run          # Syntax check only
+mkdir -p {project-name}/wwwroot/content/blog
+mkdir -p {project-name}/Services
+mkdir -p {project-name}/Models
+mkdir -p {project-name}/Pages/Blog
+mkdir -p {project-name}/Pages/Shared
+mkdir -p {project-name}/evidence
 ```
 
-If build fails:
-- Check .csproj for malformed XML
-- Check namespace mismatches
-- Run `dotnet clean` and retry
+**5B - Copy Blueprint Templates & Substitute Tokens:**
+
+Reference Table: See `blueprints/BLUEPRINT_INVENTORY.md` § "Token Substitution Matrix" for collection timing per token.
+
+**Token values (must be resolved before substitution):**
+
+| Token | Source | How to Obtain |
+|-------|--------|---------------|
+| `{{PROJECT_NAME}}` | Roadmap / briefing-synthesis | PascalCase app name (e.g., `PureWipe`) |
+| `{{TAGLINE}}` | Roadmap / briefing-synthesis | Brand tagline (Spanish) |
+| `{{BRAND_EMOJI}}` | integrate-ui-component output or user intake | Single Unicode emoji (e.g., 💧) |
+| `{{TARGET_FRAMEWORK}}` | Roadmap / .NET version decision | Framework ID (net9.0, net8.0, etc.) |
+| `{{CACHE_TTL_MINUTES}}` | buildopt.cache_ttl or default 10 | Integer minutes |
+| `{{LOCALE}}` | buildopt.locale or default es-ES | Locale string (es-ES, en-US, etc.) |
+| `{{HERO_TITLE}}` | integrate-ui-component or user intake | Hero section headline |
+| `{{HERO_SUBTITLE}}` | integrate-ui-component or user intake | Hero description paragraph |
+| `{{SECTION_SOLUTIONS}}` | integrate-ui-component or user intake | Products section title |
+| `{{SECTION_SOLUTIONS_COPY}}` | integrate-ui-component or user intake | Products section description |
+| `{{SECTION_BLOG}}` | integrate-ui-component or user intake | Blog section preview title |
+| `{{PROJECT_TAGLINE}}` | Derived: {{PROJECT_NAME}} + {{TAGLINE}} | Auto-formatted (no separate intake) |
+| `{{GITHUB_CLIENT_ID}}` | GitHub OAuth app setup | OAuth app client ID (if using custom auth) |
+| `{{GITHUB_CLIENT_SECRET}}` | GitHub OAuth app setup | OAuth app secret (if using custom auth) |
+| `{{DOMAIN}}` | VPS provisioning or user intake | FQDN (e.g., hechoenmargarita.com) |
+| `{{GITHUB_ROUTE}}` | Derived from {{DOMAIN}} + {{USE_SHARED_DOMAIN}} | Route prefix (e.g., /purewipe) or empty |
+
+**Copy & Substitute Instructions:**
+
+```bash
+# 1. Copy & substitute .csproj (token: TARGET_FRAMEWORK)
+cp blueprints/code/PureWipe.csproj.template  {project-name}/{project-name}.csproj
+# Then: sed -i 's/{{TARGET_FRAMEWORK}}/net9.0/g' {project-name}/{project-name}.csproj
+
+# 2. Copy & substitute Program.cs (tokens: PROJECT_NAME, CACHE_TTL_MINUTES)
+cp blueprints/code/Program.cs.template  {project-name}/Program.cs
+# Then: sed -i 's/{{PROJECT_NAME}}/{PROJECT_NAME}/g' {project-name}/Program.cs
+# Then: sed -i 's/{{CACHE_TTL_MINUTES}}/{CACHE_TTL_MINUTES}/g' {project-name}/Program.cs
+
+# 3. Copy & substitute appsettings.json (tokens: GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, DOMAIN, GITHUB_ROUTE)
+cp blueprints/code/appsettings.json.template  {project-name}/appsettings.json
+# Then: perform GitHub OAuth token substitution
+# Then: perform DOMAIN and GITHUB_ROUTE substitution
+
+# 4. Copy ContentService.cs (tokens: PROJECT_NAME, CACHE_TTL_MINUTES)
+cp blueprints/code/Services/ContentService.cs.template  {project-name}/Services/ContentService.cs
+# Then: sed -i 's/{{PROJECT_NAME}}/{PROJECT_NAME}/g' {project-name}/Services/ContentService.cs
+# Then: sed -i 's/{{CACHE_TTL_MINUTES}}/{CACHE_TTL_MINUTES}/g' {project-name}/Services/ContentService.cs
+
+# 5. Copy BlogPost.cs model (token: PROJECT_NAME)
+cp blueprints/code/Models/BlogPost.cs.template  {project-name}/Models/BlogPost.cs
+# Then: sed -i 's/{{PROJECT_NAME}}/{PROJECT_NAME}/g' {project-name}/Models/BlogPost.cs
+
+# 6. Copy _Layout.cshtml (tokens: PROJECT_NAME, TAGLINE, BRAND_EMOJI)
+cp blueprints/code/Pages/Shared/_Layout.cshtml.template  {project-name}/Pages/Shared/_Layout.cshtml
+# Then: perform PROJECT_NAME, TAGLINE, BRAND_EMOJI substitution
+
+# 7. Copy Index.cshtml (tokens: PROJECT_NAME, PROJECT_TAGLINE, HERO_TITLE, HERO_SUBTITLE, SECTION_SOLUTIONS, SECTION_SOLUTIONS_COPY, SECTION_BLOG)
+cp blueprints/code/Pages/Index.cshtml.template  {project-name}/Pages/Index.cshtml
+# Then: perform all 7 token substitutions
+
+# 8. Copy Post.cshtml (tokens: PROJECT_NAME, LOCALE)
+cp blueprints/code/Pages/Blog/Post.cshtml.template  {project-name}/Pages/Blog/Post.cshtml
+# Then: sed -i 's/{{PROJECT_NAME}}/{PROJECT_NAME}/g' {project-name}/Pages/Blog/Post.cshtml
+# Then: sed -i 's/{{LOCALE}}/{LOCALE}/g' {project-name}/Pages/Blog/Post.cshtml
+
+# 9. Create evidence README
+echo "# Evidence — see WFO evidence/README.md for convention" > {project-name}/evidence/README.md
+```
+
+**Detailed Token Substitution Locations:**
+
+For exact token locations in each template file, refer to `blueprints/BLUEPRINT_INVENTORY.md` § "File Manifest".
+
+**Verification (Post-Substitution):**
+
+```bash
+cd {project-name}/
+# 1. Check for remaining template tokens (should be NONE except in comments)
+grep -r "{{" . --include="*.cs" --include="*.json" | grep -v "^#\|^//" || echo "✓ No unreplaced tokens found"
+
+# 2. Validate .csproj is well-formed XML
+xmllint --noout {project-name}.csproj || { echo "ERROR: .csproj is malformed XML"; exit 1; }
+
+# 3. Validate appsettings.json is valid JSON
+jq empty appsettings.json || { echo "ERROR: appsettings.json is invalid"; exit 1; }
+
+# 4. Run dotnet build dry-run (syntax check only)
+dotnet --version
+dotnet build --dry-run
+
+# 5. Check that all .cshtml files have valid Razor syntax (basic grep for common errors)
+grep -r "@model" Pages/ --include="*.cshtml" || { echo "WARNING: @model binding may be missing"; }
+```
+
+**If verification fails:**
+- Stop immediately and fix all errors before committing
+- Check for UTF-8 encoding issues in substituted files
+- Check for escaped characters in JSON or XML values
+- Manually inspect any binary/encoding differences if sed/awk substitution produced unexpected results
 
 ### Step 6 — Create Decap CMS Admin Structure
 

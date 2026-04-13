@@ -1,0 +1,15 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "GitHub": {
+    "ClientId": "{{GITHUB_CLIENT_ID}}",
+    "ClientSecret": "{{GITHUB_CLIENT_SECRET}}",
+    "RedirectUri": "https://{{DOMAIN}}{{GITHUB_ROUTE}}/callback",
+    "BaseUrl": "https://{{DOMAIN}}{{GITHUB_ROUTE}}"
+  }
+}
