@@ -5,6 +5,9 @@
 This file is the operator and AI fallback manual for running WFO when user intent is ambiguous.
 Use it as a deterministic entrypoint menu.
 
+For cross-domain implementation planning beyond websites, also use:
+- `docs/agentic-business-milestones.md`
+
 ## Default Rule
 
 At session start, always do this first:
@@ -53,6 +56,11 @@ Use these exact intents:
   - `vps-provisioning`
   - `release-and-postdeploy-verification`
 
+6. Assess capability fit
+- Trigger words: `is this in scope`, `do we need a new skill`, `do we need a new agent`, `capability gap`
+- Action: run `capability-gap-assessment`
+- Output: `in-scope` | `in-scope-with-extension` | `out-of-scope` + required new artifacts
+
 ## Visual Intake Rule
 
 Before `integrate-ui-component`, the Orchestrator must ask for one visual source:
@@ -81,6 +89,9 @@ Minimum evidence types:
 If the user prompt is too vague, ask one menu question only:
 
 "Choose one: 1) new project, 2) resume project, 3) update roadmap, 4) continue build, 5) deploy"
+
+If the user asks for a new domain or unclear capability, add option 6:
+"6) assess capability fit"
 
 Do not execute skills until one option is selected.
 

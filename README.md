@@ -17,13 +17,16 @@ New to WFO? Start here:
 - **[Full User-Agent Flow (.drawio)](docs/wfo-full-flow-user-agent.drawio)** — End-to-end draw.io flow: user interaction, orchestration, skills, task creation, execution, and deploy
 - **[Quickstart & Runbook](docs/wfo-quickstart.md)** — 2-minute intro, multi-project management, troubleshooting
 - **[Main Orchestrator Manual](docs/main-orchestrator.md)** — deterministic command menu and fallback behavior for weak prompts
+- **[Agentic Business Milestones](docs/agentic-business-milestones.md)** — high-level implementation milestones to reuse this logic in any business domain
+- **[Agentic Org Chart Article Guide](docs/agentic-org-chart-article-guide.md)** — concepts, layered org chart, and publication structure for writing the agentic model article
+- **[Agentic Knowledge Base Schema](docs/agentic-knowledge-base-schema.md)** — canonical KB schema for skills, agents, gates, and capability-gap decisions
 - **[Skill and Agent Roadmap](docs/wfo-skill-agent-roadmap.md)** — Missing skills/agents, execution prerequisites, GitHub Projects model
 - **[Process History](docs/wfo-process-history.md)** — Chronological build log for future Medium/LinkedIn writing
 - **[Skill Anatomy](docs/skill-anatomy.md)** — How to write new SKILL.md files
 
 For developers:
 - Each skill is documented in `skills/<skill-name>/SKILL.md`
-  - Current: `briefing-synthesis`, `project-estimation-and-stack-selection`, `project-scaffolding`, `spec-driven-architecture`, `content-model-and-decap-design`, `repo-adoption-assessment`, `implementation-batch-planning`, `look-and-feel-ingestion`, `github-project-bootstrap`, `content-service-and-data-wiring`, `integrate-ui-component`, `seo-aio-optimization`, `security-audit`, `quality-smoke-and-acceptance`, `vps-provisioning`, `release-and-postdeploy-verification`
+  - Current: `briefing-synthesis`, `project-estimation-and-stack-selection`, `project-scaffolding`, `spec-driven-architecture`, `content-model-and-decap-design`, `repo-adoption-assessment`, `implementation-batch-planning`, `look-and-feel-ingestion`, `github-project-bootstrap`, `content-service-and-data-wiring`, `integrate-ui-component`, `seo-aio-optimization`, `security-audit`, `quality-smoke-and-acceptance`, `vps-provisioning`, `release-and-postdeploy-verification`, `capability-gap-assessment`
   - Planned: none (core pipeline complete; execution hardening continues)
 
 Execution history should live in each client repository through GitHub Issues + one GitHub Project board per website. The roadmap remains the design source of truth; the board is the delivery history.
