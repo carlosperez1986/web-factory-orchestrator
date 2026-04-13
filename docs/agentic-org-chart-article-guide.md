@@ -91,6 +91,26 @@ These are the executive checkpoints to include in the article.
 - where evidence is stored
 - how audits are run without chat transcript dependency
 
+## Executive Role
+
+Use:
+- `Automation Governance Officer`
+
+Why this title works:
+- it signals control, policy, and accountability rather than prompt execution
+- it fits a cross-functional mandate spanning delivery, risk, compliance, and platform standards
+- it is easier for executive audiences to place in an org chart than a purely technical title
+
+What this role owns:
+- governance of skills, agents, blueprints, and approval gates
+- decision rights for capability expansion and controlled exceptions
+- KPI review across quality, reuse, speed, risk, and auditability
+
+Important framing for the article:
+- this is not the builder role
+- this is not the orchestrator itself
+- this is the accountable governance owner for the operating model
+
 ## Core Concepts You Should Explain
 
 ### 0) Knowledge Base (KB)
@@ -241,6 +261,9 @@ Files that interact:
 ## Agentic Org Chart (Layered Model)
 
 Use this as the high-level organization model in your article.
+
+Executive accountable owner:
+- Automation Governance Officer
 
 ### Layer A - Control Plane
 Role:
