@@ -24,6 +24,7 @@ The current state is strong in **Phase 1 (Define)**, but still incomplete in **P
 | build | `project-scaffolding` | Ready (v1) | Create, detect, or adopt repository and seed project structure |
 | build | `repo-adoption-assessment` | Ready | Assess existing repo compatibility and adoption risk |
 | build | `content-model-and-decap-design` | Ready | Define Decap CMS collections and Git-based content schemas |
+| build | `look-and-feel-ingestion` | Ready | Capture style from image/URL/Stitch and generate implementation-ready design contract |
 | build | `github-project-bootstrap` | Ready | Create GitHub Issues, labels, and project board from roadmap/spec |
 | build | `content-service-and-data-wiring` | Ready | Implement file-based models/services and page data binding |
 | build | `integrate-ui-component` | Ready | Assemble Bootstrap-first page UI from implementation contracts |
@@ -104,6 +105,7 @@ Once analysis and architecture are stable, WFO still needs these foundations bef
 
 1. Run the core skill chain on a first project:
    - `content-model-and-decap-design`
+   - `look-and-feel-ingestion`
    - `quality-smoke-and-acceptance`
    - `security-audit`
    - `vps-provisioning`
@@ -219,7 +221,8 @@ This prevents the board from drifting away from the design intent.
 2. Create `@ContentArchitect.agent.md`
 3. Create `@QA.agent.md`
 4. Create `implementation-batch-planning/SKILL.md`
-5. Review and finalize `quality-smoke-and-acceptance/SKILL.md` and `release-and-postdeploy-verification/SKILL.md`
+5. Add `look-and-feel-ingestion/SKILL.md` execution gate before `integrate-ui-component`
+6. Review and finalize `quality-smoke-and-acceptance/SKILL.md` and `release-and-postdeploy-verification/SKILL.md`
 
 This gives you the remaining minimum end-to-end factory.
 

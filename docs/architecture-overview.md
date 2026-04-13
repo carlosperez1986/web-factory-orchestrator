@@ -31,8 +31,9 @@
 │  │ Skills Library (read-only, shared)                                       │  │
 │  │  - briefing-synthesis/SKILL.md                                           │  │
 │  │  - project-estimation-and-stack-selection/SKILL.md                       │  │
-│  │  - spec-driven-architecture/SKILL.md (planned)                           │  │
-│  │  - project-scaffolding/SKILL.md (planned)                                │  │
+│  │  - spec-driven-architecture/SKILL.md                                     │  │
+│  │  - look-and-feel-ingestion/SKILL.md                                     │  │
+│  │  - project-scaffolding/SKILL.md                                          │  │
 │  │  ... etc.                                                                │  │
 │  └──────────────────────────────────────────────────────────────────────────┘  │
 │                                                                                  │
@@ -85,7 +86,7 @@
 **Skills:**
 1. `briefing-synthesis` — Extract intent, sitemap, features
 2. `project-estimation-and-stack-selection` — Token/time/cost forecast, .NET version
-3. `spec-driven-architecture` (planned) — Specification document per phase
+3. `spec-driven-architecture` — Specification document per phase
 
 **Output:**
 - `PROJECT_ROADMAP-{project-name}.md` with all phases
@@ -103,16 +104,12 @@
 **Location:** Per-client repository (NEW)  
 **Owner:** @Developer, @FrontendUI  
 **Skills:**
-4. ~~`project-scaffolding`~~ → **NEW SKILL** (this request)
-  - Detect, create, or adopt GitHub repo
-  - Initialize .NET project from blueprint for new repos
-  - Preserve working codebase and CI/CD for existing repos
-  - Copy roadmap & state to repo
-  - Commit initial scaffold or adoption metadata
-
-5. `spec-driven-architecture` → [Implementation of Define specs]
-6. `integrate-ui-component` → [Bootstrap templates]
-7. `decap-cms-config` → [Admin schema setup]
+4. `project-scaffolding` — Detect, create, or adopt GitHub repo
+5. `look-and-feel-ingestion` — Capture style from image/URL/Stitch and generate design style contract
+6. `github-project-bootstrap` — Convert roadmap/spec into issues and board tracking
+7. `content-service-and-data-wiring` — Implement models/services/PageModel bindings
+8. `integrate-ui-component` — Build Razor + Bootstrap sections using style contract
+9. `seo-aio-optimization` — Apply Schema.org, AIO meta, and sitemap polish
 
 **Orchestrator Decision Point (NEW):**
 ```
@@ -303,8 +300,11 @@ USER APPROVAL GATE
 current_state.phase = "build"
   ↓
 [spec-driven-architecture] → Generate specs per phase
+[look-and-feel-ingestion] → Capture visual DNA from image/URL/Stitch
+[github-project-bootstrap] → Create issues and board tracking
+[content-service-and-data-wiring] → Implement models/services bindings
 [integrate-ui-component] → Build UI components
-[decap-cms-config] → Generate admin schema
+[seo-aio-optimization] → Apply discoverability and schema
   ↓
 USER CHECKPOINT: Code review
   ↓
@@ -348,23 +348,7 @@ DEPLOYED ✅
 
 ## Next Steps (Immediate)
 
-1. ✅ **Create `project-scaffolding` SKILL.md** (THIS REQUEST)
-   - Input: Approved roadmap + estimation
-   - Logic: Detect/create repo, init .NET scaffold
-   - Output: Live repo with state/roadmap files
-
-2. ✅ **Update Orchestrator agent to detect repos**
-   - Session Start: check for existing `<project-name>` repo on user's GitHub
-   - Ask user confirmation before creating new repo
-
-3. 🔄 **Create runbook + quick-start docs**
-   - How to invoke Orchestrator
-   - How to approve/reject roadmaps
-   - How to monitor Phase 2/3 builds
-
-4. 🔄 **Create remaining skills** (planned, not this session)
-   - spec-driven-architecture
-   - integrate-ui-component
-   - decap-cms-config
-   - security-audit
-   - vps-provisioning
+1. ✅ Keep `look-and-feel-ingestion` mandatory before `integrate-ui-component`
+2. ✅ Keep `DESIGN_STYLE_CONTRACT-{project-name}.md` as visual source of truth per project
+3. 🔄 Add operator checklist for visual intake (image, URL, Stitch artifacts/token)
+4. 🔄 Validate first end-to-end execution with PureWipe as reference project

@@ -16,14 +16,15 @@ New to WFO? Start here:
 - **[Internal Agent Diagram (.drawio)](docs/wfo-orchestrator-internal-agents.drawio)** — Draw.io diagram of Orchestrator, Architect, DeliveryManager, and artifact-based collaboration
 - **[Full User-Agent Flow (.drawio)](docs/wfo-full-flow-user-agent.drawio)** — End-to-end draw.io flow: user interaction, orchestration, skills, task creation, execution, and deploy
 - **[Quickstart & Runbook](docs/wfo-quickstart.md)** — 2-minute intro, multi-project management, troubleshooting
+- **[Main Orchestrator Manual](docs/main-orchestrator.md)** — deterministic command menu and fallback behavior for weak prompts
 - **[Skill and Agent Roadmap](docs/wfo-skill-agent-roadmap.md)** — Missing skills/agents, execution prerequisites, GitHub Projects model
 - **[Process History](docs/wfo-process-history.md)** — Chronological build log for future Medium/LinkedIn writing
 - **[Skill Anatomy](docs/skill-anatomy.md)** — How to write new SKILL.md files
 
 For developers:
 - Each skill is documented in `skills/<skill-name>/SKILL.md`
-  - Current: `briefing-synthesis`, `project-estimation-and-stack-selection`, `project-scaffolding`, `spec-driven-architecture`, `github-project-bootstrap`, `content-service-and-data-wiring`, `integrate-ui-component`, `seo-aio-optimization`, `security-audit`
-  - Planned: `content-model-and-decap-design`, `repo-adoption-assessment`, `implementation-batch-planning`, `vps-provisioning`, `release-and-postdeploy-verification`
+  - Current: `briefing-synthesis`, `project-estimation-and-stack-selection`, `project-scaffolding`, `spec-driven-architecture`, `content-model-and-decap-design`, `repo-adoption-assessment`, `implementation-batch-planning`, `look-and-feel-ingestion`, `github-project-bootstrap`, `content-service-and-data-wiring`, `integrate-ui-component`, `seo-aio-optimization`, `security-audit`, `quality-smoke-and-acceptance`, `vps-provisioning`, `release-and-postdeploy-verification`
+  - Planned: none (core pipeline complete; execution hardening continues)
 
 Execution history should live in each client repository through GitHub Issues + one GitHub Project board per website. The roadmap remains the design source of truth; the board is the delivery history.
 
@@ -63,6 +64,7 @@ You only talk to the **@Orchestrator**. The Orchestrator executes every skill di
 | define | `project-estimation-and-stack-selection` | Token/time/cost estimate and stack decision |
 | define | `spec-driven-architecture` | Convert roadmap into implementation-ready spec |
 | build | `project-scaffolding` | Create or adopt repository, .NET scaffold, Decap seed |
+| build | `look-and-feel-ingestion` | Capture style from image/URL/Stitch and produce design style contract |
 | build | `github-project-bootstrap` | GitHub Issues + Project board from roadmap/spec |
 | build | `content-service-and-data-wiring` | File-based models, services, Razor PageModel bindings |
 | build | `integrate-ui-component` | Bootstrap-first page assembly from contracts |

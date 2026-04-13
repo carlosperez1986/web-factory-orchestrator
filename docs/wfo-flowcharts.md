@@ -118,24 +118,26 @@ flowchart LR
     D --> B
     C -->|Proceed| E["project-scaffolding<br/>Create or adopt repo<br/>→ repo ready"]
     E --> F["spec-driven-architecture<br/>Route matrix, contracts,<br/>component map, batches<br/>→ IMPLEMENTATION_SPEC"]
-    F --> G["github-project-bootstrap<br/>GitHub Issues + labels<br/>+ Project board<br/>→ delivery tracking"]
-    G --> H["content-service-and-data-wiring<br/>C# models + services<br/>+ PageModel bindings<br/>→ backend code"]
-    H --> I["integrate-ui-component<br/>Razor Pages + Bootstrap 5<br/>+ responsive sections<br/>→ frontend code"]
-    I --> J["seo-aio-optimization<br/>Schema.org + AIO meta<br/>+ sitemap.xml<br/>→ discoverability"]
-    J --> K["USER GATE 2<br/>Code review OK?"]
-    K -->|No| L["Request changes"]
-    L --> H
-    K -->|Yes| M["security-audit<br/>@Auditor — go/no-go<br/>CVE + config scan"]
-    M --> N["vps-provisioning<br/>Nginx + systemd<br/>+ CI/CD deploy"]
-    N --> O["✅ DEPLOYED"]
+    F --> G["look-and-feel-ingestion<br/>Image/URL/Stitch input<br/>→ DESIGN_STYLE_CONTRACT"]
+    G --> H["github-project-bootstrap<br/>GitHub Issues + labels<br/>+ Project board<br/>→ delivery tracking"]
+    H --> I["content-service-and-data-wiring<br/>C# models + services<br/>+ PageModel bindings<br/>→ backend code"]
+    I --> J["integrate-ui-component<br/>Razor Pages + Bootstrap 5<br/>+ responsive sections<br/>→ frontend code"]
+    J --> K["seo-aio-optimization<br/>Schema.org + AIO meta<br/>+ sitemap.xml<br/>→ discoverability"]
+    K --> L["USER GATE 2<br/>Code review OK?"]
+    L -->|No| M["Request changes"]
+    M --> I
+    L -->|Yes| N["security-audit<br/>@Auditor — go/no-go<br/>CVE + config scan"]
+    N --> O["vps-provisioning<br/>Nginx + systemd<br/>+ CI/CD deploy"]
+    O --> P["✅ DEPLOYED"]
 
     style C fill:#fff9c4
-    style K fill:#fff9c4
-    style G fill:#e1f5ff
-    style H fill:#f3e5f5
+    style L fill:#fff9c4
+    style G fill:#d1ecf1
+    style H fill:#e1f5ff
     style I fill:#f3e5f5
-    style M fill:#fce4ec
-    style O fill:#a5d6a7
+    style J fill:#f3e5f5
+    style N fill:#fce4ec
+    style P fill:#a5d6a7
 ```
 
 ---
@@ -215,7 +217,7 @@ stateDiagram-v2
     
     BUILD: phase: "build"<br/>active_agent: @Developer<br/>location: client repo
     
-    BUILD --> BUILD: spec-driven-architecture<br/>integrate-ui<br/>decap-cms-config<br/>tokens decrease
+    BUILD --> BUILD: spec-driven-architecture<br/>look-and-feel-ingestion<br/>content-service-and-data-wiring<br/>integrate-ui-component<br/>seo-aio-optimization<br/>tokens decrease
     
     BUILD --> REVIEW: USER GATE 2<br/>"Code review OK"
     
@@ -249,32 +251,34 @@ flowchart TD
     subgraph build_infra ["Phase 2A — Planning (Client repo context)"]
         S3["project-scaffolding<br/>OUTPUT: repository ready<br/>blueprint seeded · workflows in place"]
         S4["spec-driven-architecture<br/>OUTPUT: IMPLEMENTATION_SPEC<br/>route matrix · contracts · batches"]
-        S5["github-project-bootstrap<br/>OUTPUT: GitHub Issues + Project board<br/>⚠️ NO CODE — delivery tracking only"]
-        S3 --> S4 --> S5
+        S5["look-and-feel-ingestion<br/>OUTPUT: DESIGN_STYLE_CONTRACT<br/>image/URL/Stitch visual intake"]
+        S6["github-project-bootstrap<br/>OUTPUT: GitHub Issues + Project board<br/>⚠️ NO CODE — delivery tracking only"]
+        S3 --> S4 --> S5 --> S6
     end
 
     subgraph build_code ["Phase 2B — Code (Client repo context)"]
-        S6["content-service-and-data-wiring<br/>OUTPUT: C# code<br/>models · services · PageModel bindings"]
-        S7["integrate-ui-component<br/>OUTPUT: Razor + Bootstrap code<br/>page sections · shared layout · responsive UI"]
-        S8["seo-aio-optimization<br/>OUTPUT: meta / schema markup<br/>Schema.org · AIO meta · sitemap.xml"]
-        S6 --> S7 --> S8
+        S7["content-service-and-data-wiring<br/>OUTPUT: C# code<br/>models · services · PageModel bindings"]
+        S8["integrate-ui-component<br/>OUTPUT: Razor + Bootstrap code<br/>page sections · shared layout · responsive UI"]
+        S9["seo-aio-optimization<br/>OUTPUT: meta / schema markup<br/>Schema.org · AIO meta · sitemap.xml"]
+        S7 --> S8 --> S9
     end
 
     GU2["⏸ USER GATE 2<br/>Human code review"]
 
     subgraph deploy ["Phase 3 — Deploy"]
-        S9["security-audit<br/>AGENT: @Auditor (restricted tools)<br/>OUTPUT: go/no-go report"]
-        S10["vps-provisioning ⌛<br/>OUTPUT: Nginx · systemd · CI/CD pipeline"]
-        S9 --> S10
+        S10["security-audit<br/>AGENT: @Auditor (restricted tools)<br/>OUTPUT: go/no-go report"]
+        S11["vps-provisioning ⌛<br/>OUTPUT: Nginx · systemd · CI/CD pipeline"]
+        S10 --> S11
     end
 
     define --> GU1 --> build_infra --> build_code --> GU2 --> deploy
 
-    style S5 fill:#e1f5ff
-    style S6 fill:#f3e5f5
+    style S5 fill:#d1ecf1
+    style S6 fill:#e1f5ff
     style S7 fill:#f3e5f5
-    style S9 fill:#fce4ec
-    style S10 fill:#ffe0b2
+    style S8 fill:#f3e5f5
+    style S10 fill:#fce4ec
+    style S11 fill:#ffe0b2
     style GU1 fill:#fff9c4
     style GU2 fill:#fff9c4
 ```
@@ -308,6 +312,7 @@ sequenceDiagram
         Note over Orch,Repo: Phase 2A — Planning (switches to repo context)
         Orch->>Repo: project-scaffolding → create or adopt repo + seed blueprint
         Orch->>Repo: spec-driven-architecture → write IMPLEMENTATION_SPEC
+        Orch->>Repo: look-and-feel-ingestion → ingest image/URL/Stitch and write DESIGN_STYLE_CONTRACT
         Orch->>GH: github-project-bootstrap → create Issues + labels + Project board
         Note over GH: No code yet — only delivery tracking
     end

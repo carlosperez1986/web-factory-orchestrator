@@ -179,18 +179,19 @@
 
 ## Phase 2 — Build
 
-> Skill chain: `project-scaffolding` → `github-project-bootstrap` → `content-service-and-data-wiring` → `integrate-ui-component` → `seo-aio-optimization`  
+> Skill chain: `project-scaffolding` → `look-and-feel-ingestion` → `github-project-bootstrap` → `content-service-and-data-wiring` → `integrate-ui-component` → `seo-aio-optimization`  
 > Spec reference: [`IMPLEMENTATION_SPEC-pure-wipe.md`](IMPLEMENTATION_SPEC-pure-wipe.md)
 
-- [ ] Scaffold .NET 9 project via `project-scaffolding` skill | Depends on: Phase 1 DONE ✅
-- [ ] Bootstrap GitHub Issues + Project board via `github-project-bootstrap` | Depends on: project scaffold + IMPLEMENTATION_SPEC
-- [ ] Batch 1 — Foundation + shared layout via `content-service-and-data-wiring` + `integrate-ui-component` | Depends on: github-project-bootstrap
-- [ ] Batch 2 — Legal + Nosotros pages | Depends on: Batch 1
-- [ ] Batch 3 — Product catalog + detail pages | Depends on: Batch 1
-- [ ] Batch 4 — Homepage + Blog | Depends on: Batch 1 + Batch 3
-- [ ] Batch 5 — Forms + Galería + Instagram API | Depends on: Batch 1 + Batch 3
-- [ ] Batch 6 — SEO/AIO via `seo-aio-optimization` | Depends on: Batches 1–5
-- [ ] Generate Decap CMS `config.yml` for all collections | Depends on: content models approved
+- [ ] Scaffold .NET 9 project via `project-scaffolding` skill | Depends on: Phase 1 DONE ✅ | Evidence required: `Program.cs`, `.csproj`, initial scaffold commit hash
+- [ ] Capture visual style via `look-and-feel-ingestion` (image/URL/Stitch) | Depends on: project scaffold + IMPLEMENTATION_SPEC | Evidence required: `DESIGN_STYLE_CONTRACT-pure-wipe.md`
+- [ ] Bootstrap GitHub Issues + Project board via `github-project-bootstrap` | Depends on: look-and-feel-ingestion | Evidence required: GitHub Project URL + issue list snapshot
+- [ ] Batch 1 — Foundation + shared layout via `content-service-and-data-wiring` + `integrate-ui-component` | Depends on: github-project-bootstrap | Evidence required: build log + `Pages/Shared/_Layout.cshtml`
+- [ ] Batch 2 — Legal + Nosotros pages | Depends on: Batch 1 | Evidence required: route smoke (`/legal`, `/nosotros`) + screenshot pair
+- [ ] Batch 3 — Product catalog + detail pages | Depends on: Batch 1 | Evidence required: route smoke (`/productos`, `/productos/{slug}`) + sample content render
+- [ ] Batch 4 — Homepage + Blog | Depends on: Batch 1 + Batch 3 | Evidence required: route smoke (`/`, `/blog`, `/blog/{slug}`) + metadata check
+- [ ] Batch 5 — Forms + Galería + Instagram API | Depends on: Batch 1 + Batch 3 | Evidence required: form validation log + API fallback evidence
+- [ ] Batch 6 — SEO/AIO via `seo-aio-optimization` | Depends on: Batches 1–5 | Evidence required: schema check + `sitemap.xml` + `robots.txt`
+- [ ] Generate Decap CMS `config.yml` for all collections | Depends on: content models approved | Evidence required: `wwwroot/admin/config.yml` + collection save smoke
 
 ---
 
@@ -199,14 +200,14 @@
 > Owner: `@Auditor` (security scan), `@DevOps` (Nginx + Systemd provisioning)
 > Depends on: `[✅ GO] @Developer → @Auditor` and `[✅ GO] @FrontendUI → @Auditor`
 
-- [ ] Run `security-audit` skill on all Nginx templates and .NET configs | Owner: @Auditor | Depends on: Phase 2 DONE
-- [ ] Audit all contact/distributor form handlers for input validation and XSS | Owner: @Auditor | Depends on: contact-form-handler complete
-- [ ] Audit Instagram API integration for secrets exposure | Owner: @Auditor | Depends on: Galería component complete
-- [ ] @Auditor sign-off on all components — evidence required in this file | Owner: @Auditor | Depends on: all audits above
-- [ ] Run `vps-provisioning` skill — generate Nginx/Systemd files for Debian 11 | Owner: @DevOps | Depends on: @Auditor sign-off
-- [ ] Configure CI/CD GitHub Actions workflow | Owner: @DevOps | Depends on: vps-provisioning
-- [ ] Deploy to temporary URL for client review (2-month timeline per contract) | Owner: @DevOps | Depends on: CI/CD configured
-- [ ] Final deployment to official URL — requires 100% payment confirmed | Owner: @DevOps | Depends on: client final payment + approval
+- [ ] Run `security-audit` skill on all Nginx templates and .NET configs | Owner: @Auditor | Depends on: Phase 2 DONE | Evidence required: `evidence/security-audit-report.md`
+- [ ] Audit all contact/distributor form handlers for input validation and XSS | Owner: @Auditor | Depends on: contact-form-handler complete | Evidence required: findings section in `evidence/security-audit-report.md`
+- [ ] Audit Instagram API integration for secrets exposure | Owner: @Auditor | Depends on: Galería component complete | Evidence required: secrets posture section in `evidence/security-audit-report.md`
+- [ ] @Auditor sign-off on all components — evidence required in this file | Owner: @Auditor | Depends on: all audits above | Evidence required: `[✅ GO] @Auditor | security-audit PASSED | YYYY-MM-DD`
+- [ ] Run `vps-provisioning` skill — generate Nginx/Systemd files for Debian 11 | Owner: @DevOps | Depends on: @Auditor sign-off | Evidence required: `deploy/nginx-pure-wipe.conf`, `deploy/pure-wipe.service`, `.github/workflows/deploy.yml`
+- [ ] Configure CI/CD GitHub Actions workflow | Owner: @DevOps | Depends on: vps-provisioning | Evidence required: successful workflow run URL
+- [ ] Deploy to temporary URL for client review (2-month timeline per contract) | Owner: @DevOps | Depends on: CI/CD configured | Evidence required: staging URL + smoke checklist
+- [ ] Final deployment to official URL — requires 100% payment confirmed | Owner: @DevOps | Depends on: client final payment + approval | Evidence required: production URL + deploy timestamp + payment confirmation note
 
 ---
 

@@ -696,6 +696,31 @@ Article notes:
 
 ---
 
+## Entry 019 — Visual Ingestion Became a First-Class Build Step
+Date: 2026-04-13
+Stage: Build
+
+What changed:
+- A new skill, `look-and-feel-ingestion`, was introduced as a formal pre-UI step in Phase 2.
+- Build diagrams were updated so visual intake appears between `spec-driven-architecture` and `github-project-bootstrap` / implementation.
+- Documentation now states that visual source input can come from image references, a live URL, or Stitch artifacts/token context.
+
+Why it was needed:
+- The previous flow could produce technically correct pages but with style drift when no explicit visual contract was captured.
+- Operators needed a deterministic way to ask for design extraction and keep that intent stable across all UI pages.
+
+Architectural impact:
+- WFO now treats visual language as an explicit artifact (`DESIGN_STYLE_CONTRACT-{project-name}.md`), not an implicit coding preference.
+- `integrate-ui-component` receives a normalized style contract, reducing rework and visual inconsistency.
+
+Files:
+- docs/wfo-flowcharts.md
+- docs/architecture-overview.md
+- docs/wfo-quickstart.md
+- skills/look-and-feel-ingestion/SKILL.md
+
+---
+
 ## Future Entries To Add
 
 When new skills or agents are created, append entries for:

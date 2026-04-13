@@ -66,6 +66,8 @@
 
 > IDs are permanent. Assign sequentially; do not reuse a deleted ID.
 > Column "Evidence Required" holds the path the @Auditor checks before marking a task `done`.
+> For markdown checklist style tasks, append `| Evidence required: ...` on every line.
+> A task without explicit evidence cannot be closed.
 
 | ID | Task | Phase | Owner | Status | Evidence Required |
 |----|------|-------|-------|--------|-------------------|

@@ -144,11 +144,11 @@ project-scaffolding
   ↓
 (Copies state/roadmap into repo)
   ↓
-(Initializes .NET project)
+(Runs look-and-feel-ingestion from image/URL/Stitch input)
   ↓
-(Sets up Decap CMS)
+(Writes DESIGN_STYLE_CONTRACT-{project-name}.md)
   ↓
-(Creates GitHub Actions workflows)
+(Creates GitHub Issues/workboard via github-project-bootstrap)
   ↓
 Hub state: phase = "build" ✅
 Repo: Initial commit pushed to main
@@ -156,9 +156,11 @@ Repo: Initial commit pushed to main
 @Developer assumes repo ownership for feature implementation
 spec-driven-architecture
   ↓
+content-service-and-data-wiring
+  ↓
 integrate-ui-component
   ↓
-decap-cms-config
+seo-aio-optimization
   ↓
 (User: Code review complete, ship it)
 ```
@@ -168,9 +170,9 @@ decap-cms-config
 ```
 security-audit
   ↓
-(Scans dependencies (vps-provisioning
+(Scans dependencies, secrets, and hardening posture)
   ↓
-(Sets up Nginx, Systemd, domain)
+(vps-provisioning sets up Nginx, Systemd, domain)
   ↓
 (Pulls code to VPS)
   ↓

@@ -25,6 +25,8 @@ You do NOT write code. You read, plan, execute skills, and verify outcomes.
    - If user wants to start new: proceed to Intake.
    - If no `current_state-*.json` files exist: proceed to Intake.
 
+If user intent is ambiguous, switch to guided mode using `docs/main-orchestrator.md` and ask the user to choose one operation.
+
 ## Intake — New Project from Briefing Input
 
 When the user provides a briefing in any supported format:
@@ -84,12 +86,13 @@ After repo context exists:
 
 1. Read and execute `skills/spec-driven-architecture/SKILL.md` directly
 2. Verify `IMPLEMENTATION_SPEC-{project-name}.md` was created and roadmap updated
-3. Read and execute `skills/github-project-bootstrap/SKILL.md` directly
-4. Verify GitHub Issues and project board reflect the roadmap and implementation spec
-5. Read and execute `skills/content-service-and-data-wiring/SKILL.md` directly
-6. Read and execute `skills/integrate-ui-component/SKILL.md` directly
-7. Read and execute `skills/seo-aio-optimization/SKILL.md` directly
-8. Only then delegate to `@Auditor` for `security-audit` (runs with no-edit restriction)
+3. Read and execute `skills/look-and-feel-ingestion/SKILL.md` directly
+4. Verify `DESIGN_STYLE_CONTRACT-{project-name}.md` was created and roadmap updated
+5. Read and execute `skills/github-project-bootstrap/SKILL.md` directly
+6. Read and execute `skills/content-service-and-data-wiring/SKILL.md` directly
+7. Read and execute `skills/integrate-ui-component/SKILL.md` directly
+8. Read and execute `skills/seo-aio-optimization/SKILL.md` directly
+9. Only then delegate to `@Auditor` for `security-audit` (runs with no-edit restriction)
 
 ## Skill Execution Rules
 
@@ -116,6 +119,7 @@ After repo context exists:
 | define | `project-estimation-and-stack-selection` |
 | define | `spec-driven-architecture` |
 | build | `project-scaffolding` |
+| build | `look-and-feel-ingestion` |
 | build | `github-project-bootstrap` |
 | build | `content-service-and-data-wiring` |
 | build | `integrate-ui-component` |
