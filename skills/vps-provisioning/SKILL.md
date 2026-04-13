@@ -37,21 +37,34 @@ GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 
 Before starting, collect these values. If any are missing, stop and record a `BLOCKER`:
 
+**Auto-resolved from state (no need to ask):**
+
+| Variable | Source | Example |
+|---|---|---|
+| `{{APP_NAME}}` | `project` field in `current_state-{project-name}.json` | `purewipe` |
+| `{{DOTNET_VERSION_GA}}` | `target_framework` stripped of `net` + `.x` appended | `9.0.x` |
+| `{{DOTNET_RUNTIME_MAJOR}}` | `target_framework` stripped of `net` prefix | `9.0` |
+| `{{APP_DLL}}` | Pascal-cased `{{APP_NAME}}` + `.dll` | `PureWipe.dll` |
+| `{{PROJECT_PATH}}` | `./` + Pascal-cased `{{APP_NAME}}` + `.csproj` | `./PureWipe.csproj` |
+
+**Collected from Orchestrator VPS intake (already in `current_state vps_config`):**
+
 | Variable | Description | Example |
 |---|---|---|
-| `{{DOMAIN}}` | Primary domain for the site | `purewipe.com` |
-| `{{APP_NAME}}` | Project slug — matches service name | `pure-wipe` |
-| `{{KESTREL_PORT}}` | Localhost port Kestrel listens on | `5000` |
-| `{{SUBPATH}}` | URL subpath or `/` for root domain | `/` or `/purewipe/` |
-| `{{VPS_HOST}}` | VPS IP or SSH hostname | `192.168.1.10` |
-| `{{VPS_USER}}` | SSH deploy user (non-root) | `deploy` |
-| `{{DEPLOY_DIR}}` | App directory on VPS | `/var/www/pure-wipe` |
-| `{{DOTNET_VERSION}}` | From stack decision in roadmap | `9.0` |
+| `{{APP_PORT}}` | Kestrel localhost port | `5010` |
+| `{{TARGET_DIR}}` | Absolute deploy path on VPS | `/var/www/purewipe` |
+| `{{USE_SHARED_DOMAIN}}` | Topology A — shared domain | `true` or `false` |
+| `{{SHARED_DOMAIN}}` | Base domain hosting multiple apps | `hechoenmargarita.com` |
+| `{{SHARED_SITE_FILE}}` | Nginx sites-available filename | `hechoenmargarita.com` |
+| `{{ROUTE_PREFIX}}` | URL prefix under shared domain | `/purewipe` |
+| `{{USE_CUSTOM_DOMAIN}}` | Topology B — dedicated domain | `true` or `false` |
+| `{{DOMAIN}}` | Custom domain (Topology B only) | `purewipe.com` |
+| `{{CERT_DIR}}` | SSL cert directory (Topology B only) | `/etc/ssl/certs/purewipe` |
+| `{{CERT_CRT}}` | SSL cert filename (Topology B only) | `SSL1234.pem` |
+| `{{CERT_KEY}}` | SSL key filename (Topology B only) | `SSL1234.priv` |
 
-Read `current_state-{project-name}.json` and `PROJECT_ROADMAP-{project-name}.md` first.  
-`{{APP_NAME}}` = `project` field from state. `{{DOTNET_VERSION}}` = `target_framework` stripped of `net` prefix.
-
-Ask the operator for any values not present in those files.
+Note: `USE_SHARED_DOMAIN` and `USE_CUSTOM_DOMAIN` are mutually exclusive. Set one to `true` and the other to `false`.  
+If both are `false`, record `BLOCKER: no topology selected`.
 
 ## Process
 
@@ -114,65 +127,31 @@ Rules:
 - `User` must be a non-root user on the VPS. Default: `deploy`. Warn if operator sets `User=root`.
 
 ### Step 4 — Generate GitHub Actions Deploy Workflow
-Create or update `.github/workflows/deploy.yml`:
 
-```yaml
-name: Deploy — {{APP_NAME}}
+Copy `blueprints/infra/deploy.yml.template` to `.github/workflows/deploy.yml`.
 
-on:
-  push:
-    branches: [main]
+Apply all token substitutions from the inputs table above. Auto-resolved values:
+- `{{APP_DLL}}` → Pascal-case the `APP_NAME` slug and append `.dll` (e.g., `purewipe` → `PureWipe.dll`)
+- `{{PROJECT_PATH}}` → `./` + Pascal-cased name + `.csproj` (e.g., `./PureWipe.csproj`)
+- `{{DOTNET_VERSION_GA}}` → from `target_framework` in roadmap, strip `net`, append `.x` (e.g., `net9.0` → `9.0.x`)
+- `{{DOTNET_RUNTIME_MAJOR}}` → same as above without `.x` (e.g., `9.0`)
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+Topology rules:
+- If `USE_SHARED_DOMAIN=true`: set `ROUTE_PREFIX`, `SHARED_DOMAIN`, `SHARED_SITE_FILE`; set `USE_CUSTOM_DOMAIN=false`; leave `DOMAIN`/`CERT_*` as empty strings.
+- If `USE_CUSTOM_DOMAIN=true`: set `DOMAIN`, `CERT_DIR`, `CERT_CRT`, `CERT_KEY`; set `USE_SHARED_DOMAIN=false`; leave `SHARED_DOMAIN`/`ROUTE_PREFIX` as empty strings.
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '{{DOTNET_VERSION}}'
+**Required GitHub repository secrets** — record in `deploy/README.md` and instruct the operator to set them in repo Settings → Secrets and variables → Actions:
 
-      - name: Restore
-        run: dotnet restore
+| Secret | Value | Required |
+|---|---|---|
+| `SERVER_IP` | VPS IP address or hostname | always |
+| `USERNAME` | SSH user with sudo rights | always |
+| `PASSWORD` | SSH password (also used for sudo escalation) | always |
+| `PORT` | SSH port | optional — defaults to 22 |
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+> ⚠️ If the repo already has a working `.github/workflows/deploy.yml`, compare it against the template before overwriting. In adoption mode, preserve the existing workflow unless the operator explicitly approves replacement.
 
-      - name: Publish
-        run: dotnet publish --configuration Release --output ./publish --no-build
-
-      - name: Deploy to VPS via rsync
-        uses: burnett01/rsync-deployments@7.0.1
-        with:
-          switches: -avzr --delete
-          path: publish/
-          remote_path: ${{ secrets.DEPLOY_DIR }}
-          remote_host: ${{ secrets.VPS_HOST }}
-          remote_user: ${{ secrets.VPS_USER }}
-          remote_key: ${{ secrets.VPS_SSH_KEY }}
-
-      - name: Restart service
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: sudo systemctl restart {{APP_NAME}}
-```
-
-**Required GitHub repository secrets** — record in `deploy/README.md`:
-
-| Secret | Value |
-|---|---|
-| `VPS_HOST` | VPS IP or hostname |
-| `VPS_USER` | SSH deploy user |
-| `VPS_SSH_KEY` | Full private key (ed25519 or RSA) — no passphrase |
-| `DEPLOY_DIR` | Path on VPS, e.g. `/var/www/pure-wipe` |
-
-> ⚠️ If the repo already has a working `.github/workflows/deploy.yml`, compare it against this template before overwriting. In adoption mode, preserve the existing workflow unless the operator explicitly approves replacement.
+> ⚠️ The PASSWORD secret is used for SSH auth AND sudo escalation inside the provisioning script. The deploy user must have sudo rights on the VPS. If passwordless sudo is configured, the PASSWORD secret is still required for SSH auth.
 
 ### Step 5 — Generate One-Time Provision Script
 Create `deploy/provision.sh` — operator runs this once on a fresh VPS:

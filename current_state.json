@@ -4,8 +4,17 @@
   "active_skill": "project-scaffolding",
   "active_agent": "@Orchestrator",
   "last_completed_step": "spec-driven-architecture → Step 7: IMPLEMENTATION_SPEC-pure-wipe.md written 2026-04-13",
-  "next_step": "project-scaffolding → Step 1",
+  "next_step": "project-scaffolding → Step 3 (clone) — BLOCKED: awaiting user-created repo URL",
   "implementation_spec_ref": "IMPLEMENTATION_SPEC-pure-wipe.md",
   "token_budget_remaining": null,
-  "roadmap_ref": "PROJECT_ROADMAP.md"
+  "roadmap_ref": "PROJECT_ROADMAP.md",
+  "repo_status": "pending-manual-creation",
+  "repo_url": null,
+  "blocker": {
+    "type": "auth-failure",
+    "detail": "GITHUB_TOKEN is invalid — gh repo create failed. Scaffold staged locally in pure-wipe/ within hub.",
+    "resolution": "User must create repo manually on GitHub and provide clone URL. On next session: set repo_url, then run 'git remote add origin {url} && git push -u origin main' from pure-wipe/.",
+    "detected_at": "2026-04-13"
+  },
+  "scaffold_staging_path": "pure-wipe/"
 }

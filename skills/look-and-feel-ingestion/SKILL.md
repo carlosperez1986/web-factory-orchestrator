@@ -37,17 +37,35 @@ GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 
 ## Inputs Required
 
-At least one of the following must be present:
-- reference image set (desktop and mobile preferred)
-- reference site URL
-- Stitch with Google output artifacts (screens or layout exports)
-- Stitch access context (token/session provided by operator)
+**Visual source — at least one is mandatory (skill will not start without it):**
 
-Also required:
+| Priority | Source | Minimum required |
+|---|---|---|
+| 1st choice | Stitch with Google MCP | Active MCP session + token/context |
+| 2nd choice | Reference images | Homepage desktop screenshot ✅ required; mobile optional |
+| 3rd choice | Reference URL | Full URL of live site or design reference |
+| Combined | Any mix of the above | At least one must be confirmed before step 1 |
+
+**Stitch with Google — setup check:**
+- Verify the MCP server `stitch-with-google` is active in the session.
+- If not configured: direct the operator to https://stitch.withgoogle.com and pause until confirmed.
+- Never attempt to mock Stitch output — if unavailable, fall back to images or URL.
+
+**Image requirements (when Stitch is not available):**
+- `homepage-desktop.*` — **required** — represents primary brand, hero, nav, footer
+- `homepage-mobile.*` — recommended — validates responsive breakpoints
+- Additional pages (product, contact, blog) — optional but each adds contract precision
+- Format: PNG, JPG, or WEBP. Do not accept PDF screenshots without explicit operator confirmation.
+
+**Also required:**
 - `IMPLEMENTATION_SPEC-{project-name}.md`
 - `PROJECT_ROADMAP-{project-name}.md`
+- `look_and_feel` block in `current_state-{project-name}.json` (written by Orchestrator intake)
 
-If no visual source is provided, stop and record a `BLOCKER`.
+**Blocker conditions:**
+- No visual source of any kind → `BLOCKER: no visual source — operator must provide Stitch context, images, or URL`
+- Stitch chosen but MCP server not active → `BLOCKER: Stitch MCP not active — configure server or switch to image/URL source`
+- Images chosen but homepage desktop image not provided → `BLOCKER: homepage-desktop image required as minimum input`
 
 ## Process
 

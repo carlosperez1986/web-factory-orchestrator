@@ -33,6 +33,44 @@ GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 [✅ GO] content-service-and-data-wiring | content wiring validated | YYYY-MM-DD
 ```
 
+## Evidence Output
+
+This skill produces a structured evidence file in JSON format. The @Auditor will verify this file exists and contains acceptable thresholds before issuing the GO signal for deployment.
+
+**Output file:** `evidence/ui-smoke-{project-name}.json`
+
+**Schema:**
+```json
+{
+  "project": "pure-wipe",
+  "skill": "integrate-ui-component",
+  "date": "2026-04-13T10:30:00Z",
+  "pages_implemented": 7,
+  "pages_passing": 7,
+  "implementation_coverage_percent": 100,
+  "layout_renders": true,
+  "no_broken_assets": true,
+  "responsive_validated": true,
+  "a11y_baseline_met": true,
+  "bootstrap_compliance_percent": 100,
+  "custom_css_violations": 0,
+  "pages_checked": ["/", "/productos", "/blog"],
+  "critical_issues": 0,
+  "warnings": 0,
+  "findings": []
+}
+```
+
+**Auditor verification rules (auto-fail if any):**
+- `pages_passing === pages_implemented` ✅
+- `layout_renders === true` ✅
+- `no_broken_assets === true` ✅
+- `responsive_validated === true` ✅
+- `a11y_baseline_met === true` ✅
+- `bootstrap_compliance_percent >= 90` ✅
+- `custom_css_violations === 0` ✅
+- `critical_issues === 0` ✅
+
 ## Process
 
 ### Step 1 — Load UI Contracts

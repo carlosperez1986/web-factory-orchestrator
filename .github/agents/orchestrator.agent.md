@@ -73,6 +73,37 @@ After roadmap and estimation are presented:
    - Execute skill **exactly as written** — all 10 steps
    - Skill will copy state/roadmap files to repo, initialize .NET scaffold, seed Decap CMS, and push initial commit
 
+   **GitHub Auth Failure Protocol:**
+   If `gh repo create` fails with any auth error (`GITHUB_TOKEN is invalid`, `authentication required`, `401`, or similar):
+   - Set `repo_status: "pending-manual-creation"` in `current_state-{project-name}.json`
+   - Do NOT abort. Ask the user:
+
+   ```
+   ⚠️ GitHub auth failed — I cannot create the repository automatically.
+
+   You have two options:
+
+   OPTION A — Provide a Personal Access Token (PAT):
+   1. Go to: https://github.com/settings/tokens
+   2. Click "Generate new token (classic)"
+   3. Set scopes: ✅ repo   ✅ workflow
+   4. Copy the token (only shown once)
+   5. Paste it here and I will configure the MCP GitHub server.
+
+   OPTION B — Create the repo manually:
+   1. Go to https://github.com/new
+   2. Name it exactly: {project-name}
+   3. Set visibility: Private
+   4. Do NOT initialize with README (leave empty)
+   5. Copy the clone URL and paste it here.
+
+   Which option do you prefer? (A / B)
+   ```
+
+   - If user chooses **Option A**: save the PAT input securely and proceed with MCP GitHub server (`@modelcontextprotocol/server-github`); do not write the PAT to any file.
+   - If user chooses **Option B**: set `repo_url` from user input, update `repo_status: "manual"`, continue with Step 3 (clone).
+   - Scaffold files created locally in `{project-name}/` within the hub remain valid — do not regenerate them.
+
 3. **Monitor completion:**
    - Wait for `project-scaffolding` to complete all steps
    - Verify: repo is live on GitHub, initial commit present, build workflow triggered
@@ -86,13 +117,60 @@ After repo context exists:
 
 1. Read and execute `skills/spec-driven-architecture/SKILL.md` directly
 2. Verify `IMPLEMENTATION_SPEC-{project-name}.md` was created and roadmap updated
-3. Read and execute `skills/look-and-feel-ingestion/SKILL.md` directly
-4. Verify `DESIGN_STYLE_CONTRACT-{project-name}.md` was created and roadmap updated
-5. Read and execute `skills/github-project-bootstrap/SKILL.md` directly
-6. Read and execute `skills/content-service-and-data-wiring/SKILL.md` directly
-7. Read and execute `skills/integrate-ui-component/SKILL.md` directly
-8. Read and execute `skills/seo-aio-optimization/SKILL.md` directly
-9. Only then delegate to `@Auditor` for `security-audit` (runs with no-edit restriction)
+
+3. **Look & Feel Intake (Required before `look-and-feel-ingestion`):**
+   Before reading the skill, collect visual sources interactively in the chat session.
+   Do NOT start the skill until at least the homepage image or a Stitch connection is confirmed.
+
+   Ask the user:
+
+   ```
+   🎨 Look & Feel Ingestion — necesito los siguientes insumos antes de generar el contrato de estilo:
+
+   OPCIÓN A — Stitch with Google (recomendado):
+   1. ¿Tienes el MCP de Stitch configurado en VS Code?
+      Si no: instálalo en https://stitch.withgoogle.com y activa el MCP server.
+   2. Pega aquí el token de acceso o contexto de sesión de Stitch.
+
+   OPCIÓN B — Imágenes de diseño:
+   Adjunta o proporciona ruta a imágenes de referencia.
+   Requeridas:
+     • Página principal (homepage) — desktop  ✅ obligatoria
+     • Página principal — mobile             (opcional pero recomendada)
+   Opcionales:
+     • Página de producto / catálogo
+     • Formulario de contacto
+     • Cualquier pantalla adicional relevante
+
+   OPCIÓN C — URL de referencia:
+   Pega la URL del sitio existente o de referencia visual.
+
+   Puedes combinar opciones (ej. Stitch + imágenes).
+   ¿Cómo prefieres proceder? (A / B / C)
+   ```
+
+   - Si el usuario elige **Opción A**: verificar que el MCP server de Stitch esté activo antes de continuar; si no está configurado, guiar al usuario con los pasos de instalación.
+   - Si el usuario elige **Opción B**: confirmar que al menos la imagen de homepage (desktop) fue recibida antes de iniciar el skill.
+   - Si el usuario elige **Opción C**: registrar la URL como `visual_reference_url` en `current_state-{project-name}.json`.
+   - Si ninguna fuente visual está disponible: registrar `BLOCKER: no visual source provided` y NO avanzar al skill.
+
+   Una vez confirmada la fuente, guardar en `current_state-{project-name}.json`:
+   ```json
+   "look_and_feel": {
+     "source_type": "stitch | images | url | combined",
+     "stitch_context": "(token/session si aplica)",
+     "images_provided": ["homepage-desktop.png"],
+     "reference_url": null
+   }
+   ```
+
+4. Read and execute `skills/look-and-feel-ingestion/SKILL.md` directly
+5. Verify `DESIGN_STYLE_CONTRACT-{project-name}.md` was created and roadmap updated
+6. Read and execute `skills/github-project-bootstrap/SKILL.md` directly
+7. Read and execute `skills/content-service-and-data-wiring/SKILL.md` directly
+8. Read and execute `skills/integrate-ui-component/SKILL.md` directly
+9. Read and execute `skills/seo-aio-optimization/SKILL.md` directly
+10. Only then delegate to `@Auditor` for `security-audit` (runs with no-edit restriction)
 
 ## Skill Execution Rules
 
@@ -126,6 +204,85 @@ After repo context exists:
 | build | `seo-aio-optimization` |
 | deploy | `security-audit` — delegated to `@Auditor` |
 | deploy | `vps-provisioning` |
+
+## VPS Deployment Intake (Required Before `vps-provisioning`)
+
+Before reading `skills/vps-provisioning/SKILL.md`, collect these values interactively in the chat session.
+Do NOT start the skill until all required values are confirmed.
+
+**Stage 1 — Topology selection (ask first):**
+
+```
+🖥️ VPS Deployment — Paso 1 de 2: Topología de despliegue
+
+¿Cómo se va a alojar este sitio en el VPS?
+
+  A) Dominio compartido — la app vive como subfijo de un dominio existente
+     Ejemplo: https://hechoenmargarita.com/purewipe
+
+  B) Dominio propio — la app tiene su propio dominio dedicado
+     Ejemplo: https://purewipe.com
+
+Responde A o B.
+```
+
+**If user replies A (shared domain) — Stage 2A:**
+
+```
+🖥️ VPS Deployment — Paso 2 de 2 (Dominio compartido)
+
+Necesito los siguientes valores:
+
+1. Dominio base          e.g. hechoenmargarita.com
+2. Archivo Nginx base    e.g. hechoenmargarita.com  (nombre en sites-available, normalmente igual al dominio)
+3. Prefijo de ruta       e.g. /purewipe  (URL prefix bajo el dominio base)
+4. Directorio en VPS     e.g. /var/www/purewipe
+5. Puerto Kestrel        e.g. 5010  (debe ser único por app en el servidor)
+
+Nota: APP_NAME y DOTNET_VERSION se toman del estado del proyecto.
+```
+
+**If user replies B (custom domain) — Stage 2B:**
+
+```
+🖥️ VPS Deployment — Paso 2 de 2 (Dominio propio)
+
+Necesito los siguientes valores:
+
+1. Dominio               e.g. purewipe.com
+2. Directorio en VPS     e.g. /var/www/purewipe
+3. Puerto Kestrel        e.g. 5010  (debe ser único por app en el servidor)
+4. Directorio del cert   e.g. /etc/ssl/certs/purewipe
+5. Archivo .pem del cert e.g. SSL1234.pem
+6. Archivo .priv del key e.g. SSL1234.priv
+
+Nota: Los certificados SSL deben existir en el VPS o se incluirán en el paso de copia.
+```
+
+Once the user provides all values, write them into `current_state-{project-name}.json` under `vps_config`:
+
+```json
+"vps_config": {
+  "topology": "shared | custom",
+  "app_port": "",
+  "target_dir": "",
+  "use_shared_domain": "true | false",
+  "shared_domain": "",
+  "shared_site_file": "",
+  "route_prefix": "",
+  "use_custom_domain": "true | false",
+  "domain": "",
+  "cert_dir": "",
+  "cert_crt": "",
+  "cert_key": ""
+}
+```
+
+Confirm back to the user:
+```
+✅ VPS config guardado. Iniciando skill vps-provisioning...
+```
+Then proceed to read and execute `skills/vps-provisioning/SKILL.md`.
 
 ## Output Format
 

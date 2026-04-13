@@ -33,6 +33,42 @@ GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 [✅ GO] integrate-ui-component | UI baseline validated | YYYY-MM-DD
 ```
 
+## Evidence Output
+
+This skill produces a structured evidence file in JSON format. The @Auditor will verify this file exists and contains acceptable thresholds before issuing the GO signal for the next phase.
+
+**Output file:** `evidence/seo-report-{project-name}.json`
+
+**Schema:**
+```json
+{
+  "project": "pure-wipe",
+  "skill": "seo-aio-optimization",
+  "date": "2026-04-13T10:30:00Z",
+  "pages_optimized": 7,
+  "schema_coverage": 6,
+  "structured_data_score": 92,
+  "metadata_completeness_percent": 95,
+  "sitemap_exists": true,
+  "robots_txt_exists": true,
+  "canonical_consistency": true,
+  "internal_linking_quality": "good",
+  "aio_readability_score": 88,
+  "checked_routes": ["/", "/productos", "/blog"],
+  "critical_issues": 0,
+  "warnings": 0,
+  "findings": []
+}
+```
+
+**Auditor verification rules (auto-fail if any):**
+- `structured_data_score >= 85` ✅
+- `metadata_completeness_percent >= 90` ✅
+- `sitemap_exists === true` ✅
+- `robots_txt_exists === true` ✅
+- `canonical_consistency === true` ✅
+- `critical_issues === 0` ✅
+
 ## Process
 
 ### Step 1 — Load Page and Content Context

@@ -32,6 +32,44 @@ GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 [✅ GO] content-model-and-decap-design PASSED | YYYY-MM-DD
 ```
 
+## Evidence Output
+
+This skill produces a structured evidence file in JSON format. The @Auditor will verify this file exists and contains acceptable thresholds before issuing the GO signal for deployment.
+
+**Output file:** `evidence/quality-smoke-{project-name}.json`
+
+**Schema:**
+```json
+{
+  "project": "pure-wipe",
+  "skill": "quality-smoke-and-acceptance",
+  "date": "2026-04-13T10:30:00Z",
+  "preview_url": "https://preview.purewipe.local",
+  "routes_checked": 9,
+  "routes_passed": 9,
+  "all_routes_200": true,
+  "route_failures": [],
+  "assets_checked": 42,
+  "assets_broken": 0,
+  "broken_assets": [],
+  "forms_validated": true,
+  "form_issues": [],
+  "content_present": true,
+  "critical_issues": 0,
+  "warnings": 0,
+  "findings": []
+}
+```
+
+**Auditor verification rules (auto-fail if any):**
+- `all_routes_200 === true` ✅
+- `assets_broken === 0` ✅
+- `forms_validated === true` ✅
+- `content_present === true` ✅
+- `critical_issues === 0` ✅
+- `route_failures` array is empty ✅
+- `broken_assets` array is empty ✅
+
 ## Inputs Required
 
 This skill requires:

@@ -72,7 +72,10 @@ Validate key auth and externally reachable surfaces:
 - reverse proxy assumptions and forwarded headers alignment
 
 ### Step 5 — Evidence File Verification
-Before reviewing deployment artifacts, validate the Task Registry evidence:
+
+Before reviewing deployment artifacts, validate the Task Registry evidence with both binary and threshold checks:
+
+**Phase 1: Binary file existence checks**
 
 ```
 For each row in PROJECT_ROADMAP-{project-name}.md ## Task Registry where Status = "done":
@@ -88,7 +91,35 @@ For each row in PROJECT_ROADMAP-{project-name}.md ## Task Registry where Status 
     - DO NOT proceed to GO signal for the affected phase
 ```
 
-Write a summary of evidence checks to `evidence/security-audit-report.md` in the client repo.
+**Phase 2: Threshold-based JSON validation (new — for build-phase artifacts)**
+
+If the evidence file is JSON-formatted, parse and verify the schema fields according to the skill definition:
+
+| Evidence file | Skill | Min-threshold fields |
+|---|---|---|
+| `evidence/seo-report-{project}.json` | seo-aio-optimization | `structured_data_score >= 85`, `metadata_completeness_percent >= 90`, `sitemap_exists: true`, `robots_txt_exists: true`, `canonical_consistency: true`, `critical_issues: 0` |
+| `evidence/quality-smoke-{project}.json` | quality-smoke-and-acceptance | `all_routes_200: true`, `assets_broken: 0`, `forms_validated: true`, `content_present: true`, `critical_issues: 0`, `route_failures: []`, `broken_assets: []` |
+| `evidence/ui-smoke-{project}.json` | integrate-ui-component | `pages_passing === pages_implemented`, `layout_renders: true`, `no_broken_assets: true`, `responsive_validated: true`, `a11y_baseline_met: true`, `bootstrap_compliance_percent >= 90`, `custom_css_violations: 0`, `critical_issues: 0` |
+
+For each JSON file:
+1. Parse the JSON. If parsing fails → log as `EVIDENCE_CORRUPTION: {file} is not valid JSON` → flag task as `pending`.
+2. Verify all min-threshold fields are present.
+3. If any threshold is violated → log as `THRESHOLD_VIOLATION: {file} — {field} does not meet minimum requirement` → flag task as `pending` → **do NOT issue GO signal**.
+4. If all thresholds pass → continue to next evidence file.
+
+Write a summary of threshold verification results to `evidence/security-audit-report.md` under a new section:
+
+```markdown
+## Evidence Threshold Verification
+
+### Build Phase Artifacts
+- [ ] seo-report-{project}.json: structured_data_score >= 85 ✅
+- [ ] seo-report-{project}.json: metadata_completeness >= 90 ✅
+- [ ] quality-smoke-{project}.json: all_routes_200 ✅
+- [ ] ui-smoke-{project}.json: a11y_baseline_met ✅
+
+All build-phase evidence files: PASS
+```
 
 ### Step 6 — Deployment Hardening Review
 Inspect deployment artifacts:
