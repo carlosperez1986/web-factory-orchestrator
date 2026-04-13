@@ -1,0 +1,7 @@
+[
+  { "component": "json-content-service",  "required": true,  "trigger": "Every project — no exceptions" },
+  { "component": "marketing-seo-pack",    "required": true,  "trigger": "Every project — AIO always required" },
+  { "component": "decap-admin-panel",     "required": true,  "trigger": "Every project — /admin/ default" },
+  { "component": "contact-form-handler",  "required": true,  "trigger": "Lead Generation motive detected" },
+  { "component": "dynamic-content-grid",  "required": true,  "trigger": "Product Catalog motive detected" }
+]

@@ -1,0 +1,9 @@
+{
+  "slug": "toallas-para-bebes",
+  "name": "Toallas para Bebés",
+  "category": "bebes",
+  "short_description": "Suavidad y protección para la piel más delicada.",
+  "image_url": "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&h=400&fit=crop",
+  "features": ["Hipoalergénicas", "Sin alcohol ni perfume", "Con vitamina E"],
+  "in_stock": true
+}

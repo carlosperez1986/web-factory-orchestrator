@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="@(string.IsNullOrEmpty(Context.Request.PathBase.Value) ? "/" : $"{Context.Request.PathBase.Value.TrimEnd('/')}/")" />
+    <title>@ViewData["Title"] - Pure Wipe 3.0</title>
+    <meta name="description" content="@(ViewData["SeoDescription"] ?? "Pure Wipe 3.0 — Cuidado puro para tu familia, tu hogar y el planeta.")" />
+
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plh7eecyn6CafxmKoweBQ3JDc4VqRQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- ── NAVBAR ───────────────────────────────────────────────── -->
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg py-2">
+            <div class="container-xl">
+                <a class="navbar-brand pw-brand" href="~/">
+                    <span class="brand-mark" aria-hidden="true">💧</span>
+                    <span class="brand-text ms-2">
+                        <strong>Pure Wipe</strong>
+                        <small>Cuidado puro diario</small>
+                    </span>
+                </a>
+
+                <button class="navbar-toggler border-0" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                        aria-controls="navbarMain" aria-expanded="false"
+                        aria-label="Abrir menú de navegación">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav mx-auto nav-pills-wrap py-2 py-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="~/">Quiénes somos</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle px-3" href="~/products" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Productos
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-custom">
+                                <li><a class="dropdown-item" href="~/products?category=ecologica">Papel Higiénico Ecológico</a></li>
+                                <li><a class="dropdown-item" href="~/products?category=adultos-mayores">Toallas para Adultos</a></li>
+                                <li><a class="dropdown-item" href="~/products?category=mascotas">Toallas para Mascotas</a></li>
+                                <li><a class="dropdown-item" href="~/products?category=multiuso">Toallas Multiuso Hogar</a></li>
+                                <li><a class="dropdown-item" href="~/products?category=bebes">Toallas para Bebés</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="~/blog">Consejos (Blog)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="~/galeria">Galería de Imágenes</a>
+                        </li>
+                    </ul>
+                    <a class="btn btn-pw-locate ms-lg-3 mt-2 mt-lg-0" href="~/contacto">
+                        <i class="fas fa-map-marker-alt me-1" aria-hidden="true"></i> ¿Dónde encontrar?
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="site-main">
+        @RenderBody()
+    </main>
+
+    <!-- ── FOOTER ──────────────────────────────────────────────── -->
+    <footer class="site-footer">
+        <div class="container-xl">
+            <div class="row g-4 py-4">
+                <!-- Brand column -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-logo">
+                        <span class="brand-mark" aria-hidden="true">💧</span>
+                        <div class="ms-2">
+                            <h5 class="mb-0 text-white">Pure Wipe</h5>
+                            <small>Cuidado puro diario</small>
+                        </div>
+                    </div>
+                    <p class="small mt-3 mb-3">Cuidado para disfrutar la vida. Formulaciones para compartir y vivir al máximo.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" aria-label="Síguenos en Facebook" class="footer-social-link"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Síguenos en Instagram" class="footer-social-link"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                        <a href="#" aria-label="Canal de YouTube" class="footer-social-link"><i class="fab fa-youtube" aria-hidden="true"></i></a>
+                    </div>
+                </div>
+
+                <!-- Explorar -->
+                <div class="col-md-2 col-6 offset-lg-1">
+                    <h6 class="footer-heading">Explorar</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-1"><a href="~/" class="footer-link">Quiénes somos</a></li>
+                        <li class="mb-1"><a href="~/products" class="footer-link">Nuestros productos</a></li>
+                        <li class="mb-1"><a href="~/nosotros" class="footer-link">Nuestro compromiso</a></li>
+                        <li class="mb-1"><a href="~/galeria" class="footer-link">Galería de Imágenes</a></li>
+                    </ul>
+                </div>
+
+                <!-- Consejos -->
+                <div class="col-md-2 col-6">
+                    <h6 class="footer-heading">Consejos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-1"><a href="~/blog" class="footer-link">Blog</a></li>
+                        <li class="mb-1"><a href="~/blog?category=familia" class="footer-link">Cuidado de la familia</a></li>
+                        <li class="mb-1"><a href="~/blog?category=mascotas" class="footer-link">Cuidado de Kroger</a></li>
+                        <li class="mb-1"><a href="~/blog?category=mascotas" class="footer-link">Cuidado de mascotas</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="footer-heading">Suscríbete y recibe consejos y novedades</h6>
+                    <form class="newsletter-form mt-2" onsubmit="return false;" aria-label="Formulario de suscripción al boletín">
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Tu correo electrónico" aria-label="Dirección de correo electrónico" required />
+                            <button class="btn btn-pw-primary" type="submit">Suscribirse</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contáctanos row -->
+            <div class="row g-3 py-3 border-top border-white border-opacity-10">
+                <div class="col-md-6">
+                    <h6 class="footer-heading">Contáctanos</h6>
+                    <p class="small mb-1"><i class="fas fa-envelope me-2" aria-hidden="true"></i><a href="mailto:hello@pure-wipes.com" class="footer-link">hello@pure-wipes.com</a></p>
+                    <p class="small mb-1"><i class="fas fa-phone me-2" aria-hidden="true"></i>+57 700 123 4567</p>
+                    <p class="small"><i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>Colombia</p>
+                </div>
+            </div>
+
+            <p class="footer-copy">&copy; @DateTime.Now.Year Pure Wipe. Todos los derechos reservados. <a href="~/privacy" class="footer-link">Política de privacidad</a></p>
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmcH5ePK0Pj22zHIK7Vun1VVMYQ=="
+            crossorigin="anonymous"></script>
+</body>
+</html>

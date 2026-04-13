@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>PureWide3</RootNamespace>
+    <AssemblyName>PureWide3</AssemblyName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WFO Standard Dependencies -->
+    <PackageReference Include="Markdig" Version="0.41.0" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
+                      Version="9.*" Condition="'$(Configuration)'=='Debug'" />
+  </ItemGroup>
+
+  <!-- Static assets (whitelisted JS) — Swiper.js and AOS loaded via CDN, no npm -->
+
+</Project>

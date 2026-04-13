@@ -1,0 +1,10 @@
+{
+  "nav": [
+    { "label": "Inicio",          "slug": "/",          "template": "home",    "rule": "C — always required" },
+    { "label": "Quiénes Somos",   "slug": "/nosotros",  "template": "about",   "rule": "Brand Info detected" },
+    { "label": "Productos",       "slug": "/products",  "template": "catalog", "rule": "B — Product Catalog detected" },
+    { "label": "Consejos (Blog)", "slug": "/blog",      "template": "blog",    "rule": "Brand Info / content marketing" },
+    { "label": "Galería",         "slug": "/galeria",   "template": "gallery", "rule": "Brand Info / visual content" },
+    { "label": "Contáctenos",     "slug": "/contacto",  "template": "contact", "rule": "A — Lead Generation detected" }
+  ]
+}

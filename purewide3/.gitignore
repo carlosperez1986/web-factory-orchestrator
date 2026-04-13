@@ -1,0 +1,35 @@
+## .gitignore for Pure Wipe 3.0 (.NET 9 / ASP.NET Core)
+
+# Build outputs
+bin/
+obj/
+publish/
+
+# Visual Studio
+.vs/
+*.user
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# dotnet cli
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets — never commit
+appsettings.Production.json
+appsettings.Secrets.json
+secrets/
+*.pfx
+*.key
+*.pem
+*.priv
+
+# Uploaded media (managed by Decap CMS, not tracked in git)
+# wwwroot/media/ — uncomment if you want to ignore uploaded files

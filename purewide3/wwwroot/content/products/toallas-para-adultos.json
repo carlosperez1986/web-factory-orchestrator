@@ -1,0 +1,9 @@
+{
+  "slug": "toallas-para-adultos",
+  "name": "Toallas para Adultos",
+  "category": "adultos-mayores",
+  "short_description": "Cuidado suave y digno para cada día.",
+  "image_url": "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=400&h=400&fit=crop",
+  "features": ["Extra gruesas", "pH balanceado", "Con aloe vera"],
+  "in_stock": true
+}

@@ -1,0 +1,84 @@
+backend:
+  name: github
+  repo: carlosperez1986/purewide3.0
+  branch: main
+
+media_folder: wwwroot/media
+public_folder: /media
+
+locale: es
+
+collections:
+  - name: products
+    label: Productos
+    label_singular: Producto
+    folder: wwwroot/content/products
+    create: true
+    slug: "{{slug}}"
+    extension: json
+    format: json
+    fields:
+      - { name: slug,              label: Slug (URL),          widget: string }
+      - { name: name,              label: Nombre,              widget: string }
+      - { name: category,          label: Categoría,           widget: select,
+          options: [
+            { label: "Papel Higiénico Ecológico", value: ecologica },
+            { label: "Toallas para Adultos",       value: adultos-mayores },
+            { label: "Toallas para Mascotas",      value: mascotas },
+            { label: "Toallas Multiuso Hogar",     value: multiuso },
+            { label: "Toallas para Bebés",         value: bebes }
+          ] }
+      - { name: short_description, label: Descripción corta,  widget: text }
+      - { name: description,       label: Descripción larga,  widget: markdown, required: false }
+      - { name: image_url,         label: Imagen URL,         widget: image }
+      - { name: features,          label: Características,    widget: list, required: false }
+      - { name: in_stock,          label: En stock,           widget: boolean, default: true }
+
+  - name: blog
+    label: Blog (Consejos)
+    label_singular: Artículo
+    folder: wwwroot/content/blog
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title,           label: Título,          widget: string }
+      - { name: date,            label: Fecha,           widget: datetime, date_format: YYYY-MM-DD, time_format: false }
+      - { name: category,        label: Categoría,       widget: string }
+      - { name: image,           label: Imagen,          widget: image, required: false }
+      - { name: seo_description, label: Meta descripción, widget: text }
+      - { name: body,            label: Contenido,       widget: markdown }
+
+  - name: pages
+    label: Páginas
+    files:
+      - name: inicio
+        label: Inicio
+        file: wwwroot/content/pages/inicio.json
+        format: json
+        fields:
+          - { name: hero_title,    label: Título hero,    widget: string }
+          - { name: hero_tagline,  label: Tagline hero,   widget: string }
+          - { name: hero_subtitle, label: Subtítulo hero, widget: text }
+          - { name: hero_cta_label,label: CTA texto,      widget: string }
+          - name: retailers
+            label: Tiendas disponibles
+            widget: list
+            field: { name: name, label: Nombre, widget: string }
+
+      - name: nosotros
+        label: Quiénes somos
+        file: wwwroot/content/pages/nosotros.json
+        format: json
+        fields:
+          - { name: title,    label: Título,        widget: string }
+          - { name: subtitle, label: Subtítulo,     widget: string }
+          - { name: body,     label: Contenido,     widget: markdown }
+          - name: values
+            label: Valores
+            widget: list
+            fields:
+              - { name: title,       label: Título,       widget: string }
+              - { name: description, label: Descripción,  widget: text }
+              - { name: icon,        label: Icono (FA class), widget: string }

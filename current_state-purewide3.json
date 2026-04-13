@@ -1,0 +1,44 @@
+{
+  "project": "purewide3",
+  "phase": "build",
+  "active_skill": "project-scaffolding",
+  "active_agent": "@Orchestrator",
+  "last_completed_step": "project-scaffolding → scaffold complete, staged in purewide3/ — awaiting GitHub repo creation",
+  "next_step": "Push purewide3/ to github.com/carlosperez1986/purewide3.0, then run look-and-feel-ingestion",
+  "implementation_spec_ref": "IMPLEMENTATION_SPEC-purewide3.md",
+  "design_style_contract_ref": "DESIGN_STYLE_CONTRACT-purewide3.md",
+  "roadmap_ref": "PROJECT_ROADMAP-purewide3.md",
+  "strategy_contract_ref": "STRATEGY_CONTRACT-purewide3.json",
+  "repo_url": null,
+  "repo_status": "staged-pending-creation",
+  "token_budget_remaining": null,
+  "look_and_feel": {
+    "source_type": "stitch+images",
+    "stitch_project_id": "5053646075436783644",
+    "stitch_screen_id": "e3bd25bfcdad46a4bd0a0b6ff75d74c0",
+    "images_provided": ["Pure Wipes Home Page screenshot — provided in chat"],
+    "reference_url": null
+  },
+  "vps_config": {
+    "topology": "shared",
+    "app_name": "purewide3",
+    "app_port": "5011",
+    "target_dir": "/var/www/purewide3",
+    "use_shared_domain": "true",
+    "shared_domain": "(set via SHARED_DOMAIN GitHub secret)",
+    "shared_site_file": "(set via SHARED_SITE_FILE GitHub secret)",
+    "route_prefix": "/purewide3",
+    "use_custom_domain": "false",
+    "domain": "",
+    "cert_dir": "",
+    "cert_crt": "",
+    "cert_key": ""
+  },
+  "scaffold_staging_path": "purewide3/",
+  "blocker": {
+    "type": "github-api-blocked",
+    "detail": "GitHub REST API blocked by DNS monitoring proxy in sandbox — repo creation requires manual step.",
+    "resolution": "1. Create repo 'purewide3.0' at https://github.com/new (empty, no auto-init). 2. From hub repo root: cd purewide3 && git init && git checkout -b main && git remote add origin https://github.com/carlosperez1986/purewide3.0.git && git add . && git commit -m 'feat: initial scaffold' && git push -u origin main",
+    "detected_at": "2026-04-13"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "project": "purewide3",
+  "phase": "define",
+  "briefing_source": "visual reference — Pure Wipes Home Page Stitch project 5053646075436783644 + homepage image",
+  "detected_motives": ["product-catalog", "lead-generation", "brand-info"],
+  "sitemap_ref": "evidence/sitemap-purewide3.json",
+  "feature_components_ref": "evidence/feature-components-purewide3.json",
+  "constraints": {
+    "max_nav_items": 7,
+    "data_layer": "git-json-md",
+    "admin": "decap"
+  }
+}

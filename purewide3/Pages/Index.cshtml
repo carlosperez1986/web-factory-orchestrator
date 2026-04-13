@@ -1,0 +1,220 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Inicio";
+    ViewData["SeoDescription"] = "Pure Wipe 3.0 — Toallas y papeles de alta calidad, elaborados con fórmulas seguras y materiales biodegradables que cuidan lo que más importa.";
+
+    var showcaseProducts = Model.ProductsByCategory.SelectMany(g => g.Value).Take(4).ToList();
+    var retailers = new[] { "Éxito", "Walmart", "Carrefour", "Farmatodo", "Megatiendes del Sur", "Makro", "Ara" };
+}
+
+<!-- ── HERO ───────────────────────────────────────────────────── -->
+<section class="hero-section">
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <h1 class="hero-title">Cuidado puro<br/>que se siente bien</h1>
+            <p class="hero-tagline">Para tu familia, tu hogar y el planeta.</p>
+            <p class="hero-subtitle">Toallas y papeles de alta calidad, elaborados con fórmulas seguras y materiales biodegradables que cuidan lo que más importa.</p>
+            <div class="hero-ctas">
+                <a href="~/products" class="btn btn-pw-primary">
+                    Conoce nuestras soluciones <i class="fas fa-chevron-right ms-1" aria-hidden="true"></i>
+                </a>
+                <a href="#sustainability" class="btn btn-pw-outline">
+                    Nuestro compromiso <i class="fas fa-leaf ms-1" aria-hidden="true" style="color:var(--color-secondary)"></i>
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+            <div class="biodegradable-seal">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-4-4 1.41-1.41L10 13.67l6.59-6.59L18 8.5l-8 8z" fill="currentColor"/></svg>
+                <span>Papel Higiénico<br/><strong>BIODEGRADABLE</strong></span>
+            </div>
+            <div class="hero-showcase">
+                @if (showcaseProducts.Any())
+                {
+                    @foreach (var product in showcaseProducts)
+                    {
+                        <article class="mini-product-card">
+                            <img src="@(product.ImageUrl.StartsWith('/') ? Url.Content($"~{product.ImageUrl}") : product.ImageUrl)"
+                                 alt="@product.Name"
+                                 class="mini-product-image"
+                                 onerror="this.style.display='none'" />
+                            <div>
+                                <span class="mini-product-category">@product.Category</span>
+                                <h3>@product.Name</h3>
+                            </div>
+                        </article>
+                    }
+                }
+                else
+                {
+                    <div class="hero-placeholder-products">
+                        <p class="text-muted small">Administra los productos desde <a href="~/admin/">/admin</a></p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── FEATURES STRIP ─────────────────────────────────────────── -->
+<section class="features-section">
+    <div class="container features-grid">
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-leaf" aria-hidden="true"></i></div>
+            <h3>Fórmulas biodegradables</h3>
+            <p>Cuidado efectivo que respeta el planeta.</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-tint" aria-hidden="true"></i></div>
+            <h3>Hipoalergénico y pH balanceado</h3>
+            <p>Permitas suaves que cuidan tu piel.</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-wind" aria-hidden="true"></i></div>
+            <h3>Textura premium</h3>
+            <p>Extra suaves, resistentes y absorbentes.</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-heart" aria-hidden="true"></i></div>
+            <h3>Soluciones para cada necesidad</h3>
+            <p>Para toda la familia, en cada etapa de la vida.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── PRODUCT LINES ──────────────────────────────────────────── -->
+<section class="product-lines-section">
+    <div class="container">
+        <div class="product-lines-grid-complex">
+            <div class="solutions-intro">
+                <span class="eyebrow">NUESTRAS SOLUCIONES <i class="fas fa-leaf" aria-hidden="true"></i></span>
+                <h2 class="section-title align-left">Bienestar para cada momento, para todos</h2>
+                <p class="section-copy">Descubre nuestra línea de productos creados para acompañarte en la higiene diaria con calidad y responsabilidad.</p>
+                <a href="~/products" class="text-link mt-2 d-inline-block">Conoce toda la línea <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="solutions-grid">
+                @{
+                    var categoryLabels = new Dictionary<string, string>
+                    {
+                        ["ecologica"]       = "Papel Higiénico Ecoló­gico",
+                        ["adultos-mayores"] = "Toallas para Adultos",
+                        ["mascotas"]        = "Toallas Húmedas para Mascotas",
+                        ["multiuso"]        = "Toallas Multiuso para el Hogar",
+                        ["bebes"]           = "Toallas para Bebés"
+                    };
+                }
+                @foreach (var category in Model.ProductsByCategory.Take(5))
+                {
+                    var firstProduct = category.Value.FirstOrDefault();
+                    if (firstProduct != null)
+                    {
+                        var label = categoryLabels.TryGetValue(category.Key, out var l) ? l : category.Key;
+                        <div class="solution-card">
+                            <img src="@(firstProduct.ImageUrl.StartsWith('/') ? Url.Content($"~{firstProduct.ImageUrl}") : firstProduct.ImageUrl)"
+                                 alt="@label"
+                                 onerror="this.src='https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&h=400&fit=crop'" />
+                            <h3>@label</h3>
+                            <p class="small text-muted">@firstProduct.ShortDescription</p>
+                            <a href="~/products?category=@category.Key" class="text-link small">Ver más <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i></a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── SUSTAINABILITY BANNER ──────────────────────────────────── -->
+<section class="water-banner" id="sustainability">
+    <div class="container">
+        <div class="water-banner-bg">
+            <div class="water-banner-content">
+                <div class="banner-grid">
+                    <div>
+                        <span class="eyebrow light">Cuidado que deja huella positiva</span>
+                        <h2>Cuidado que deja<br/>huella positiva</h2>
+                        <div class="positive-impact-icons">
+                            <div class="impact-icon-item">
+                                <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M15 25 L22 32 L35 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                </svg>
+                                <p>Materiales<br/>biodegradables</p>
+                            </div>
+                            <div class="impact-icon-item">
+                                <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M25 10 L25 40 M10 25 L40 25" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+                                    <circle cx="25" cy="25" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <p>Procesos<br/>responsables</p>
+                            </div>
+                            <div class="impact-icon-item">
+                                <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M25 15 Q30 20 25 30 Q20 20 25 15 M20 30 Q25 35 30 30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                                </svg>
+                                <p>Compromiso real<br/>con el medio ambiente</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="floating-leaf" aria-hidden="true">
+                        <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=300&h=300&fit=crop&auto=format"
+                             alt="" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── RETAILERS ───────────────────────────────────────────────── -->
+<section class="retailers-section">
+    <div class="container">
+        <h3 class="retailers-title">Encuentra Pure Wipe en tus tiendas favoritas</h3>
+        <div class="retailer-logos" role="list">
+            @foreach (var retailer in retailers)
+            {
+                <span class="retailer-pill" role="listitem">@retailer</span>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- ── BLOG PREVIEW ───────────────────────────────────────────── -->
+@if (Model.LatestPosts.Any())
+{
+    <section class="blog-preview-section">
+        <div class="container">
+            <div class="section-intro">
+                <div>
+                    <h2 class="section-title align-left">Consejos para tu bienestar diario</h2>
+                </div>
+                <a href="~/blog" class="text-link">Ver todos los artículos <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="blog-grid">
+                @foreach (var post in Model.LatestPosts)
+                {
+                    <article class="blog-card">
+                        @if (!string.IsNullOrEmpty(post.Image))
+                        {
+                            <div class="blog-card-img-wrapper">
+                                <span class="blog-category-tag">@post.Category</span>
+                                <img src="@(post.Image.StartsWith('/') ? Url.Content($"~{post.Image}") : post.Image)"
+                                     alt="@post.Title"
+                                     class="blog-img"
+                                     onerror="this.style.display='none'" />
+                            </div>
+                        }
+                        <div class="blog-card-content">
+                            <h3><a href="~/blog/@post.Slug">@post.Title</a></h3>
+                            <p>@post.SeoDescription</p>
+                            <a href="~/blog/@post.Slug" class="text-link small">Leer más <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i></a>
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+}

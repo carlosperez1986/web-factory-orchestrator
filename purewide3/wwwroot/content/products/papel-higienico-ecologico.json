@@ -1,0 +1,9 @@
+{
+  "slug": "papel-higienico-ecologico",
+  "name": "Papel Higiénico Ecológico",
+  "category": "ecologica",
+  "short_description": "Higiene superior con papel ecológico responsable.",
+  "image_url": "https://images.unsplash.com/photo-1584515933487-779824d29309?w=400&h=400&fit=crop",
+  "features": ["100% biodegradable", "Sin fragancia", "Suavidad triple capa"],
+  "in_stock": true
+}

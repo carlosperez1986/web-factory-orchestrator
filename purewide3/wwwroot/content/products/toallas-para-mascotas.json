@@ -1,0 +1,9 @@
+{
+  "slug": "toallas-para-mascotas",
+  "name": "Toallas Húmedas para Mascotas",
+  "category": "mascotas",
+  "short_description": "Limpiezas suaves y frescas para su bienestar diario.",
+  "image_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+  "features": ["Sin alcohol", "Fórmula suave para piel animal", "Biodegradable"],
+  "in_stock": true
+}
