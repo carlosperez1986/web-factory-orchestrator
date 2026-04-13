@@ -178,16 +178,20 @@ If the repository already contains a working application:
 **Copy .NET boilerplate from blueprints:**
 
 ```bash
-cp -r blueprints/code/Program.cs.template               ./{project-name}/Program.cs
-cp -r blueprints/code/Startup.cs.template               ./{project-name}/Startup.cs
+cp blueprints/code/Program.cs.template            ./{project-name}/Program.cs
+cp blueprints/code/.csproj.template               ./{project-name}/{project-name}.csproj
+mkdir -p ./{project-name}/Services
+cp blueprints/code/Services/ContentService.cs     ./{project-name}/Services/ContentService.cs
+mkdir -p ./{project-name}/Models
+mkdir -p ./{project-name}/Pages/Shared
 mkdir -p ./{project-name}/evidence
 echo "# Evidence — see WFO evidence/README.md for convention" > ./{project-name}/evidence/README.md
-cp -r blueprints/code/Models/                            ./{project-name}/Models/
-cp -r blueprints/code/Services/ContentService.cs        ./{project-name}/Services/
-cp -r blueprints/code/Pages/                             ./{project-name}/Pages/
-cp    blueprints/code/.gitignore                         ./{project-name}/.gitignore
-cp    blueprints/code/.csproj.template                  ./{project-name}/{project-name}.csproj
+cp    blueprints/code/.gitignore                  ./{project-name}/.gitignore
 ```
+
+> `.NET 9 uses minimal hosting — there is no Startup.cs.` All wiring is in `Program.cs`.
+> `Models/` and `Pages/` are seeded as empty folders; the `spec-driven-architecture` and
+> `content-service-and-data-wiring` skills generate the actual files per project.
 
 **Template substitutions (required):**
 

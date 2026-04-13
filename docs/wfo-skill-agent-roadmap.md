@@ -22,11 +22,16 @@ The current state is strong in **Phase 1 (Define)**, but still incomplete in **P
 | define | `project-estimation-and-stack-selection` | Ready | Estimate cost/time/tokens and lock stack decisions |
 | define | `spec-driven-architecture` | Ready | Convert roadmap into implementation-ready technical spec |
 | build | `project-scaffolding` | Ready (v1) | Create, detect, or adopt repository and seed project structure |
+| build | `repo-adoption-assessment` | Ready | Assess existing repo compatibility and adoption risk |
+| build | `content-model-and-decap-design` | Ready | Define Decap CMS collections and Git-based content schemas |
 | build | `github-project-bootstrap` | Ready | Create GitHub Issues, labels, and project board from roadmap/spec |
 | build | `content-service-and-data-wiring` | Ready | Implement file-based models/services and page data binding |
 | build | `integrate-ui-component` | Ready | Assemble Bootstrap-first page UI from implementation contracts |
 | build | `seo-aio-optimization` | Ready | Apply SEO/AIO metadata, schema, and discoverability improvements |
 | deploy | `security-audit` | Ready | Execute pre-deploy security gate and go/no-go recommendation |
+| deploy | `quality-smoke-and-acceptance` | Ready | Validate site health, routes, assets and acceptance criteria before security audit |
+| deploy | `release-and-postdeploy-verification` | Ready | Confirm live deployment, asset delivery, admin access and rollback readiness after production deploy |
+| deploy | `vps-provisioning` | Ready | Generate Nginx, systemd, GitHub Actions CD artifacts for Debian 11 VPS |
 
 ### Agents
 
@@ -39,27 +44,9 @@ The current state is strong in **Phase 1 (Define)**, but still incomplete in **P
 
 ## Missing Core Skills
 
-These are the **required skills** to make WFO operational end-to-end.
+These are the **required skills** still needed to make WFO operational end-to-end.
 
-### 1. `content-model-and-decap-design`
-**Priority:** Critical  
-**Owner:** `@ContentArchitect` or `@Architect`
-
-Defines the Decap CMS collections, frontmatter/json schemas, editorial workflow, and file layout.
-
-**Why it is needed:**
-Right now Decap is assumed as baseline, but there is no dedicated skill to formalize collection design from the sitemap and feature model.
-
-**Outputs should include:**
-- `wwwroot/admin/config.yml` structure,
-- collection definitions,
-- content field schemas,
-- sample content files,
-- validation rules.
-
----
-
-### 2. `implementation-batch-planning`
+### 1. `implementation-batch-planning`
 **Priority:** High  
 **Owner:** `@Architect`
 
@@ -69,68 +56,10 @@ Breaks the approved spec into execution batches for `@Developer` and `@FrontendU
 The roadmap contains phases, but not execution sequencing at code-change granularity.
 
 **Outputs should include:**
-- batch 1/2/3 slices,
+- batch slices and order,
 - per-batch dependencies,
 - estimated review checkpoints,
 - GO signal criteria between batches.
-
----
-
-### 3. `repo-adoption-assessment`
-**Priority:** High  
-**Owner:** `@Architect`
-
-Formal assessment skill for existing repositories before WFO adopts them.
-
-**Why it is needed:**
-PureWipe proved this is a real scenario. `project-scaffolding` can adopt a repo, but a first-class assessment skill will make the process safer and reusable.
-
-**Outputs should include:**
-- architecture summary,
-- CI/CD status,
-- deployment topology,
-- secrets posture,
-- modernization backlog,
-- adoption recommendation: `adopt`, `adopt-with-remediation`, or `reject`.
-
----
-
-### 4. `quality-smoke-and-acceptance`
-**Priority:** High  
-**Owner:** `@QA` or `@Auditor`
-
-Runs smoke checks, route checks, content presence checks, and acceptance verification before security/deploy.
-
-**Why it is needed:**
-Security is not the same as functional verification. WFO needs a lightweight QA gate before deployment.
-
-**Outputs should include:**
-- route smoke checklist,
-- missing asset detection,
-- content rendering checks,
-- acceptance sign-off.
-
----
-
-### 5. `vps-provisioning`
-**Priority:** Critical  
-**Owner:** `@DevOps`
-
-Sets up Nginx, systemd, deployment target directory, shared-domain/subpath topology, and release automation.
-
----
-
-### 6. `release-and-postdeploy-verification`
-**Priority:** Medium  
-**Owner:** `@DevOps` + `@QA`
-
-Verifies that the deployed site is alive after the pipeline completes.
-
-**Outputs should include:**
-- live URL health check,
-- static asset verification,
-- CMS admin route verification,
-- rollback note if needed.
 
 ---
 
@@ -173,8 +102,10 @@ Once analysis and architecture are stable, WFO still needs these foundations bef
 
 ### Required Before Starting
 
-1. Finish the core skill chain:
+1. Run the core skill chain on a first project:
    - `content-model-and-decap-design`
+   - `quality-smoke-and-acceptance`
+   - `security-audit`
    - `vps-provisioning`
    - `release-and-postdeploy-verification`
 
@@ -285,14 +216,12 @@ This prevents the board from drifting away from the design intent.
 ### Order for the next implementation wave
 
 1. Create `@DevOps.agent.md`
-2. Create `vps-provisioning/SKILL.md`
-3. Create `release-and-postdeploy-verification/SKILL.md`
-4. Create `content-model-and-decap-design/SKILL.md`
-5. Create `@ContentArchitect.agent.md`
-6. Create `@QA.agent.md`
-7. Create `quality-smoke-and-acceptance/SKILL.md`
+2. Create `@ContentArchitect.agent.md`
+3. Create `@QA.agent.md`
+4. Create `implementation-batch-planning/SKILL.md`
+5. Review and finalize `quality-smoke-and-acceptance/SKILL.md` and `release-and-postdeploy-verification/SKILL.md`
 
-This gives you the minimum viable end-to-end factory.
+This gives you the remaining minimum end-to-end factory.
 
 ---
 

@@ -112,25 +112,30 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A["briefing-synthesis<br/>Extract intent"] --> B["project-estimation<br/>Forecast cost/time"]
+    A["briefing-synthesis<br/>Extract intent<br/>→ roadmap skeleton"] --> B["project-estimation<br/>Forecast cost/time/tokens<br/>→ stack locked"]
     B --> C["USER GATE 1<br/>Approve roadmap?"]
     C -->|Changes| D["Modify roadmap"]
     D --> B
-    C -->|Proceed| E["project-scaffolding<br/>Create repo"]
-    E --> F["spec-driven-architecture<br/>Generate specs"]
-    F --> G["integrate-ui-component<br/>Build UI"]
-    G --> H["decap-cms-config<br/>Admin setup"]
-    H --> I["USER GATE 2<br/>Code review OK?"]
-    I -->|No| J["Request changes"]
-    J --> F
-    I -->|Yes| K["security-audit<br/>CVE scan"]
-    K --> L["vps-provisioning<br/>Deploy"]
-    L --> M["✅ DEPLOYED"]
-    
-    C -->|phase: define| style C fill:#fff9c4
-    E -->|phase: build| style E fill:#fff9c4
-    K -->|phase: deploy| style K fill:#fff9c4
-    M fill:#a5d6a7
+    C -->|Proceed| E["project-scaffolding<br/>Create or adopt repo<br/>→ repo ready"]
+    E --> F["spec-driven-architecture<br/>Route matrix, contracts,<br/>component map, batches<br/>→ IMPLEMENTATION_SPEC"]
+    F --> G["github-project-bootstrap<br/>GitHub Issues + labels<br/>+ Project board<br/>→ delivery tracking"]
+    G --> H["content-service-and-data-wiring<br/>C# models + services<br/>+ PageModel bindings<br/>→ backend code"]
+    H --> I["integrate-ui-component<br/>Razor Pages + Bootstrap 5<br/>+ responsive sections<br/>→ frontend code"]
+    I --> J["seo-aio-optimization<br/>Schema.org + AIO meta<br/>+ sitemap.xml<br/>→ discoverability"]
+    J --> K["USER GATE 2<br/>Code review OK?"]
+    K -->|No| L["Request changes"]
+    L --> H
+    K -->|Yes| M["security-audit<br/>@Auditor — go/no-go<br/>CVE + config scan"]
+    M --> N["vps-provisioning<br/>Nginx + systemd<br/>+ CI/CD deploy"]
+    N --> O["✅ DEPLOYED"]
+
+    style C fill:#fff9c4
+    style K fill:#fff9c4
+    style G fill:#e1f5ff
+    style H fill:#f3e5f5
+    style I fill:#f3e5f5
+    style M fill:#fce4ec
+    style O fill:#a5d6a7
 ```
 
 ---
@@ -225,4 +230,109 @@ stateDiagram-v2
     DEPLOYED: phase: "deployed"<br/>completed_at: YYYY-MM-DD
     
     DEPLOYED --> [*]
+```
+
+---
+
+## Build Phase: Skill Ownership and Output Type
+
+```mermaid
+flowchart TD
+    subgraph define ["Phase 1 — Define (Hub context)"]
+        S1["briefing-synthesis<br/>OUTPUT: roadmap skeleton<br/>sitemap · motives · feature components"]
+        S2["project-estimation-and-stack-selection<br/>OUTPUT: token forecast · cost · margin<br/>stack decision · Decap CMS baseline"]
+        S1 --> S2
+    end
+
+    GU1["⏸ USER GATE 1<br/>Human approves roadmap"]
+
+    subgraph build_infra ["Phase 2A — Planning (Client repo context)"]
+        S3["project-scaffolding<br/>OUTPUT: repository ready<br/>blueprint seeded · workflows in place"]
+        S4["spec-driven-architecture<br/>OUTPUT: IMPLEMENTATION_SPEC<br/>route matrix · contracts · batches"]
+        S5["github-project-bootstrap<br/>OUTPUT: GitHub Issues + Project board<br/>⚠️ NO CODE — delivery tracking only"]
+        S3 --> S4 --> S5
+    end
+
+    subgraph build_code ["Phase 2B — Code (Client repo context)"]
+        S6["content-service-and-data-wiring<br/>OUTPUT: C# code<br/>models · services · PageModel bindings"]
+        S7["integrate-ui-component<br/>OUTPUT: Razor + Bootstrap code<br/>page sections · shared layout · responsive UI"]
+        S8["seo-aio-optimization<br/>OUTPUT: meta / schema markup<br/>Schema.org · AIO meta · sitemap.xml"]
+        S6 --> S7 --> S8
+    end
+
+    GU2["⏸ USER GATE 2<br/>Human code review"]
+
+    subgraph deploy ["Phase 3 — Deploy"]
+        S9["security-audit<br/>AGENT: @Auditor (restricted tools)<br/>OUTPUT: go/no-go report"]
+        S10["vps-provisioning ⌛<br/>OUTPUT: Nginx · systemd · CI/CD pipeline"]
+        S9 --> S10
+    end
+
+    define --> GU1 --> build_infra --> build_code --> GU2 --> deploy
+
+    style S5 fill:#e1f5ff
+    style S6 fill:#f3e5f5
+    style S7 fill:#f3e5f5
+    style S9 fill:#fce4ec
+    style S10 fill:#ffe0b2
+    style GU1 fill:#fff9c4
+    style GU2 fill:#fff9c4
+```
+
+---
+
+## WFO Full Sequence: From Briefing to Deployed Site
+
+```mermaid
+sequenceDiagram
+    actor Human as Human Operator
+    participant Orch as @Orchestrator
+    participant Hub as Hub Workspace<br/>(web-factory-orchestrator)
+    participant Repo as Client Repo<br/>(github.com/user/project)
+    participant GH as GitHub<br/>(Issues + Project)
+    participant Aud as @Auditor
+    participant VPS as VPS
+
+    Human->>Orch: Provide briefing (PDF / inbox / chat text)
+
+    rect rgb(225, 245, 255)
+        Note over Orch,Hub: Phase 1 — Define (Hub context)
+        Orch->>Hub: Run briefing-synthesis → write PROJECT_ROADMAP
+        Orch->>Hub: Run project-estimation → write Estimation + Stack Decision
+        Orch-->>Human: "Roadmap ready. Approve to proceed?"
+    end
+
+    Human->>Orch: Proceed ✅ (USER GATE 1)
+
+    rect rgb(243, 229, 245)
+        Note over Orch,Repo: Phase 2A — Planning (switches to repo context)
+        Orch->>Repo: project-scaffolding → create or adopt repo + seed blueprint
+        Orch->>Repo: spec-driven-architecture → write IMPLEMENTATION_SPEC
+        Orch->>GH: github-project-bootstrap → create Issues + labels + Project board
+        Note over GH: No code yet — only delivery tracking
+    end
+
+    rect rgb(232, 245, 233)
+        Note over Orch,Repo: Phase 2B — Code
+        Orch->>Repo: content-service-and-data-wiring → write C# models, services, PageModel bindings
+        Orch->>Repo: integrate-ui-component → write Razor Pages + Bootstrap 5 UI
+        Orch->>Repo: seo-aio-optimization → write Schema.org, AIO meta, sitemap.xml
+        Orch-->>Human: "Code complete. Please review."
+    end
+
+    Human->>Orch: Approved ✅ (USER GATE 2)
+
+    rect rgb(252, 228, 236)
+        Note over Aud: Phase 3 — Deploy (@Auditor restricted tools: read/search/execute — no edit)
+        Orch->>Aud: Delegate security-audit
+        Aud->>Repo: Scan Nginx config, .NET config, form handlers, secrets posture
+        Aud-->>Orch: GO ✅ (or BLOCKED with findings)
+    end
+
+    rect rgb(255, 224, 178)
+        Note over Orch,VPS: Deploy
+        Orch->>VPS: vps-provisioning → Nginx + systemd config
+        Repo->>VPS: GitHub Actions CI/CD → build + deploy .NET app
+        Orch-->>Human: "Deployed ✅ — site live at {url}"
+    end
 ```

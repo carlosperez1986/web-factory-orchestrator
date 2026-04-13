@@ -1,0 +1,84 @@
+# nginx-config.template — WFO Blueprint
+# Stack  : Nginx + Systemd · Debian 11 · .NET 9 Kestrel (reverse proxy)
+# Source : blueprints/infra/nginx-config.template
+#
+# Substitutions applied by the vps-provisioning skill:
+#   {{DOMAIN}}        → e.g. purewipe.com
+#   {{APP_NAME}}      → e.g. pure-wipe  (matches Systemd service name)
+#   {{KESTREL_PORT}}  → e.g. 5000       (must match appsettings.json Kestrel URL)
+#   {{SUBPATH}}       → e.g. /          (use /subpath/ if sharing a server with other sites)
+#
+# After substitution, test with:
+#   sudo nginx -t
+# The output must contain "syntax is ok" — this is the evidence string written to
+# evidence/nginx-syntax.log and checked by @Auditor before issuing the GO signal.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── HTTP → HTTPS redirect ──────────────────────────────────────────────────────
+server {
+    listen 80;
+    listen [::]:80;
+    server_name {{DOMAIN}} www.{{DOMAIN}};
+
+    # ACME challenge for Let's Encrypt (certbot webroot method)
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://{{DOMAIN}}$request_uri;
+    }
+}
+
+# ── HTTPS main block ───────────────────────────────────────────────────────────
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name {{DOMAIN}} www.{{DOMAIN}};
+
+    # ── TLS ────────────────────────────────────────────────────────────────────
+    ssl_certificate     /etc/letsencrypt/live/{{DOMAIN}}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{DOMAIN}}/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache   shared:MozSSL:10m;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    # ── Security headers ───────────────────────────────────────────────────────
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+    add_header X-Frame-Options           SAMEORIGIN                                     always;
+    add_header X-Content-Type-Options    nosniff                                        always;
+    add_header Referrer-Policy           "strict-origin-when-cross-origin"              always;
+    # CSP is set per-project by the @Auditor after reviewing page content origins.
+    # Do NOT commit a permissive default-src: * here.
+
+    # ── Logging ────────────────────────────────────────────────────────────────
+    access_log /var/log/nginx/{{APP_NAME}}.access.log;
+    error_log  /var/log/nginx/{{APP_NAME}}.error.log;
+
+    # ── Static files (served by Nginx, not Kestrel) ──────────────────────────
+    # Adjust root if app is deployed outside /var/www/
+    root /var/www/{{APP_NAME}}/wwwroot;
+
+    location ~* \.(css|js|woff2?|ttf|eot|svg|ico|png|jpg|jpeg|webp|gif)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # ── Reverse proxy to Kestrel ──────────────────────────────────────────────
+    location {{SUBPATH}} {
+        proxy_pass         http://127.0.0.1:{{KESTREL_PORT}};
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade           $http_upgrade;
+        proxy_set_header   Connection        keep-alive;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        # Required for ASP.NET Core with PathBase / subpath routing
+        proxy_set_header   X-Forwarded-Prefix {{SUBPATH}};
+        proxy_cache_bypass $http_upgrade;
+    }
+}

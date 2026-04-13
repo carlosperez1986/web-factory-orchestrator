@@ -8,8 +8,9 @@ They are the global constraints that no agent, prompt, or skill may override.
 This is the **Web Factory Orchestrator** — a skill-based agentic pipeline for building
 and deploying .NET 9 / Decap CMS websites at a fixed 850€/site scope with an 85% margin.
 
-The only human entry point is `@Orchestrator`. All other agents (@Analyst, @Architect,
-@Developer, @FrontendUI, @Auditor, @DevOps) are invoked internally by the Orchestrator.
+The only human entry point is `@Orchestrator`. It executes all skills directly.
+The only specialized subagent is `@Auditor` — invoked by @Orchestrator for the security gate because
+its `tools: [read, search, execute]` restriction (no `edit`) cannot be expressed in a skill.
 
 ## Technology Stack (Non-Negotiable)
 

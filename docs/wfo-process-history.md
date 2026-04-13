@@ -644,6 +644,58 @@ Narrative value:
 
 ---
 
+## Entry 018 — The Build Chain Was Clarified: Who Codes, Who Tracks
+Date: 2026-04-13
+Stage: Build
+
+What changed:
+- The question "which skill writes code and which creates GitHub tasks?" was explicitly answered and documented.
+- The build phase skill chain was mapped end-to-end with clear ownership per skill.
+- The corrected pipeline was reflected in flowcharts and a sequence diagram was created for the first time.
+
+Why it was needed:
+- Up to this point the skill chain was implied by skill dependencies but never stated as a complete ordered sequence.
+- Operators new to the system could not immediately tell which skill produces C# code, which produces UI, and which creates GitHub Issues.
+- The Multi-Skill Pipeline diagram in `wfo-flowcharts.md` was outdated and missing `github-project-bootstrap` and `content-service-and-data-wiring`.
+
+The complete ordered build chain, as clarified:
+
+| # | Skill | What it produces | Owner |
+|---|---|---|---|
+| 1 | `briefing-synthesis` | Sitemap, motives, roadmap skeleton | @Orchestrator |
+| 2 | `project-estimation-and-stack-selection` | Token/cost/time forecast, stack decision | @Orchestrator |
+| — | **USER GATE 1** | Human operator approves roadmap | Human |
+| 3 | `project-scaffolding` | Repository created or adopted, blueprint seeded | @Orchestrator |
+| 4 | `spec-driven-architecture` | `IMPLEMENTATION_SPEC`: route matrix, contracts, component map, batches | @Orchestrator |
+| 5 | `github-project-bootstrap` | GitHub Issues + labels + Project board per client repo | @Orchestrator |
+| 6 | `content-service-and-data-wiring` | C# models, services, Razor PageModel bindings | @Orchestrator |
+| 7 | `integrate-ui-component` | Razor Pages, Bootstrap 5 layout, responsive UI sections | @Orchestrator |
+| 8 | `seo-aio-optimization` | Schema.org, AIO meta, sitemap.xml, robots.txt | @Orchestrator |
+| — | **USER GATE 2** | Human operator code review | Human |
+| 9 | `security-audit` | Go/no-go security sign-off | @Auditor |
+| 10 | `vps-provisioning` *(pending)* | Nginx, systemd, CI/CD deploy | @Orchestrator |
+
+Key distinction between skills 5 and 6-7:
+- `github-project-bootstrap` (skill 5) = delivery tracking — creates Issues, assigns them, sets up the project board. No code written.
+- `content-service-and-data-wiring` (skill 6) = first code skill — generates C# backend code.
+- `integrate-ui-component` (skill 7) = second code skill — generates Razor/HTML/Bootstrap frontend.
+
+Architectural impact:
+- The factory now has a verifiable, ordered pipeline with one artifact type per stage.
+- No skill produces more than one type of output (tracking vs. code vs. UI vs. SEO vs. security).
+- Sequence diagram was added to `docs/wfo-flowcharts.md` to make this visible at a glance.
+
+Files:
+- docs/wfo-process-history.md
+- docs/wfo-flowcharts.md
+
+Article notes:
+- Strong table for the "How It Works" section of a Medium/LinkedIn article.
+- Strong angle: "In WFO, tracking and coding are explicitly separate stages — one writes Issues, one writes C#."
+- The sequence diagram is a strong visual for showing that a single user prompt produces GitHub Issues, C# code, Bootstrap UI, SEO meta, and a deployed site — all without a human developer touching the keyboard.
+
+---
+
 ## Future Entries To Add
 
 When new skills or agents are created, append entries for:

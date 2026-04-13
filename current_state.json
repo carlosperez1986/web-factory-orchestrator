@@ -1,12 +1,11 @@
 {
   "project": "pure-wipe",
-  "phase": "define",
-  "active_skill": "project-estimation-and-stack-selection",
-  "active_agent": "@Architect",
-  "last_completed_step": "project-estimation-and-stack-selection → Step 6: Stack decision locked",
-  "next_step": "spec-driven-architecture → Step 1 (awaiting user approval)",
+  "phase": "build",
+  "active_skill": "project-scaffolding",
+  "active_agent": "@Orchestrator",
+  "last_completed_step": "spec-driven-architecture → Step 7: IMPLEMENTATION_SPEC-pure-wipe.md written 2026-04-13",
+  "next_step": "project-scaffolding → Step 1",
+  "implementation_spec_ref": "IMPLEMENTATION_SPEC-pure-wipe.md",
   "token_budget_remaining": null,
-  "roadmap_ref": "PROJECT_ROADMAP.md",
-  "briefing_rerun_date": "2026-04-12",
-  "rerun_correction": "Added missing decap-admin-panel to Feature Components"
+  "roadmap_ref": "PROJECT_ROADMAP.md"
 }

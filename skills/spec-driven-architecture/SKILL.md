@@ -25,6 +25,7 @@ This skill produces `IMPLEMENTATION_SPEC-{project-name}.md` and updates the road
 
 ```text
 Requires: project-estimation-and-stack-selection has completed and the human operator approved Phase 1.
+Requires: project-scaffolding has completed and the client repository exists.
 GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 [✅ GO] @Orchestrator | Phase 1 approved | YYYY-MM-DD
 ```
@@ -85,7 +86,7 @@ Each batch must include:
 - batch name
 - objective
 - files likely affected
-- owner (`@Developer`, `@FrontendUI`, or both)
+- skill owner (`content-service-and-data-wiring`, `integrate-ui-component`, or both)
 - dependencies
 - acceptance criteria
 
@@ -115,15 +116,15 @@ Create or update `IMPLEMENTATION_SPEC-{project-name}.md` with these sections:
 In `PROJECT_ROADMAP-{project-name}.md`:
 - add a reference to `IMPLEMENTATION_SPEC-{project-name}.md`
 - add a summary note: `Architecture spec locked`
-- add GO signal for `@DeliveryManager`
+- add GO signal for `github-project-bootstrap`
 
 Update `current_state-{project-name}.json`:
 
 ```json
 {
-  "phase": "define",
+  "phase": "build",
   "active_skill": "spec-driven-architecture",
-  "active_agent": "@Architect",
+  "active_agent": "@Orchestrator",
   "last_completed_step": "spec-driven-architecture → Step 7: Implementation spec written",
   "next_step": "github-project-bootstrap → Step 1",
   "implementation_spec_ref": "IMPLEMENTATION_SPEC-{project-name}.md"
