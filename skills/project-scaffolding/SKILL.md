@@ -20,6 +20,17 @@ Orchestrates the creation of a per-project GitHub repository and populates it wi
 
 This skill bridges Phase 1 (analysis in central hub) to Phase 2 (development in client repo).
 
+## Blueprint Enforcement Mode (Non-Negotiable)
+
+When this skill writes scaffold code, it operates in blueprint-only mode:
+- **Allowed:** copy from `/blueprints/**` and substitute declared tokens.
+- **Allowed:** create empty folders and evidence files.
+- **Forbidden:** invent new application logic, new classes, or custom code beyond token substitution.
+- **Forbidden:** replacing existing working app logic in adoption mode.
+
+If a required scaffold artifact does not exist in `/blueprints`, stop with `BLOCKER` and
+request blueprint completion instead of generating code from scratch.
+
 If the project already has a repository with working code and CI/CD, this skill switches to an adoption mode:
 - preserve existing application code,
 - preserve existing `.github/workflows/` unless user explicitly approves replacement,
@@ -159,7 +170,7 @@ cp current_state-{project-name}.json ./{project-name}/
 
 ```bash
 ls -la ./{project-name}/current_state-{project-name}.json
-ls -la ./{project-name}/PROJECT_ROADMAP-{project-name}.json
+ls -la ./{project-name}/PROJECT_ROADMAP-{project-name}.md
 ```
 
 **Expected output:** Both files present and readable.
@@ -174,6 +185,11 @@ If the repository already contains a working application:
 - only add missing baseline artifacts,
 - record all deviations in the roadmap,
 - if modernization is needed (for example .NET 8 to .NET 9), propose it as a later roadmap task instead of silently rewriting the project.
+
+If the repository is new:
+- copy only from `/blueprints/code/**`,
+- perform only token substitution (`{{PROJECT_NAME}}`, `{{DOTNET_VERSION}}`),
+- do not add hand-written logic outside blueprint scope.
 
 **Copy .NET boilerplate from blueprints:**
 
@@ -417,7 +433,8 @@ cd ./{project-name}/
 dotnet build
 
 # 2. Files present
-ls -la Program.cs Startup.cs
+ls -la Program.cs
+ls -la *.csproj
 ls -la .github/workflows/
 ls -la wwwroot/admin/config.yml
 
@@ -478,12 +495,14 @@ The owning agent (@Architect) completes this checklist and writes evidence direc
 - [ ] Repository is PRIVATE — evidence: GitHub settings page shows "Private" label
 - [ ] Repository is cloned locally — evidence: `ls -la ./{project-name}/` shows .git/ folder and recent commit
 - [ ] `.NET 9 project builds locally** — evidence: `dotnet build` output showing ✅ successful build
+- [ ] `.NET 9 project builds locally` — evidence: `dotnet build` output showing ✅ successful build
 - [ ] `.csproj` has correct project name — evidence: `grep "<RootNamespace>" ./{project-name}/{project-name}.csproj`
 - [ ] `wwwroot/admin/config.yml` exists and is valid YAML — evidence: `cat wwwroot/admin/config.yml` (no parse errors)
 - [ ] `current_state.json` is copied to repo — evidence: `head -5 ./{project-name}/current_state-{project-name}.json`
 - [ ] `PROJECT_ROADMAP.md` is copied to repo — evidence: `head -10 ./{project-name}/PROJECT_ROADMAP-{project-name}.md`
 - [ ] `.github/workflows/build.yml` is present and triggers on push — evidence: `grep "on:" ./{project-name}/.github/workflows/build.yml`
 - [ ] If repo existed before WFO adoption, existing CI/CD was assessed and either preserved or changed with explicit approval
+- [ ] If repo is new, scaffold files were copied from `/blueprints/**` with token substitution only (no generated custom logic)
 - [ ] Initial commit is present with WFO signature — evidence: `git log --oneline | head -1` shows "WFO" mention
 - [ ] Hub's `current_state-{project-name}.json` updated to `phase: "build"` — evidence: `cat current_state-{project-name}.json | grep "phase"`
 - [ ] User has been shown GitHub Secrets requirements — evidence: prompt output shown to user

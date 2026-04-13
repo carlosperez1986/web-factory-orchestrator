@@ -2,7 +2,8 @@
 name: briefing-synthesis
 description: >
   Produces a structured PROJECT_ROADMAP-{project-name}.md and a sitemap JSON from a raw client
-  briefing (PDF or text). Use when a briefing is provided in chat text, via a
+  briefing (PDF or text), plus machine-readable strategy artifacts under /evidence.
+  Use when a briefing is provided in chat text, via a
   PDF attachment (when supported), or as /inbox/briefing.md or /inbox/briefing.txt,
   and no PROJECT_ROADMAP-{project-name}.md exists yet in the project root.
 phase: "define"
@@ -14,6 +15,11 @@ phase: "define"
 Transforms a raw client briefing into a structured, agent-executable project plan.
 Produces a sitemap JSON, a feature component list, and a `PROJECT_ROADMAP-{project-name}.md` that
 the Orchestrator uses to sequence all subsequent skill executions.
+
+Also produces machine-readable artifacts:
+- `evidence/sitemap-{project-name}.json`
+- `evidence/feature-components-{project-name}.json`
+- `STRATEGY_CONTRACT-{project-name}.json`
 
 ## When to Use
 - A PDF briefing is attached in chat (if supported by the client).
@@ -66,7 +72,11 @@ Apply these routing rules to the detected motives:
 | **C** | Always | `Inicio` as the root page (slug: `/`) |
 | **D** | Always | Maximum 7 navigation items total |
 
-Output the sitemap as a JSON object and write it into `PROJECT_ROADMAP-{project-name}.md` under `## Sitemap`. Example:
+Output the sitemap as a JSON object and write it into:
+- `PROJECT_ROADMAP-{project-name}.md` under `## Sitemap`
+- `evidence/sitemap-{project-name}.json` (canonical machine-readable artifact)
+
+Example:
 
 ```json
 {
@@ -90,10 +100,38 @@ Based on the sitemap, produce a feature component manifest. Apply these rules:
 | `dynamic-content-grid` | Product Catalog motive detected |
 
 Write the manifest under `## Feature Components` in `PROJECT_ROADMAP-{project-name}.md`.
+Also write a machine-readable copy to `evidence/feature-components-{project-name}.json`.
+
+### Step 3B — Create Machine-Readable Strategy Contract
+Create `STRATEGY_CONTRACT-{project-name}.json` in project root as the canonical handoff
+between strategy and build skills.
+
+Minimum contract schema:
+
+```json
+{
+  "project": "{project-name}",
+  "phase": "define",
+  "briefing_source": "inbox/{briefing-file}",
+  "detected_motives": ["lead-generation", "product-catalog", "brand-info"],
+  "sitemap_ref": "evidence/sitemap-{project-name}.json",
+  "feature_components_ref": "evidence/feature-components-{project-name}.json",
+  "constraints": {
+    "max_nav_items": 7,
+    "data_layer": "git-json-md",
+    "admin": "decap"
+  }
+}
+```
+
+Do not proceed to Step 4 if this contract is missing.
 
 ### Step 4 — Initialize the Project Roadmap
 Using `blueprints/code/roadmap-template.md` as the base structure, generate
 `PROJECT_ROADMAP-{project-name}.md` in the project root.
+
+Use `STRATEGY_CONTRACT-{project-name}.json` as the source of truth for populated
+sections and tasks. Do not re-interpret briefing text at this stage.
 
 **Task Registry rules (non-negotiable):**
 - Every task must have a unique, immutable ID in the format `TASK-NNN` (three zero-padded digits).
@@ -126,7 +164,8 @@ Write the following fields to `current_state-{project-name}.json` in the project
   "last_completed_step": "briefing-synthesis → Step 4: Roadmap initialized",
   "next_step": "project-estimation-and-stack-selection → Step 1",
   "token_budget_remaining": null,
-  "roadmap_ref": "PROJECT_ROADMAP-{project-name}.md"
+  "roadmap_ref": "PROJECT_ROADMAP-{project-name}.md",
+  "strategy_contract_ref": "STRATEGY_CONTRACT-{project-name}.json"
 }
 ```
 
@@ -159,11 +198,14 @@ is asked to approve the roadmap.
 
 - [ ] `/inbox` file was fully read — evidence: first 3 detected Business Motive signals listed under `## Detected Motives` in `PROJECT_ROADMAP-{project-name}.md`
 - [ ] Sitemap JSON is present under `## Sitemap` in `PROJECT_ROADMAP-{project-name}.md` — validate: `nav` array has ≥ 1 and ≤ 7 items
+- [ ] Physical evidence file exists: `evidence/sitemap-{project-name}.json` — validate JSON parse succeeds
 - [ ] All routing rules (A–D) were evaluated — evidence: comment next to each nav item indicating which rule triggered it
 - [ ] Feature component manifest is present under `## Feature Components` — confirm `json-content-service` and `marketing-seo-pack` are always included
 - [ ] Feature component manifest is present under `## Feature Components` — confirm `json-content-service`, `decap-admin-panel`, and `marketing-seo-pack` are always included
+- [ ] Physical evidence file exists: `evidence/feature-components-{project-name}.json` — validate JSON parse succeeds
+- [ ] `STRATEGY_CONTRACT-{project-name}.json` exists in project root and references both evidence files
 - [ ] `PROJECT_ROADMAP-{project-name}.md` exists in the project root — evidence: `Get-ChildItem PROJECT_ROADMAP-{project-name}.md` output
 - [ ] All three phases (Define, Build, Deploy) are populated in `PROJECT_ROADMAP-{project-name}.md` with at least one `- [ ]` task each
 - [ ] Phase 2 includes Decap admin tasks — evidence: task lines for `/admin/`, Decap `config.yml`, and content collections
 - [ ] `current_state-{project-name}.json` updated with `last_completed_step` pointing to this skill — evidence: paste the JSON block
-- [ ] Human operator has been shown the roadmap and asked for approval with the exact prompt: `"Review PROJECT_ROADMAP-{project-name}.md. Reply 'Proceed' to begin Phase 1, or provide corrections."`
+- [ ] Human operator has been shown the roadmap and asked for approval with the exact prompt: `"Review PROJECT_ROADMAP-{project-name}.md. Reply 'Proceed' to begin Phase 2, or provide corrections."`

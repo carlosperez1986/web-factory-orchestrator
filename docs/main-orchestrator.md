@@ -19,6 +19,10 @@ Use these exact intents:
 1. New project
 - Trigger words: `new project`, `new client`, `start factory`, `briefing`
 - Action: run `briefing-synthesis` then `project-estimation-and-stack-selection`
+- Required artifacts after briefing-synthesis:
+  - `STRATEGY_CONTRACT-{project-name}.json`
+  - `evidence/sitemap-{project-name}.json`
+  - `evidence/feature-components-{project-name}.json`
 - Stop at approval gate and wait for `Proceed`
 
 2. Resume project
