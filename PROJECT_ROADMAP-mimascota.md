@@ -229,6 +229,7 @@ time_days = 4
 | `[✅ GO] Phase 1 → Phase 2 (user approved)` | @Orchestrator | 2026-04-14 | Human operator approved roadmap — "Proceed" received |
 | `[✅ GO] spec-driven-architecture` | @Orchestrator | 2026-04-14 | IMPLEMENTATION_SPEC-mimascota.md written, all routes/contracts/batches defined |
 | `[✅ GO] look-and-feel-ingestion` | @Orchestrator | 2026-04-14 | DESIGN_STYLE_CONTRACT-mimascota.md written, tokens/components/responsive/a11y locked |
+| `[✅ GO] github-project-bootstrap` | @Orchestrator | 2026-04-14 | Delivery tracking section added · bootstrap script ready · client repo: carlosperez1986/mimascota-web |
 | `[✅ GO] Phase 1 → Phase 2` | @Orchestrator | 2026-04-14 | TASK-001 through TASK-011 all `done` + user approval |
 | `[✅ GO] Phase 2 → Phase 3` | @Orchestrator | YYYY-MM-DD | TASK-020 through TASK-029 all `done` + user approval |
 | `[✅ GO] security-audit` | @Auditor | YYYY-MM-DD | TASK-030–032 `done`, no unresolved Critical/High findings |
@@ -251,6 +252,78 @@ time_days = 4
 
 ### Low
 *(none)*
+
+---
+
+## Delivery Tracking
+
+**Project board:** [WFO — mimascota](https://github.com/users/carlosperez1986/projects/) ← run `bootstrap-github-mimascota.sh` to get exact URL
+**Repository:** [carlosperez1986/mimascota-web](https://github.com/carlosperez1986/mimascota-web)
+**Bootstrap script:** `scripts/bootstrap-github-mimascota.sh`
+**Issue count:** 25
+**Board status:** Backlog (all issues) — populated after running bootstrap script
+
+> Note: The roadmap remains the design source of truth. The project board is the operational execution layer.
+
+### How to run
+
+```bash
+GH_TOKEN=<your_pat> bash scripts/bootstrap-github-mimascota.sh
+```
+
+The script will:
+1. Create repository `carlosperez1986/mimascota-web` (private)
+2. Create all 14 WFO labels
+3. Create 25 GitHub Issues from the Task Registry
+4. Create project board `WFO — mimascota`
+5. Add all issues to the board
+
+### Issue Map
+
+| TASK-ID | Title | Phase | Owner | Priority |
+|---------|-------|-------|-------|----------|
+| TASK-001 | [Define] Inicio spec + Hero Banner schema | Phase 1 | @Architect | high |
+| TASK-002 | [Define] Productos spec — catalog grid | Phase 1 | @Architect | high |
+| TASK-003 | [Define] Galería spec — Instagram feed | Phase 1 | @Architect | medium |
+| TASK-004 | [Define] Nosotros spec | Phase 1 | @Architect | medium |
+| TASK-005 | [Define] Blog spec — article list + SEO | Phase 1 | @Architect | medium |
+| TASK-006 | [Define] Contacto spec — form + distributors | Phase 1 | @Architect | high |
+| TASK-007 | [Define] Legal spec | Phase 1 | @Architect | low |
+| TASK-008 | [Define] Hero Banner content model (content/hero.json) | Phase 1 | @Architect | high |
+| TASK-010 | [Define] C# content models for all pages | Phase 1 | @Architect | high |
+| TASK-011 | [Define] Decap CMS config.yml incl. hero-banner | Phase 1 | @Architect | high |
+| TASK-020 | [Build] Scaffold .NET 9 project from blueprint | Phase 2 | @Developer | high |
+| TASK-021 | [Build] Implement ContentService | Phase 2 | @Developer | high |
+| TASK-022 | [Build] Implement contact form handler | Phase 2 | @Developer | high |
+| TASK-023 | [Build] Implement SEO pack | Phase 2 | @Developer | high |
+| TASK-024 | [Build] Implement decap-hero-banner wire | Phase 2 | @Frontend | high |
+| TASK-025 | [Build] Assemble UI: Inicio (all sections) | Phase 2 | @Frontend | high |
+| TASK-026 | [Build] Assemble UI: Productos grid + detail | Phase 2 | @Frontend | high |
+| TASK-027 | [Build] Assemble UI: Galería | Phase 2 | @Frontend | medium |
+| TASK-028 | [Build] Assemble UI: Nosotros, Blog, Contacto, Legal | Phase 2 | @Frontend | high |
+| TASK-029 | [Build] Global components: nav, footer, WhatsApp FAB, promo | Phase 2 | @Frontend | high |
+| TASK-030/031/032 | [Deploy] Security audit (secrets + auth + hardening) | Phase 3 | @Auditor | high |
+| TASK-040 | [Deploy] VPS provisioning — Nginx + Systemd + HTTPS | Phase 3 | @DevOps | high |
+| TASK-041 | [Deploy] CI/CD GitHub Actions workflow | Phase 3 | @DevOps | high |
+| TASK-042 | [Deploy] Staging deploy + client smoke test | Phase 3 | @DevOps | high |
+| TASK-043 | [Deploy] Final production deploy | Phase 3 | @DevOps | high |
+
+### Labels Model
+
+| Label | Color | Purpose |
+|-------|-------|---------|
+| `phase:define` | #0052CC | Phase 1 tasks |
+| `phase:build` | #0075CA | Phase 2 tasks |
+| `phase:deploy` | #006B75 | Phase 3 tasks |
+| `owner:architect` | #E4E669 | @Architect owned |
+| `owner:developer` | #D4C5F9 | @Developer owned |
+| `owner:frontend` | #BFD4F2 | @Frontend owned |
+| `owner:auditor` | #F9D0C4 | @Auditor owned |
+| `owner:devops` | #C2E0C6 | @DevOps owned |
+| `type:task` | #EDEDED | Standard task |
+| `priority:high` | #B60205 | High priority |
+| `priority:medium` | #FBCA04 | Medium priority |
+| `priority:low` | #0E8A16 | Low priority |
 
 ---
 
