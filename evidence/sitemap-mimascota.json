@@ -1,0 +1,11 @@
+{
+  "nav": [
+    { "label": "Inicio",    "slug": "/",          "template": "home",    "rule": "C — always required" },
+    { "label": "Productos", "slug": "/productos",  "template": "catalog", "rule": "B — Product Catalog detected" },
+    { "label": "Galería",   "slug": "/galeria",    "template": "services","rule": "Brand Info — visual gallery and Instagram feed" },
+    { "label": "Nosotros",  "slug": "/nosotros",   "template": "about",   "rule": "Brand Info — historia, misión, equipo" },
+    { "label": "Blog",      "slug": "/blog",       "template": "blog",    "rule": "Brand Info — Tips de uso y contenido SEO" },
+    { "label": "Contacto",  "slug": "/contacto",   "template": "contact", "rule": "A — Lead Generation detected" },
+    { "label": "Legal",     "slug": "/legal",      "template": "about",   "rule": "Brand Info — políticas y términos legales" }
+  ]
+}

@@ -1,0 +1,8 @@
+[
+  { "component": "json-content-service",    "required": true,  "trigger": "Every project — no exceptions" },
+  { "component": "marketing-seo-pack",      "required": true,  "trigger": "Every project — AIO always required" },
+  { "component": "decap-admin-panel",       "required": true,  "trigger": "Every project — /admin/ default" },
+  { "component": "contact-form-handler",    "required": true,  "trigger": "Lead Generation motive detected — /contacto page" },
+  { "component": "dynamic-content-grid",   "required": true,  "trigger": "Product Catalog motive detected — /productos page" },
+  { "component": "decap-hero-banner",       "required": true,  "trigger": "User requirement: banner principal editable en Decap — content/hero.json" }
+]

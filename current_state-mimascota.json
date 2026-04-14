@@ -1,0 +1,23 @@
+{
+  "project": "mimascota",
+  "phase": "define",
+  "active_skill": "project-estimation-and-stack-selection",
+  "active_agent": "@Orchestrator",
+  "last_completed_step": "project-estimation-and-stack-selection → Step 6: Stack decision locked (net9.0, Decap CMS /admin/)",
+  "next_step": "spec-driven-architecture → Step 1 (awaiting user approval of roadmap)",
+  "token_budget_remaining": null,
+  "roadmap_ref": "PROJECT_ROADMAP-mimascota.md",
+  "strategy_contract_ref": "STRATEGY_CONTRACT-mimascota.json",
+  "stack": {
+    "target_framework": "net9.0",
+    "fallback_framework": "net8.0",
+    "admin": "decap",
+    "admin_route": "/admin/",
+    "admin_config": "wwwroot/admin/config.yml"
+  },
+  "special_requirements": {
+    "decap_hero_banner": true,
+    "hero_content_file": "content/hero.json",
+    "hero_fields": ["title", "subtitle", "cta_primary_text", "cta_primary_url", "cta_secondary_text", "cta_secondary_url", "background_image"]
+  }
+}

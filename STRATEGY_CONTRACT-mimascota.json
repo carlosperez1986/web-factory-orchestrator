@@ -1,0 +1,16 @@
+{
+  "project": "mimascota",
+  "phase": "define",
+  "briefing_source": "inbox/pure_wipe_cotizacion (1).pdf",
+  "detected_motives": ["lead-generation", "product-catalog", "brand-info"],
+  "sitemap_ref": "evidence/sitemap-mimascota.json",
+  "feature_components_ref": "evidence/feature-components-mimascota.json",
+  "constraints": {
+    "max_nav_items": 7,
+    "data_layer": "git-json-md",
+    "admin": "decap"
+  },
+  "special_requirements": {
+    "decap_hero_banner": "Banner principal (Hero section on Inicio) must be fully editable via Decap CMS. Content stored in content/hero.json. Fields: title, subtitle, cta_primary_text, cta_primary_url, cta_secondary_text, cta_secondary_url, background_image."
+  }
+}
