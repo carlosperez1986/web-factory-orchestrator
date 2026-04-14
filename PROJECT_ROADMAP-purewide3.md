@@ -66,13 +66,13 @@
 
 | ID | Task | Phase | Owner | Status | Evidence Required |
 |----|------|-------|-------|--------|-------------------|
-| TASK-001 | Define Razor Page spec: Inicio (`/`) | Phase 1 | @Orchestrator | done | `evidence/spec-inicio.md` |
+| TASK-001 | Define Razor Page spec: Inicio (`/`) | Phase 1 | @Orchestrator | pending | `evidence/spec-inicio.md` |
 | TASK-002 | Define Razor Page spec: Quiénes Somos (`/nosotros`) | Phase 1 | @Orchestrator | pending | `evidence/spec-nosotros.md` |
 | TASK-003 | Define Razor Page spec: Contáctenos (`/contacto`) | Phase 1 | @Orchestrator | pending | `evidence/spec-contacto.md` |
 | TASK-004 | Define Razor Page spec: Productos (`/products`) | Phase 1 | @Orchestrator | pending | `evidence/spec-products.md` |
 | TASK-005 | Define Razor Page spec: Blog (`/blog`) | Phase 1 | @Orchestrator | pending | `evidence/spec-blog.md` |
 | TASK-006 | Define Razor Page spec: Galería (`/galeria`) | Phase 1 | @Orchestrator | pending | `evidence/spec-galeria.md` |
-| TASK-010 | Define C# content models for all approved pages | Phase 1 | @Orchestrator | done | `evidence/models-review.md` |
+| TASK-010 | Define C# content models for all approved pages | Phase 1 | @Orchestrator | pending | `evidence/models-review.md` |
 | TASK-011 | Define Decap CMS collection schema (`config.yml`) | Phase 1 | @Orchestrator | done | `wwwroot/admin/config.yml` |
 | TASK-020 | Scaffold .NET net9.0 project from blueprint | Phase 2 | @Orchestrator | done | `Program.cs` exists in repo |
 | TASK-021 | Implement `json-content-service` | Phase 2 | @Orchestrator | done | `Services/ContentService.cs` exists |
@@ -87,7 +87,7 @@
 | TASK-030 | Security audit — secrets + dep scan | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
 | TASK-031 | Security audit — auth/OAuth surface review | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
 | TASK-032 | Security audit — deploy hardening review | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
-| TASK-040 | VPS provisioning — Nginx + Systemd config | Phase 3 | @Orchestrator | done | `evidence/nginx-syntax.log` |
+| TASK-040 | VPS provisioning — Nginx + Systemd config | Phase 3 | @Orchestrator | pending | `evidence/nginx-syntax.log` |
 | TASK-041 | CI/CD GitHub Actions workflow | Phase 3 | @Orchestrator | done | `.github/workflows/deploy.yml` exists |
 | TASK-042 | Deploy to staging URL (client review) | Phase 3 | @Orchestrator | pending | `evidence/staging-smoke.md` |
 | TASK-043 | Final deploy to production URL | Phase 3 | @Orchestrator | pending | `evidence/prod-deploy.md` |
@@ -104,24 +104,38 @@
 | `[✅ GO] look-and-feel-ingestion` | @Orchestrator | 2026-04-13 | DESIGN_STYLE_CONTRACT-purewide3.md written |
 | `[✅ GO] project-scaffolding` | @Orchestrator | 2026-04-13 | Scaffold pushed to github.com/carlosperez1986/purewide3.0 |
 | `[⏳ PENDING] Phase 2 → Phase 3` | @Orchestrator | — | TASK-022, 023, 025, 026, 028, 029 pending |
+| `[✅ GO] @Auditor` | security-audit PASSED | 2026-04-14 | No hard-coded secrets; 1 High (pin scp-action@master before deploy), 2 Medium config items (AllowedHosts + BaseUrl must be set in Production appsettings), 2 Medium hardening (SSH key + Decap pin); 3 evidence gaps reset to pending; GO conditional on HIGH-001 remediation before first production deploy |
 
 ---
 
 ## Security Audit Findings
 
-> Written by @Auditor during security-audit skill.
+> Written by @Auditor · security-audit skill · 2026-04-14
 
 ### Critical
 *(none)*
 
 ### High
-*(none)*
+
+| ID | Location | Risk | Remediation |
+|----|----------|------|-------------|
+| HIGH-001 | `.github/workflows/deploy.yml` line 174 | `appleboy/scp-action@master` — mutable branch tag creates supply chain risk; upstream code runs in CI with deploy credentials in scope | Pin to specific immutable version tag or SHA before production deploy |
 
 ### Medium
-*(none)*
+
+| ID | Location | Risk | Remediation |
+|----|----------|------|-------------|
+| MED-001 | `deploy.yml` SSH auth config | Password-based SSH auth instead of key pair — larger brute-force surface, password piped via `sudo -S` in remote sessions | Replace with SSH key pair; store private key in `secrets.SSH_PRIVATE_KEY` |
+| MED-002 | `appsettings.json` line 8 | `AllowedHosts: "*"` disables host-header filtering — enable for production | Override with actual domain in `appsettings.Production.json` |
+| MED-003 | `appsettings.json` line 11 | `BaseUrl: purewide3.example.com` placeholder — canonical tags will be invalid in production | Set real URL in `appsettings.Production.json` before go-live |
+| MED-004 | `wwwroot/admin/index.html` line 11 | `decap-cms@^3.0.0` floating CDN version — any 3.x patch updates without explicit approval | Pin to specific version; add SRI integrity hash |
 
 ### Low
-*(none)*
+
+| ID | Location | Risk | Remediation |
+|----|----------|------|-------------|
+| LOW-001 | `wwwroot/admin/index.html` line 8 | Vestigial Netlify Identity widget loaded from CDN — unused with GitHub backend, unnecessary external dependency | Remove the `<script>` tag |
+| LOW-002 | README.md / docs | No credential rotation procedure documented | Add rotation playbook to README.md |
 
 ---
 
