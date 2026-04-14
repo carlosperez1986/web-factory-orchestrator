@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "author": "Carolina Ramírez",
+      "rating": 5,
+      "text": "Mis dos golden retriever han cambiado completamente desde que uso las toallitas Pure Wipe. El olor entre baños desapareció y su pelaje se ve más brillante. ¡Las recomiendo 100%!",
+      "line": "mascotas"
+    },
+    {
+      "author": "Dr. Andrés Gómez — Veterinario",
+      "rating": 5,
+      "text": "Como veterinario, recomiendo Pure Wipe a todos mis pacientes. La fórmula sin alcohol y pH balanceado es exactamente lo que la piel canina necesita. Excelente producto colombiano.",
+      "line": "mascotas"
+    },
+    {
+      "author": "María Fernanda López",
+      "rating": 5,
+      "text": "Mi gato es muy difícil para el baño. Las toallitas Pure Wipe para gatos fueron la solución perfecta. Sin estrés, sin agua, y él mismo se deja limpiar. Gracias Mi Mascota.",
+      "line": "mascotas"
+    },
+    {
+      "author": "Familia Herrera — Bogotá",
+      "rating": 5,
+      "text": "Usamos la línea multiuso hogar y es increíble. Limpia las superficies de la cocina en segundos sin químicos agresivos. Nuestros hijos y perro pueden estar en la misma habitación sin riesgo.",
+      "line": "hogar"
+    },
+    {
+      "author": "Enfermera Claudia Vásquez",
+      "rating": 5,
+      "text": "Para el cuidado de mi madre adulta mayor, las toallitas son imprescindibles. Son suaves, no irritan y facilitan enormemente la higiene diaria. Siempre tenemos stock en casa.",
+      "line": "adultos-mayores"
+    }
+  ]
+}

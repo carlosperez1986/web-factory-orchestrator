@@ -1,10 +1,10 @@
 {
   "project": "mimascota",
   "phase": "build",
-  "active_skill": "github-project-bootstrap",
+  "active_skill": "content-model-and-decap-design",
   "active_agent": "@Orchestrator",
-  "last_completed_step": "github-project-bootstrap → Step 7: Delivery tracking section added to roadmap, bootstrap script created",
-  "next_step": "content-model-and-decap-design → Step 1",
+  "last_completed_step": "content-model-and-decap-design → content contracts locked: wwwroot/admin/config.yml (9 collections) + all content/ seed files",
+  "next_step": "project-scaffolding → Step 1 (Batch 0: scaffold .NET 9 project)",
   "token_budget_remaining": null,
   "roadmap_ref": "PROJECT_ROADMAP-mimascota.md",
   "strategy_contract_ref": "STRATEGY_CONTRACT-mimascota.json",
@@ -14,6 +14,19 @@
   "client_repo": "carlosperez1986/mimascota-web",
   "bootstrap_script": "scripts/bootstrap-github-mimascota.sh",
   "issue_tracking_enabled": true,
+  "content_model_locked": true,
+  "decap_config": "wwwroot/admin/config.yml",
+  "content_files": {
+    "hero": "content/hero.json",
+    "product_lines": "content/product-lines.json",
+    "products": "content/products/*.json",
+    "about": "content/about.json",
+    "blog": "content/blog/*.md",
+    "gallery": "content/gallery.json",
+    "contact": "content/contact.json",
+    "testimonials": "content/testimonials.json",
+    "legal": "content/legal.json"
+  },
   "stack": {
     "target_framework": "net9.0",
     "fallback_framework": "net8.0",

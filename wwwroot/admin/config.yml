@@ -1,0 +1,469 @@
+backend:
+  name: github
+  repo: carlosperez1986/mimascota-web
+  branch: main
+  # GitHub OAuth credentials — configure via environment variables or Netlify Identity
+  # Required: set DECAP_GITHUB_CLIENT_ID and DECAP_GITHUB_CLIENT_SECRET on your OAuth proxy
+  # See: https://decapcms.org/docs/backends-overview/
+
+media_folder: wwwroot/images/uploads
+public_folder: /images/uploads
+
+# ─── Collections ──────────────────────────────────────────────────────────────
+
+collections:
+
+  # ── Hero Banner (singleton) ─────────────────────────────────────────────────
+  - name: hero
+    label: "Hero / Banner Principal"
+    description: "Edita el banner principal de la página de Inicio. Estos cambios son visibles inmediatamente en el sitio."
+    files:
+      - name: hero
+        label: "Hero Banner"
+        file: content/hero.json
+        fields:
+          - label: "Titular principal (H1)"
+            name: title
+            widget: string
+            required: true
+            hint: "Texto principal del banner. Máximo 80 caracteres recomendado."
+
+          - label: "Subtítulo"
+            name: subtitle
+            widget: text
+            required: true
+            hint: "Texto de apoyo bajo el titular. Máximo 160 caracteres recomendado."
+
+          - label: "Texto CTA primario"
+            name: cta_primary_text
+            widget: string
+            required: true
+            hint: "Etiqueta del botón principal (ej: 'Ver productos')"
+
+          - label: "URL CTA primario"
+            name: cta_primary_url
+            widget: string
+            required: true
+            hint: "Ruta o URL del botón principal (ej: /productos)"
+
+          - label: "Texto CTA secundario"
+            name: cta_secondary_text
+            widget: string
+            required: false
+            hint: "Etiqueta del botón secundario (opcional)"
+
+          - label: "URL CTA secundario"
+            name: cta_secondary_url
+            widget: string
+            required: false
+            hint: "Ruta o URL del botón secundario (opcional)"
+
+          - label: "Imagen de fondo"
+            name: background_image
+            widget: image
+            required: true
+            hint: "Imagen de fondo del hero. Dimensión recomendada: 1920×800px."
+
+  # ── Líneas de Producto (singleton — archivo único) ──────────────────────────
+  - name: product_lines
+    label: "Líneas de Producto"
+    description: "Las 4 líneas de productos que aparecen en la página de inicio y catálogo."
+    files:
+      - name: product_lines
+        label: "Líneas de Producto"
+        file: content/product-lines.json
+        fields:
+          - label: "Líneas"
+            name: lines
+            widget: list
+            summary: "{{fields.name}}"
+            fields:
+              - label: "ID (slug)"
+                name: id
+                widget: string
+                required: true
+                hint: "Identificador URL-safe (ej: mascotas, hogar)"
+
+              - label: "Nombre"
+                name: name
+                widget: string
+                required: true
+
+              - label: "Descripción"
+                name: description
+                widget: text
+                required: true
+                hint: "Descripción breve para la tarjeta del grid."
+
+              - label: "Imagen"
+                name: image
+                widget: image
+                required: true
+
+              - label: "URL del CTA"
+                name: cta_url
+                widget: string
+                required: true
+                hint: "Enlace de la tarjeta (ej: /productos?linea=mascotas)"
+
+              - label: "Color de acento Bootstrap"
+                name: color_accent
+                widget: select
+                required: false
+                options:
+                  - { label: "Azul (primary)", value: primary }
+                  - { label: "Celeste (info)", value: info }
+                  - { label: "Verde (success)", value: success }
+                  - { label: "Amarillo (warning)", value: warning }
+                  - { label: "Rojo (danger)", value: danger }
+
+  # ── Productos (folder collection) ───────────────────────────────────────────
+  - name: products
+    label: "Productos"
+    description: "Fichas individuales de cada producto. Cada archivo corresponde a una URL /productos/{slug}."
+    folder: content/products
+    create: true
+    slug: "{{slug}}"
+    extension: json
+    format: json
+    identifier_field: slug
+    summary: "{{name}} ({{line}})"
+    fields:
+      - label: "Slug (URL)"
+        name: slug
+        widget: string
+        required: true
+        hint: "Identificador URL-safe del producto (ej: toallitas-perros-pure-wipe)"
+
+      - label: "Nombre del producto"
+        name: name
+        widget: string
+        required: true
+
+      - label: "Línea"
+        name: line
+        widget: select
+        required: true
+        options:
+          - { label: "Mascotas", value: mascotas }
+          - { label: "Adultos Mayores", value: adultos-mayores }
+          - { label: "Ecológica", value: ecologica }
+          - { label: "Multiuso Hogar", value: hogar }
+
+      - label: "Descripción completa"
+        name: description
+        widget: text
+        required: true
+
+      - label: "Ingredientes"
+        name: ingredients
+        widget: list
+        required: true
+        hint: "Un ingrediente por línea."
+
+      - label: "Certificaciones"
+        name: certifications
+        widget: list
+        required: false
+        hint: "Una certificación por línea (ej: Libre de parabenos)"
+
+      - label: "Instrucciones de uso"
+        name: usage_instructions
+        widget: text
+        required: true
+
+      - label: "Advertencias"
+        name: warnings
+        widget: text
+        required: false
+
+      - label: "Presentaciones disponibles"
+        name: presentations
+        widget: list
+        required: true
+        hint: "Una presentación por línea (ej: Paquete x 20 unidades)"
+
+      - label: "Imágenes de galería"
+        name: gallery_images
+        widget: list
+        required: true
+        field:
+          label: Imagen
+          name: image
+          widget: image
+
+      - label: "Productos relacionados (slugs)"
+        name: related_products
+        widget: list
+        required: false
+        hint: "Slugs de productos relacionados separados por línea."
+
+      - label: "Texto del CTA"
+        name: cta_text
+        widget: string
+        required: false
+        hint: "Etiqueta del botón de acción (ej: Solicitar pedido)"
+
+      - label: "URL del CTA"
+        name: cta_url
+        widget: string
+        required: false
+        hint: "Destino del botón (ej: /contacto)"
+
+  # ── Blog (folder collection) ─────────────────────────────────────────────────
+  - name: blog
+    label: "Blog"
+    description: "Artículos del blog. Cada archivo es un post con URL /blog/{slug}."
+    folder: content/blog
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    identifier_field: slug
+    summary: "{{title}} — {{date}}"
+    fields:
+      - label: "Título (SEO)"
+        name: title
+        widget: string
+        required: true
+        hint: "Título del artículo. Máximo 60 caracteres recomendado para SEO."
+
+      - label: "Fecha de publicación"
+        name: date
+        widget: datetime
+        required: true
+        format: "YYYY-MM-DD"
+        date_format: "DD/MM/YYYY"
+
+      - label: "Categoría"
+        name: category
+        widget: select
+        required: true
+        options:
+          - { label: "Mascotas", value: mascotas }
+          - { label: "Ecología", value: ecologia }
+          - { label: "Bienestar", value: bienestar }
+          - { label: "Hogar", value: hogar }
+          - { label: "Noticias", value: noticias }
+
+      - label: "Imagen destacada"
+        name: featured_image
+        widget: image
+        required: true
+        hint: "Imagen principal del artículo. Dimensión recomendada: 1200×630px."
+
+      - label: "Resumen (meta description)"
+        name: excerpt
+        widget: text
+        required: true
+        hint: "Máximo 160 caracteres. Se usa como meta description en Google."
+
+      - label: "Producto relacionado (slug)"
+        name: related_product
+        widget: string
+        required: false
+        hint: "Slug del producto relacionado para el CTA al final del artículo."
+
+      - label: "Slug (URL)"
+        name: slug
+        widget: string
+        required: true
+        hint: "URL-safe sin tildes ni espacios (ej: consejos-higiene-perros)"
+
+      - label: "Contenido del artículo"
+        name: body
+        widget: markdown
+        required: true
+        hint: "Cuerpo del artículo en Markdown. Usa ## para subtítulos, **texto** para negritas."
+
+  # ── Acerca de / Nosotros (singleton) ─────────────────────────────────────────
+  - name: about
+    label: "Nosotros"
+    description: "Contenido de la página Nosotros: historia, misión, equipo y compromiso ecológico."
+    files:
+      - name: about
+        label: "Nosotros"
+        file: content/about.json
+        fields:
+          - label: "Historia de la marca"
+            name: brand_story
+            widget: markdown
+            required: true
+
+          - label: "Misión"
+            name: mission
+            widget: text
+            required: true
+
+          - label: "Visión"
+            name: vision
+            widget: text
+            required: true
+
+          - label: "Valores"
+            name: values
+            widget: list
+            required: true
+            hint: "Un valor por línea (ej: Higiene y seguridad ante todo)"
+
+          - label: "Compromiso ecológico"
+            name: eco_commitment
+            widget: markdown
+            required: true
+
+          - label: "Equipo"
+            name: team
+            widget: list
+            required: false
+            summary: "{{fields.name}} — {{fields.role}}"
+            fields:
+              - { label: "Nombre", name: name, widget: string, required: true }
+              - { label: "Cargo", name: role, widget: string, required: true }
+              - { label: "Foto", name: photo, widget: image, required: false }
+
+  # ── Galería (singleton) ──────────────────────────────────────────────────────
+  - name: gallery
+    label: "Galería"
+    description: "Imágenes y videos de la galería visual (/galeria). Fallback estático para el feed de Instagram."
+    files:
+      - name: gallery
+        label: "Galería"
+        file: content/gallery.json
+        fields:
+          - label: "Items"
+            name: items
+            widget: list
+            summary: "{{fields.caption}} ({{fields.type}})"
+            fields:
+              - label: "Imagen / Video"
+                name: image
+                widget: image
+                required: true
+                hint: "Para videos .mp4, sube el archivo aquí."
+
+              - label: "Pie de imagen"
+                name: caption
+                widget: string
+                required: false
+
+              - label: "Línea de producto"
+                name: line
+                widget: select
+                required: false
+                options:
+                  - { label: "Mascotas", value: mascotas }
+                  - { label: "Adultos Mayores", value: adultos-mayores }
+                  - { label: "Ecológica", value: ecologica }
+                  - { label: "Hogar", value: hogar }
+
+              - label: "Tipo"
+                name: type
+                widget: select
+                required: true
+                options:
+                  - { label: "Foto", value: photo }
+                  - { label: "Video", value: video }
+
+  # ── Contacto y Distribuidores (singleton) ────────────────────────────────────
+  - name: contact
+    label: "Contacto y Distribuidores"
+    description: "Número de WhatsApp, redes sociales y lista de distribuidores autorizados."
+    files:
+      - name: contact
+        label: "Contacto"
+        file: content/contact.json
+        fields:
+          - label: "Número WhatsApp Business"
+            name: whatsapp_number
+            widget: string
+            required: true
+            hint: "Con código de país sin espacios (ej: +573001234567)"
+
+          - label: "Mensaje predeterminado de WhatsApp"
+            name: whatsapp_message
+            widget: string
+            required: true
+
+          - label: "Redes sociales"
+            name: social_links
+            widget: object
+            required: false
+            fields:
+              - { label: "Instagram URL", name: instagram, widget: string, required: false }
+              - { label: "Facebook URL", name: facebook, widget: string, required: false }
+              - { label: "TikTok URL", name: tiktok, widget: string, required: false }
+
+          - label: "Distribuidores"
+            name: distributors
+            widget: list
+            required: false
+            summary: "{{fields.name}} — {{fields.city}}"
+            fields:
+              - { label: "Ciudad", name: city, widget: string, required: true }
+              - { label: "Nombre del distribuidor", name: name, widget: string, required: true }
+              - { label: "Dirección", name: address, widget: string, required: false }
+              - { label: "Teléfono", name: phone, widget: string, required: false }
+
+  # ── Testimonios (singleton) ──────────────────────────────────────────────────
+  - name: testimonials
+    label: "Testimonios"
+    description: "Reseñas de clientes que aparecen en la página de inicio y Nosotros."
+    files:
+      - name: testimonials
+        label: "Testimonios"
+        file: content/testimonials.json
+        fields:
+          - label: "Testimonios"
+            name: items
+            widget: list
+            summary: "{{fields.author}} (★{{fields.rating}})"
+            fields:
+              - { label: "Nombre del cliente", name: author, widget: string, required: true }
+              - label: "Calificación (1–5)"
+                name: rating
+                widget: number
+                required: true
+                value_type: int
+                min: 1
+                max: 5
+              - { label: "Texto de la reseña", name: text, widget: text, required: true }
+              - label: "Línea de producto"
+                name: line
+                widget: select
+                required: false
+                options:
+                  - { label: "Mascotas", value: mascotas }
+                  - { label: "Adultos Mayores", value: adultos-mayores }
+                  - { label: "Ecológica", value: ecologica }
+                  - { label: "Hogar", value: hogar }
+
+  # ── Legal (singleton) ─────────────────────────────────────────────────────────
+  - name: legal
+    label: "Contenido Legal"
+    description: "Términos y condiciones, política de privacidad y política de devolución."
+    files:
+      - name: legal
+        label: "Contenido Legal"
+        file: content/legal.json
+        fields:
+          - label: "Términos y Condiciones"
+            name: terms
+            widget: markdown
+            required: true
+            hint: "Usa ## para secciones. Se renderiza con acordeón Bootstrap."
+
+          - label: "Política de Privacidad (Ley 1581 de 2012)"
+            name: privacy
+            widget: markdown
+            required: true
+
+          - label: "Política de Devolución y Garantía"
+            name: returns
+            widget: markdown
+            required: true
+
+          - label: "Información Fiscal y Legal"
+            name: fiscal_info
+            widget: markdown
+            required: false
+            hint: "Opcional — NIT, régimen, dirección fiscal."

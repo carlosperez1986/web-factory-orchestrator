@@ -1,0 +1,52 @@
+{
+  "items": [
+    {
+      "image": "images/gallery/perro-baño-1.jpg",
+      "caption": "Limpieza de patas después del paseo",
+      "line": "mascotas",
+      "type": "photo"
+    },
+    {
+      "image": "images/gallery/gato-toallita-1.jpg",
+      "caption": "Higiene sin estrés para gatos",
+      "line": "mascotas",
+      "type": "photo"
+    },
+    {
+      "image": "images/gallery/eco-producto-1.jpg",
+      "caption": "Línea ecológica — empaque biodegradable",
+      "line": "ecologica",
+      "type": "photo"
+    },
+    {
+      "image": "images/gallery/hogar-limpieza-1.jpg",
+      "caption": "Limpieza de superficies de cocina",
+      "line": "hogar",
+      "type": "photo"
+    },
+    {
+      "image": "images/gallery/adultos-cuidado-1.jpg",
+      "caption": "Higiene suave para adultos mayores",
+      "line": "adultos-mayores",
+      "type": "photo"
+    },
+    {
+      "image": "images/gallery/perro-pata-limpia.jpg",
+      "caption": "Patas limpias en 2 minutos",
+      "line": "mascotas",
+      "type": "photo"
+    },
+    {
+      "image": "images/gallery/unboxing-pure-wipe.jpg",
+      "caption": "Unboxing Pure Wipe — comunidad",
+      "line": null,
+      "type": "photo"
+    },
+    {
+      "image": "images/gallery/reels-demo-uso.mp4",
+      "caption": "Demo: cómo usar nuestras toallitas",
+      "line": null,
+      "type": "video"
+    }
+  ]
+}

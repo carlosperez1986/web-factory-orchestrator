@@ -1,0 +1,30 @@
+{
+  "brand_story": "Mi Mascota nació en 2018 como parte de la familia Oclara Group, con una sola misión: ofrecer higiene segura y accesible para perros y gatos colombianos. Nuestros fundadores, convencidos de que las mascotas merecen los mismos estándares de cuidado que las personas, desarrollaron una fórmula biodegradable libre de parabenos y alcohol.\n\nHoy distribuimos en más de 15 ciudades de Colombia y exportamos a Ecuador y Perú. Cada toallita es fabricada con fibras naturales certificadas y aprobadas por veterinarios.",
+  "mission": "Brindar soluciones de higiene seguras, biodegradables y accesibles para mascotas y sus familias, contribuyendo al bienestar animal y al cuidado del medio ambiente.",
+  "vision": "Ser la marca de higiene para mascotas más confiable de Latinoamérica para el año 2030, reconocida por su compromiso ecológico y calidad veterinaria.",
+  "values": [
+    "Higiene y seguridad ante todo",
+    "Ingredientes naturales sin tóxicos",
+    "Compromiso ecológico real",
+    "Calidad certificada por veterinarios",
+    "Accesibilidad para todas las familias"
+  ],
+  "eco_commitment": "En Mi Mascota creemos que cuidar a tu mascota no debe costar el planeta. Por eso el **100% de nuestros empaques son reciclables** y nuestras toallitas se biodegradan en menos de 90 días.\n\nColaboramos con organizaciones de reforestación en Colombia y destinamos el 1% de nuestras ventas netas a programas de adopción responsable.",
+  "team": [
+    {
+      "name": "Aron Levy",
+      "role": "CEO & Co-fundador",
+      "photo": "images/team/aron-levy.jpg"
+    },
+    {
+      "name": "Dr. Camila Reyes",
+      "role": "Directora Veterinaria",
+      "photo": "images/team/camila-reyes.jpg"
+    },
+    {
+      "name": "Juan Pablo Mora",
+      "role": "Director de Operaciones",
+      "photo": "images/team/juan-pablo-mora.jpg"
+    }
+  ]
+}

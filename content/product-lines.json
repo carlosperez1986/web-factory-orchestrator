@@ -1,0 +1,36 @@
+{
+  "lines": [
+    {
+      "id": "mascotas",
+      "name": "Mascotas",
+      "description": "Toallitas biodegradables especialmente formuladas para perros y gatos. Sin parabenos, sin alcohol, pH balanceado.",
+      "image": "images/lines/mascotas.jpg",
+      "cta_url": "/productos?linea=mascotas",
+      "color_accent": "primary"
+    },
+    {
+      "id": "adultos-mayores",
+      "name": "Adultos Mayores",
+      "description": "Higiene suave y segura para la piel sensible de adultos mayores. Fórmula dermatológicamente probada.",
+      "image": "images/lines/adultos-mayores.jpg",
+      "cta_url": "/productos?linea=adultos-mayores",
+      "color_accent": "info"
+    },
+    {
+      "id": "ecologica",
+      "name": "Ecológica",
+      "description": "Línea 100% biodegradable fabricada con fibras naturales. Cero plásticos, compromiso real con el planeta.",
+      "image": "images/lines/ecologica.jpg",
+      "cta_url": "/productos?linea=ecologica",
+      "color_accent": "success"
+    },
+    {
+      "id": "hogar",
+      "name": "Multiuso Hogar",
+      "description": "Limpieza efectiva para superficies del hogar. Formula sin tóxicos, segura para tu familia y tus mascotas.",
+      "image": "images/lines/hogar.jpg",
+      "cta_url": "/productos?linea=hogar",
+      "color_accent": "warning"
+    }
+  ]
+}

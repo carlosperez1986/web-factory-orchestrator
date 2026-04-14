@@ -230,6 +230,7 @@ time_days = 4
 | `[✅ GO] spec-driven-architecture` | @Orchestrator | 2026-04-14 | IMPLEMENTATION_SPEC-mimascota.md written, all routes/contracts/batches defined |
 | `[✅ GO] look-and-feel-ingestion` | @Orchestrator | 2026-04-14 | DESIGN_STYLE_CONTRACT-mimascota.md written, tokens/components/responsive/a11y locked |
 | `[✅ GO] github-project-bootstrap` | @Orchestrator | 2026-04-14 | Delivery tracking section added · bootstrap script ready · client repo: carlosperez1986/mimascota-web |
+| `[✅ GO] content-model-and-decap-design` | @Orchestrator | 2026-04-14 | `wwwroot/admin/config.yml` (9 collections) · all `content/` seed files created · editorial guide written |
 | `[✅ GO] Phase 1 → Phase 2` | @Orchestrator | 2026-04-14 | TASK-001 through TASK-011 all `done` + user approval |
 | `[✅ GO] Phase 2 → Phase 3` | @Orchestrator | YYYY-MM-DD | TASK-020 through TASK-029 all `done` + user approval |
 | `[✅ GO] security-audit` | @Auditor | YYYY-MM-DD | TASK-030–032 `done`, no unresolved Critical/High findings |
