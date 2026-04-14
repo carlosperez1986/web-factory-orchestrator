@@ -62,6 +62,8 @@ After roadmap and estimation are presented:
 - Target repository is `project-code-only`.
 - Do not place WFO orchestrator internals in client repo (`skills/`, `.github/agents/`, `current_state-*.json`, `PROJECT_ROADMAP-*.md`, hub docs).
 - Keep orchestration/state files in the hub workspace only.
+- Never ask the user whether project code exists locally before bootstrap.
+- Orchestrator must generate scaffold code in its own execution context and push to the client repository automatically.
 
 1. **Detect existing GitHub repository:**
    - Ask: *"Does a GitHub repository already exist for {project-name}?"*
@@ -119,6 +121,15 @@ After roadmap and estimation are presented:
    - Wait for `project-scaffolding` to complete all steps
    - Verify: repo is live on GitHub, initial commit present, build workflow triggered
    - Update `current_state-{project-name}.json` with `phase: "build"` and `next_step: "spec-driven-architecture"`
+
+4. **No local-code confirmation prompts (non-negotiable):**
+   - Do NOT ask questions like: "Do you have the code locally ready to push?"
+   - If repository bootstrap and credentials are valid, proceed autonomously:
+     1) generate scaffold,
+     2) commit,
+     3) push to `main`,
+     4) verify CI run is created.
+   - Only interrupt the user on actual blockers (permissions/network/auth/template missing).
 
 **Critical:** This is the gateway to Phase 2. Once scaffolding completes, @Developer takes over in the project repo.
 
@@ -294,6 +305,18 @@ Confirm back to the user:
 ✅ VPS config guardado. Iniciando skill vps-provisioning...
 ```
 Then proceed to read and execute `skills/vps-provisioning/SKILL.md`.
+
+## Deploy Trigger Policy (Automatic)
+
+After `vps-provisioning` generates and commits deployment artifacts:
+- If new commits were pushed to `main`, deploy workflow should auto-run from `on.push`.
+- If no new commit exists but secrets/variables are now ready, trigger `deploy.yml` via `workflow_dispatch` automatically.
+- Do not ask the user to push code manually when repository access and token permissions are valid.
+
+Only ask the user for intervention if:
+- required GitHub secrets/variables are missing,
+- GitHub API/MCP call fails,
+- VPS connectivity/auth fails.
 
 ## Output Format
 

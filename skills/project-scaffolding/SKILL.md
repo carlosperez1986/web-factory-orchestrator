@@ -23,6 +23,7 @@ This skill bridges Phase 1 (analysis in central hub) to Phase 2 (development in 
 - Client repository is `project-code-only`.
 - Do NOT copy WFO hub files into the client repo (no `skills/`, no `.github/agents/`, no orchestrator docs, no `current_state-*.json`, no `PROJECT_ROADMAP-*.md`).
 - WFO orchestration/state artifacts remain in the hub repository only.
+- Do NOT ask the operator whether code is present locally before push; this skill must generate and push autonomously when credentials are valid.
 
 ## Blueprint Enforcement Mode (Non-Negotiable)
 
@@ -525,6 +526,11 @@ Ready for Phase 2 (Build)."
 # git -c http.extraHeader="Authorization: Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}" push origin main
 git push origin main
 ```
+
+Autonomous execution rule:
+- This push is performed by the skill in its execution context.
+- Do not ask user to run local push commands when repo access is available.
+- Only stop and ask user on actual blockers (missing permissions/network/auth).
 
 **Monitor GitHub Actions:**
 

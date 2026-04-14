@@ -295,6 +295,16 @@ git commit -m "chore: add vps provisioning artifacts for {{APP_NAME}}"
 git push
 ```
 
+After push, deployment trigger behavior is automatic:
+- Primary path: `push` to `main` triggers `.github/workflows/deploy.yml` automatically.
+- Fallback path: if no new commit was created but secrets/variables are now available, trigger `workflow_dispatch` automatically via GitHub API/MCP.
+- Do not ask the operator to push code manually if repository credentials are valid.
+
+If fallback dispatch fails, record:
+```
+BLOCKER: deploy workflow_dispatch failed — verify Actions permissions and workflow file path.
+```
+
 Update `PROJECT_ROADMAP-{project-name}.md`:
 - Add `[✅ GO] @Orchestrator | vps-provisioning DONE | YYYY-MM-DD`
 - Add next step: `release-and-postdeploy-verification`
