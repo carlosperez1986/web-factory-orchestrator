@@ -1,0 +1,51 @@
+name: "Copilot Setup Steps"
+
+# Run automatically when this file changes (validates the setup),
+# and allow manual runs from the Actions tab.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # Job name MUST be exactly "copilot-setup-steps" — Copilot agent looks for this name.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+
+    # Secrets from the "copilot" GitHub Environment are automatically injected
+    # into the agent's bash environment when Copilot runs a task.
+    # Add GH_TOKEN (and any other secrets) to:
+    #   Settings → Environments → copilot → Environment secrets
+    environment: copilot
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install gh CLI and jq (pre-warm for WFO scripts)
+        run: |
+          gh --version
+          jq --version
+
+      - name: Configure git identity for WFO scripts
+        run: |
+          git config --global user.name  "WFO Orchestrator"
+          git config --global user.email "orchestrator@web-factory.local"
+
+      - name: Verify GH_TOKEN is available
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          if [[ -z "${GH_TOKEN}" ]]; then
+            echo "❌ GH_TOKEN is not set. Add it to Settings → Environments → copilot → Environment secrets"
+            exit 1
+          fi
+          echo "✅ GH_TOKEN is set (length: ${#GH_TOKEN})"
+          gh auth status
