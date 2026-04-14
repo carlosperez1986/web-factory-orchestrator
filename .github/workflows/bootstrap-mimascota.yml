@@ -1,0 +1,44 @@
+name: Bootstrap mimascota-web
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_push_scaffold:
+        description: 'Also push scaffold to carlosperez1986/mimascota-web after bootstrap'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  bootstrap:
+    name: Create GitHub repo, labels, issues & project board
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    steps:
+      - name: Checkout WFO hub
+        uses: actions/checkout@v4
+
+      - name: Install gh CLI (ensure latest)
+        run: gh --version
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Configure git identity
+        run: |
+          git config --global user.name  "WFO Orchestrator"
+          git config --global user.email "orchestrator@web-factory.local"
+
+      - name: Run bootstrap script
+        run: bash scripts/bootstrap-github-mimascota.sh
+
+      - name: Push scaffold to mimascota-web
+        if: ${{ inputs.run_push_scaffold == 'true' }}
+        run: |
+          gh auth setup-git
+          bash scripts/push-scaffold-mimascota.sh
