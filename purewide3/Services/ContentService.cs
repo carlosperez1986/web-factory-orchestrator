@@ -73,7 +73,7 @@ public sealed class JsonContentService : IContentService
     public IReadOnlyList<T> GetCollection<T>(string collectionName) where T : class
     {
         var cacheKey = $"collection_{collectionName}";
-        return _cache.GetOrCreate(cacheKey, entry =>
+        return _cache.GetOrCreate<IReadOnlyList<T>>(cacheKey, entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheTtlMinutes);
             var folder = Path.Combine(_env.WebRootPath, "content", collectionName);
