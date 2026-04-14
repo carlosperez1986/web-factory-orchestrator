@@ -35,6 +35,38 @@ GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 
 ## Process
 
+### Remote Execution Contract (Non-Negotiable)
+- This skill runs in remote execution mode only.
+- Do NOT require local Visual Studio or local VS Code setup to continue.
+- Required GitHub auth must be injected in runtime secrets/env (for example `GITHUB_PERSONAL_ACCESS_TOKEN` and/or `GH_TOKEN`).
+- If runtime can read but cannot write to GitHub resources, stop with `BLOCKER`.
+
+### Step 0 — GitHub Write Capability Gate (Blocking)
+Before any operation, verify the execution environment can perform **write** operations for:
+- repository creation (if needed),
+- labels,
+- issues,
+- project board,
+- project item updates.
+
+Hard rules:
+- Do NOT use ad-hoc `curl` calls to GitHub REST in sandboxed sessions.
+- Do NOT fall back to `gh` CLI probing as a substitute for missing write-capable integration.
+- If MCP/integration is read-only (list/get/search only), stop immediately.
+
+If write capability is not available, record:
+```
+BLOCKER: github-project-bootstrap requires write-capable GitHub integration; current session is read-only.
+
+Missing required capabilities (at least one):
+- create repository
+- create/update labels
+- create/update issues
+- create/update project board and board items
+```
+
+Then stop this skill without attempting partial bootstrap.
+
 ### Step 1 — Load Delivery Context
 Read:
 - `current_state-{project-name}.json`

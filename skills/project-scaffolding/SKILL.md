@@ -62,6 +62,12 @@ User approval: "Proceed to Phase 2" in session (USER GATE 1).
 
 ## Process
 
+### Remote Execution Contract (Non-Negotiable)
+- Execute this skill in remote runtime only.
+- Do NOT ask the user to complete local Visual Studio / local VS Code git steps.
+- GitHub auth must be provided by remote runtime secret injection (for example `GITHUB_PERSONAL_ACCESS_TOKEN` and/or `GH_TOKEN`).
+- If remote runtime cannot push to origin, emit `BLOCKER` and stop.
+
 ### Step 1 — Detect or Create Repository
 
 **Read from `current_state-{project-name}.json`:**
@@ -95,7 +101,7 @@ If the user explicitly says the repo already has working code or CI/CD, treat it
 
 Before repository bootstrap, verify GitHub MCP credentials and permissions:
 - MCP GitHub server configured and reachable
-- PAT present in MCP input
+- PAT present in remote runtime environment
 - Minimal token scopes:
   - `repo` (private repo create + push)
   - `workflow` (create/update GitHub Actions workflow files)
@@ -105,11 +111,8 @@ If any item is missing, set:
 
 ```json
 "repo_status": "blocked-missing-permissions"
-```
 
-Emit `BLOCKER` and stop pipeline until user updates credentials/permissions.
-
-**Confirm with user (required):**
+Then confirm in chat. The skill performs the push remotely and triggers `build.yml` automatically.
 
 ```
 "Repository for {project-name}: DOES NOT EXIST YET.
@@ -596,7 +599,7 @@ Expected: ✅ Build succeeded (or ⚠️ warnings only)
 If build fails in Actions:
 - Check build.yml logs
 - Common issues: missing SDK version, NuGet restore failure
-- Fix locally, commit, and retry push
+- Fix in remote runtime, commit, and retry push
 
 ### Step 9 — Update current_state.json in Hub (Orchestrator Context)
 
@@ -697,9 +700,8 @@ The owning agent (@Architect) completes this checklist and writes evidence direc
 
 - [ ] Repository exists on GitHub — evidence: `gh repo view {project-name}` output or browser screenshot
 - [ ] Repository is PRIVATE — evidence: GitHub settings page shows "Private" label
-- [ ] Repository is cloned locally — evidence: `ls -la ./{project-name}/` shows .git/ folder and recent commit
-- [ ] `.NET 9 project builds locally** — evidence: `dotnet build` output showing ✅ successful build
-- [ ] `.NET 9 project builds locally` — evidence: `dotnet build` output showing ✅ successful build
+- [ ] Repository workspace is available in remote runtime — evidence: `ls -la ./{project-name}/` shows .git/ folder and recent commit
+- [ ] `.NET 9 project builds in remote runtime` — evidence: `dotnet build` output showing ✅ successful build
 - [ ] `.csproj` has correct project name — evidence: `grep "<RootNamespace>" ./{project-name}/{project-name}.csproj`
 - [ ] `wwwroot/admin/config.yml` exists and is valid YAML — evidence: `cat wwwroot/admin/config.yml` (no parse errors)
 - [ ] `current_state-{project-name}.json` remains in hub only (not copied to client repo)
