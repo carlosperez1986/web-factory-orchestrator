@@ -1,0 +1,20 @@
+[Unit]
+Description=purewide3 ASP.NET Core application
+After=network.target
+
+[Service]
+Type=notify
+User=deploy
+WorkingDirectory=/var/www/purewide3
+ExecStart=/usr/bin/dotnet /var/www/purewide3/PureWide3.dll
+Restart=always
+RestartSec=5
+KillSignal=SIGINT
+SyslogIdentifier=purewide3
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5011
+Environment=DOTNET_ROOT=/usr/share/dotnet
+Environment=PATH_BASE=/purewide3
+
+[Install]
+WantedBy=multi-user.target

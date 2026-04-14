@@ -1,23 +1,23 @@
 {
   "project": "purewide3",
   "phase": "deploy",
-  "active_skill": "security-audit",
-  "active_agent": "@Auditor",
-  "last_completed_step": "security-audit \u2192 Step 7: Findings documented and GO signal issued",
-  "next_step": "Complete Phase 2 pending tasks (TASK-022,023,025,026,028,029) \u2192 then vps-provisioning \u2192 Step 1",
+  "active_skill": "release-and-postdeploy-verification",
+  "active_agent": "@Orchestrator",
+  "last_completed_step": "vps-provisioning → all deploy artifacts committed; audit remediations applied (HIGH-001, LOW-001, MED-004)",
+  "next_step": "release-and-postdeploy-verification → Step 1: operator sets GitHub Secrets and triggers first deploy",
   "implementation_spec_ref": "IMPLEMENTATION_SPEC-purewide3.md",
   "design_style_contract_ref": "DESIGN_STYLE_CONTRACT-purewide3.md",
   "roadmap_ref": "PROJECT_ROADMAP-purewide3.md",
   "strategy_contract_ref": "STRATEGY_CONTRACT-purewide3.json",
-  "repo_url": null,
-  "repo_status": "staged-pending-creation",
+  "repo_url": "https://github.com/carlosperez1986/purewide3.0",
+  "repo_status": "pushed",
   "token_budget_remaining": null,
   "look_and_feel": {
     "source_type": "stitch+images",
     "stitch_project_id": "5053646075436783644",
     "stitch_screen_id": "e3bd25bfcdad46a4bd0a0b6ff75d74c0",
     "images_provided": [
-      "Pure Wipes Home Page screenshot \u2014 provided in chat"
+      "Pure Wipes Home Page screenshot — provided in chat"
     ],
     "reference_url": null
   },
@@ -37,17 +37,11 @@
     "cert_key": ""
   },
   "scaffold_staging_path": "purewide3/",
-  "blocker": {
-    "type": "github-api-blocked",
-    "detail": "GitHub REST API blocked by DNS monitoring proxy in sandbox \u2014 repo creation requires manual step.",
-    "resolution": "1. Create repo 'purewide3.0' at https://github.com/new (empty, no auto-init). 2. From hub repo root: cd purewide3 && git init && git checkout -b main && git remote add origin https://github.com/carlosperez1986/purewide3.0.git && git add . && git commit -m 'feat: initial scaffold' && git push -u origin main",
-    "detected_at": "2026-04-13"
-  },
   "security_gate": "GO",
   "security_audit": {
     "date": "2026-04-14",
     "auditor": "@Auditor",
-    "result": "GO \u2014 Conditional",
+    "result": "GO — Conditional",
     "critical_findings": 0,
     "high_findings": 1,
     "medium_findings": 4,
@@ -63,5 +57,6 @@
       "MED-003: Set Seo:BaseUrl in appsettings.Production.json"
     ],
     "report": "purewide3/evidence/security-audit-report.md"
-  }
+  },
+  "deploy_artifacts_ref": "deploy/"
 }

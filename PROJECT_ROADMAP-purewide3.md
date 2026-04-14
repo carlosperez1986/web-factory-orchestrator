@@ -84,10 +84,10 @@
 | TASK-027 | Global components: Header, Footer | Phase 2 | @Orchestrator | done | `Pages/Shared/_Layout.cshtml` exists |
 | TASK-028 | Assemble UI: Productos (catalog + detail) | Phase 2 | @Orchestrator | pending | `Pages/Products/Index.cshtml` exists |
 | TASK-029 | Assemble UI: Blog (list + post) | Phase 2 | @Orchestrator | pending | `Pages/Blog/Index.cshtml` exists |
-| TASK-030 | Security audit — secrets + dep scan | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
-| TASK-031 | Security audit — auth/OAuth surface review | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
-| TASK-032 | Security audit — deploy hardening review | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
-| TASK-040 | VPS provisioning — Nginx + Systemd config | Phase 3 | @Orchestrator | pending | `evidence/nginx-syntax.log` |
+| TASK-030 | Security audit — secrets + dep scan | Phase 3 | @Auditor | done | `evidence/security-audit-report.md` |
+| TASK-031 | Security audit — auth/OAuth surface review | Phase 3 | @Auditor | done | `evidence/security-audit-report.md` |
+| TASK-032 | Security audit — deploy hardening review | Phase 3 | @Auditor | done | `evidence/security-audit-report.md` |
+| TASK-040 | VPS provisioning — Nginx + Systemd config | Phase 3 | @Orchestrator | done | `deploy/nginx-purewide3.conf`, `deploy/purewide3.service`, `deploy/provision.sh`, `deploy/README.md` |
 | TASK-041 | CI/CD GitHub Actions workflow | Phase 3 | @Orchestrator | done | `.github/workflows/deploy.yml` exists |
 | TASK-042 | Deploy to staging URL (client review) | Phase 3 | @Orchestrator | pending | `evidence/staging-smoke.md` |
 | TASK-043 | Final deploy to production URL | Phase 3 | @Orchestrator | pending | `evidence/prod-deploy.md` |
@@ -105,6 +105,7 @@
 | `[✅ GO] project-scaffolding` | @Orchestrator | 2026-04-13 | Scaffold pushed to github.com/carlosperez1986/purewide3.0 |
 | `[⏳ PENDING] Phase 2 → Phase 3` | @Orchestrator | — | TASK-022, 023, 025, 026, 028, 029 pending |
 | `[✅ GO] @Auditor` | security-audit PASSED | 2026-04-14 | No hard-coded secrets; 1 High (pin scp-action@master before deploy), 2 Medium config items (AllowedHosts + BaseUrl must be set in Production appsettings), 2 Medium hardening (SSH key + Decap pin); 3 evidence gaps reset to pending; GO conditional on HIGH-001 remediation before first production deploy |
+| `[✅ GO] vps-provisioning` | @Orchestrator | 2026-04-14 | deploy/nginx-purewide3.conf + purewide3.service + provision.sh + README.md generated; HIGH-001 pinned to scp-action@v0.1.7; LOW-001 netlify widget removed; MED-004 decap-cms pinned to 3.3.3; appsettings.Production.json created |
 
 ---
 

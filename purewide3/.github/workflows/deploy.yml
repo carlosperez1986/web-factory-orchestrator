@@ -171,7 +171,7 @@ jobs:
             sudo_run systemctl restart nginx
 
       - name: Copy published files to VPS
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.SSH_HOST }}
           username: ${{ env.SSH_USER }}
