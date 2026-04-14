@@ -111,6 +111,15 @@ jobs:
             sudo_run mkdir -p "$TARGET_DIR"
             sudo_run chown -R "$SSH_DEPLOY_USER:www-data" "$TARGET_DIR"
 
+            # Derive the canonical production URL from topology
+            if [ "$USE_SHARED_DOMAIN" = "true" ] && [ -n "$SHARED_DOMAIN" ]; then
+              PROD_URL="https://$SHARED_DOMAIN$ROUTE_PREFIX"
+              ALLOWED_HOSTS="$SHARED_DOMAIN"
+            else
+              PROD_URL="https://$DOMAIN"
+              ALLOWED_HOSTS="$DOMAIN;www.$DOMAIN"
+            fi
+
             cat > "/tmp/$APP_NAME.service" <<SERVICE
             [Unit]
             Description=PureWide3 ASP.NET Core application
@@ -127,6 +136,8 @@ jobs:
             Environment=ASPNETCORE_ENVIRONMENT=Production
             Environment=ASPNETCORE_URLS=http://127.0.0.1:$APP_PORT
             Environment=PATH_BASE=$ROUTE_PREFIX
+            Environment=AllowedHosts=$ALLOWED_HOSTS
+            Environment=Seo__BaseUrl=$PROD_URL
 
             [Install]
             WantedBy=multi-user.target
