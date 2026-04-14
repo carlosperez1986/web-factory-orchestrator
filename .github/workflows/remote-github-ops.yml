@@ -1,0 +1,206 @@
+name: Remote GitHub Ops
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "Operation to execute"
+        required: true
+        type: choice
+        options:
+          - create-repo
+          - create-issue
+          - create-project
+      owner:
+        description: "Owner login (user or org). For create-issue this can be empty if repository already includes owner/name."
+        required: false
+        type: string
+      visibility:
+        description: "Repository visibility for create-repo"
+        required: false
+        default: private
+        type: choice
+        options:
+          - private
+          - public
+      repo_name:
+        description: "Repository name for create-repo"
+        required: false
+        type: string
+      issue_repo:
+        description: "Target repository for issue, format owner/name"
+        required: false
+        type: string
+      issue_title:
+        description: "Issue title for create-issue"
+        required: false
+        type: string
+      issue_body:
+        description: "Issue body for create-issue"
+        required: false
+        type: string
+      project_title:
+        description: "Project title for create-project"
+        required: false
+        type: string
+      project_owner_type:
+        description: "Owner type for create-project"
+        required: false
+        default: user
+        type: choice
+        options:
+          - user
+          - org
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      REMOTE_GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.WFO_GH_PAT }}
+
+    steps:
+      - name: Validate PAT secret
+        run: |
+          if [ -z "$REMOTE_GH_TOKEN" ]; then
+            echo "Missing required secret GH_TOKEN (or fallback WFO_GH_PAT)"
+            exit 1
+          fi
+
+      - name: Execute remote GitHub operation
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ env.REMOTE_GH_TOKEN }}
+          script: |
+            const operation = core.getInput('operation');
+            const owner = core.getInput('owner');
+            const visibility = core.getInput('visibility') || 'private';
+            const repoName = core.getInput('repo_name');
+            const issueRepo = core.getInput('issue_repo');
+            const issueTitle = core.getInput('issue_title');
+            const issueBody = core.getInput('issue_body') || '';
+            const projectTitle = core.getInput('project_title');
+            const projectOwnerType = core.getInput('project_owner_type') || 'user';
+
+            const logResult = (title, payload) => {
+              core.notice(`${title}: ${JSON.stringify(payload)}`);
+            };
+
+            if (operation === 'create-repo') {
+              if (!repoName) {
+                core.setFailed('repo_name is required for create-repo');
+                return;
+              }
+
+              const isPrivate = visibility !== 'public';
+              let result;
+
+              if (owner) {
+                result = await github.request('POST /orgs/{org}/repos', {
+                  org: owner,
+                  name: repoName,
+                  private: isPrivate,
+                  auto_init: false
+                });
+              } else {
+                result = await github.request('POST /user/repos', {
+                  name: repoName,
+                  private: isPrivate,
+                  auto_init: false
+                });
+              }
+
+              core.setOutput('resource_url', result.data.html_url);
+              core.setOutput('resource_id', String(result.data.id));
+              logResult('Repository created', {
+                full_name: result.data.full_name,
+                html_url: result.data.html_url,
+                clone_url: result.data.clone_url
+              });
+              return;
+            }
+
+            if (operation === 'create-issue') {
+              if (!issueRepo || !issueTitle) {
+                core.setFailed('issue_repo and issue_title are required for create-issue');
+                return;
+              }
+
+              const [repoOwner, repo] = issueRepo.split('/');
+              if (!repoOwner || !repo) {
+                core.setFailed('issue_repo must be in owner/name format');
+                return;
+              }
+
+              const result = await github.request('POST /repos/{owner}/{repo}/issues', {
+                owner: repoOwner,
+                repo,
+                title: issueTitle,
+                body: issueBody
+              });
+
+              core.setOutput('resource_url', result.data.html_url);
+              core.setOutput('resource_id', String(result.data.number));
+              logResult('Issue created', {
+                number: result.data.number,
+                html_url: result.data.html_url,
+                title: result.data.title
+              });
+              return;
+            }
+
+            if (operation === 'create-project') {
+              if (!owner || !projectTitle) {
+                core.setFailed('owner and project_title are required for create-project');
+                return;
+              }
+
+              const ownerQuery = projectOwnerType === 'org'
+                ? `query($login: String!) { organization(login: $login) { id login } }`
+                : `query($login: String!) { user(login: $login) { id login } }`;
+
+              const ownerResp = await github.graphql(ownerQuery, { login: owner });
+              const ownerNode = projectOwnerType === 'org' ? ownerResp.organization : ownerResp.user;
+
+              if (!ownerNode?.id) {
+                core.setFailed(`Could not resolve owner node id for ${owner}`);
+                return;
+              }
+
+              const createMutation = `
+                mutation($ownerId: ID!, $title: String!) {
+                  createProjectV2(input: { ownerId: $ownerId, title: $title }) {
+                    projectV2 {
+                      id
+                      number
+                      title
+                      url
+                    }
+                  }
+                }
+              `;
+
+              const created = await github.graphql(createMutation, {
+                ownerId: ownerNode.id,
+                title: projectTitle
+              });
+
+              const project = created?.createProjectV2?.projectV2;
+              if (!project?.id) {
+                core.setFailed('Project creation response did not include project id');
+                return;
+              }
+
+              core.setOutput('resource_url', project.url);
+              core.setOutput('resource_id', project.id);
+              logResult('Project created', {
+                id: project.id,
+                number: project.number,
+                title: project.title,
+                url: project.url
+              });
+              return;
+            }
+
+            core.setFailed(`Unsupported operation: ${operation}`);

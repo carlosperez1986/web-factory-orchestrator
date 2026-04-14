@@ -36,6 +36,17 @@ Missing capabilities:
 
 Do not attempt `curl` fallback or local `gh` fallback.
 
+### Remote Fallback Mode (Actions Dispatch)
+If direct remote write capabilities are unavailable in the current runtime, use the repository workflow fallback:
+- workflow: `.github/workflows/remote-github-ops.yml`
+- docs: `docs/remote-github-ops.md`
+
+Behavior in fallback mode:
+- Trigger `workflow_dispatch` with the requested operation and required inputs.
+- Use repository secret `GH_TOKEN` for authentication (fallback: `WFO_GH_PAT`).
+- Return the Action run URL and resulting `resource_url`/`resource_id`.
+- If workflow dispatch itself is unavailable in the runtime, emit `BLOCKER` with that explicit reason.
+
 ## Supported Commands
 
 ### 1) Create Repository
