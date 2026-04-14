@@ -47,6 +47,17 @@ Behavior in fallback mode:
 - Return the Action run URL and resulting `resource_url`/`resource_id`.
 - If workflow dispatch itself is unavailable in the runtime, emit `BLOCKER` with that explicit reason.
 
+### Manual Remote Fallback (GitHub Web UI)
+If `workflow_dispatch` is unavailable from the runtime toolset, do not stop the user without a path.
+
+Required behavior:
+- Provide this run URL pattern so the user can execute remotely in GitHub Web:
+	`https://github.com/{owner}/{repo}/actions/workflows/remote-github-ops.yml`
+- Request only the missing workflow inputs for the selected operation.
+- Instruct: Actions -> Remote GitHub Ops -> Run workflow.
+- After run completion, ask user to paste `resource_url` and `resource_id` from logs/outputs.
+- Continue with next requested operation.
+
 ## Supported Commands
 
 ### 1) Create Repository

@@ -26,6 +26,12 @@ It uses GitHub Actions (`workflow_dispatch`) plus a PAT secret to execute:
 2. Choose `operation`.
 3. Fill required inputs:
 
+If your Copilot runtime cannot trigger `workflow_dispatch`, run it directly in GitHub Web:
+1. Open `https://github.com/<owner>/<repo>/actions/workflows/remote-github-ops.yml`
+2. Click `Run workflow`
+3. Fill inputs and execute
+4. Copy `resource_url` and `resource_id` from the run logs
+
 ### create-repo
 - `repo_name` required
 - `owner` optional (`org` if creating in organization)
@@ -51,3 +57,4 @@ And logs created resource metadata in the Actions run output.
 ## Notes
 - This is a remote-only fallback and does not require local Visual Studio/VS Code tooling.
 - If the action fails with 403/401, the PAT scopes or owner permissions are insufficient.
+- If you can run the workflow manually in GitHub Web but Copilot cannot dispatch it, the limitation is in runtime tool capabilities, not in your PAT.
