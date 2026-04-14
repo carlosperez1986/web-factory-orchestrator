@@ -260,6 +260,8 @@ Necesito los siguientes valores:
 3. Prefijo de ruta       e.g. /purewipe  (URL prefix bajo el dominio base)
 4. Directorio en VPS     e.g. /var/www/purewipe
 5. Puerto Kestrel        e.g. 5010  (debe ser único por app en el servidor)
+6. GitHub OAuth ClientId para Decap
+7. GitHub OAuth ClientSecret para Decap
 
 Nota: APP_NAME y DOTNET_VERSION se toman del estado del proyecto.
 ```
@@ -277,9 +279,17 @@ Necesito los siguientes valores:
 4. Directorio del cert   e.g. /etc/ssl/certs/purewipe
 5. Archivo .pem del cert e.g. SSL1234.pem
 6. Archivo .priv del key e.g. SSL1234.priv
+7. GitHub OAuth ClientId para Decap
+8. GitHub OAuth ClientSecret para Decap
 
 Nota: Los certificados SSL deben existir en el VPS o se incluirán en el paso de copia.
 ```
+
+After collecting OAuth values, instruct user to set repository Actions secrets:
+- `DECAP_GITHUB_CLIENT_ID`
+- `DECAP_GITHUB_CLIENT_SECRET`
+
+Do not write OAuth secret values into plain-text roadmap/state. Store only readiness flags.
 
 Once the user provides all values, write them into `current_state-{project-name}.json` under `vps_config`:
 
@@ -296,7 +306,9 @@ Once the user provides all values, write them into `current_state-{project-name}
   "domain": "",
   "cert_dir": "",
   "cert_crt": "",
-  "cert_key": ""
+   "cert_key": "",
+   "decap_oauth_client_id_set": true,
+   "decap_oauth_client_secret_set": true
 }
 ```
 

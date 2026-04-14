@@ -66,6 +66,12 @@ Before starting, collect these values. If any are missing, stop and record a `BL
 Note: `USE_SHARED_DOMAIN` and `USE_CUSTOM_DOMAIN` are mutually exclusive. Set one to `true` and the other to `false`.  
 If both are `false`, record `BLOCKER: no topology selected`.
 
+OS requirement (blocking):
+- Target VPS must be Debian 11.
+- If target host reports Debian 12 (bookworm) or any other distro/version, stop with:
+  `BLOCKER: unsupported OS for this workflow (requires Debian 11)`
+- Do not continue provisioning until host OS matches policy or workflow policy is explicitly updated.
+
 ## Process
 
 ### Step 1 — Load Provisioning Context
@@ -78,6 +84,12 @@ Resolve all 8 input variables. Record any missing ones as `BLOCKER` with:
 ```
 BLOCKER: {{VARIABLE_NAME}} not found — operator must supply before vps-provisioning can continue.
 ```
+
+Also validate topology consistency before generating artifacts:
+- Exactly one of `USE_SHARED_DOMAIN` / `USE_CUSTOM_DOMAIN` must be `true`.
+- Shared topology requires: `SHARED_DOMAIN`, `SHARED_SITE_FILE`, `ROUTE_PREFIX`.
+- Custom topology requires: `DOMAIN`, `CERT_DIR`, `CERT_CRT`, `CERT_KEY`.
+- If invalid, stop with `BLOCKER: invalid topology configuration`.
 
 ### Step 2 — Generate Nginx Config
 Copy `blueprints/infra/nginx-config.template` to `deploy/nginx-{project-name}.conf`.
@@ -145,6 +157,8 @@ Topology rules:
 | Type | Name | Value | Required |
 |---|---|---|---|
 | Secret | `PASSWORD` | SSH password (also used for sudo escalation) | always |
+| Secret | `DECAP_GITHUB_CLIENT_ID` | GitHub OAuth ClientId for Decap backend callback | always |
+| Secret | `DECAP_GITHUB_CLIENT_SECRET` | GitHub OAuth ClientSecret for Decap backend callback | always |
 | Variable (preferred) or Secret | `SERVER_IP` | VPS IP address or hostname | always |
 | Variable (preferred) or Secret | `USERNAME` | SSH user with sudo rights | always |
 | Variable (preferred) or Secret | `PORT` | SSH port | optional — defaults to 22 |
@@ -171,6 +185,16 @@ but WFO default is deterministic template substitution from state.
 > ⚠️ If the repo already has a working `.github/workflows/deploy.yml`, compare it against the template before overwriting. In adoption mode, preserve the existing workflow unless the operator explicitly approves replacement.
 
 > ⚠️ The PASSWORD secret is used for SSH auth AND sudo escalation inside the provisioning script. The deploy user must have sudo rights on the VPS. If passwordless sudo is configured, the PASSWORD secret is still required for SSH auth.
+
+> ⚠️ Decap OAuth secrets are persisted into `/etc/{app-name}/{app-name}.env` as `GitHub__ClientId` and `GitHub__ClientSecret` by the deploy workflow. The systemd unit must load this file via `EnvironmentFile=-/etc/{app-name}/{app-name}.env`.
+
+Automation note:
+- The deploy workflow enforces this operational sequence automatically on VPS:
+  1) ensure `/etc/{app-name}/{app-name}.env` exists,
+  2) enforce `chmod 600`,
+  3) `systemctl daemon-reload`,
+  4) `systemctl restart {app-name}`,
+  5) `systemctl status {app-name} --no-pager`.
 
 ### Step 5 — Generate One-Time Provision Script
 Create `deploy/provision.sh` — operator runs this once on a fresh VPS:
@@ -250,6 +274,8 @@ sudo systemctl start {project-name}
 | `SERVER_IP` (Variable preferida, o Secret) | VPS IP o hostname |
 | `USERNAME` (Variable preferida, o Secret) | SSH deploy user (non-root) |
 | `PASSWORD` (Secret obligatorio) | SSH password (también para sudo) |
+| `DECAP_GITHUB_CLIENT_ID` (Secret obligatorio) | GitHub OAuth ClientId para Decap |
+| `DECAP_GITHUB_CLIENT_SECRET` (Secret obligatorio) | GitHub OAuth ClientSecret para Decap |
 | `PORT` (Variable preferida, o Secret) | SSH port (opcional, default 22) |
 
 ## Not GitHub Secrets (context values)

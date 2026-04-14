@@ -22,6 +22,8 @@
 #
 # GitHub repository secrets required (set in repo Settings → Secrets and variables → Actions):
 #   PASSWORD   → SSH password (also used for sudo escalation)
+#   DECAP_GITHUB_CLIENT_ID     → GitHub OAuth ClientId for Decap backend auth
+#   DECAP_GITHUB_CLIENT_SECRET → GitHub OAuth ClientSecret for Decap backend auth
 #
 # GitHub Variables recommended for non-sensitive connection values:
 #   SERVER_IP  → VPS IP address or hostname
@@ -57,6 +59,8 @@ jobs:
       SSH_USER: ${{ vars.USERNAME || secrets.USERNAME }}
       SSH_PASSWORD: ${{ secrets.PASSWORD }}
       SSH_PORT: ${{ vars.PORT || secrets.PORT || '22' }}
+      DECAP_GITHUB_CLIENT_ID: ${{ secrets.DECAP_GITHUB_CLIENT_ID }}
+      DECAP_GITHUB_CLIENT_SECRET: ${{ secrets.DECAP_GITHUB_CLIENT_SECRET }}
 
       # Topology A — multiple apps under one shared domain
       # Example: https://{{SHARED_DOMAIN}}/{{APP_NAME}}
@@ -83,6 +87,35 @@ jobs:
           test -n "${{ env.SSH_HOST }}" || { echo "::error::Missing SERVER_IP (configure as GitHub Variable or Secret)"; exit 1; }
           test -n "${{ env.SSH_USER }}" || { echo "::error::Missing USERNAME (configure as GitHub Variable or Secret)"; exit 1; }
           test -n "${{ env.SSH_PASSWORD }}" || { echo "::error::Missing GitHub secret PASSWORD"; exit 1; }
+          test -n "${{ env.DECAP_GITHUB_CLIENT_ID }}" || { echo "::error::Missing GitHub secret DECAP_GITHUB_CLIENT_ID"; exit 1; }
+          test -n "${{ env.DECAP_GITHUB_CLIENT_SECRET }}" || { echo "::error::Missing GitHub secret DECAP_GITHUB_CLIENT_SECRET"; exit 1; }
+
+      - name: Validate topology configuration
+        shell: bash
+        run: |
+          set -e
+          if [ "${{ env.USE_SHARED_DOMAIN }}" = "true" ] && [ "${{ env.USE_CUSTOM_DOMAIN }}" = "true" ]; then
+            echo "::error::Invalid topology: USE_SHARED_DOMAIN and USE_CUSTOM_DOMAIN cannot both be true"
+            exit 1
+          fi
+
+          if [ "${{ env.USE_SHARED_DOMAIN }}" != "true" ] && [ "${{ env.USE_CUSTOM_DOMAIN }}" != "true" ]; then
+            echo "::error::Invalid topology: one of USE_SHARED_DOMAIN or USE_CUSTOM_DOMAIN must be true"
+            exit 1
+          fi
+
+          if [ "${{ env.USE_SHARED_DOMAIN }}" = "true" ]; then
+            test -n "${{ env.SHARED_DOMAIN }}" || { echo "::error::Missing SHARED_DOMAIN for shared topology"; exit 1; }
+            test -n "${{ env.SHARED_SITE_FILE }}" || { echo "::error::Missing SHARED_SITE_FILE for shared topology"; exit 1; }
+            test -n "${{ env.ROUTE_PREFIX }}" || { echo "::error::Missing ROUTE_PREFIX for shared topology"; exit 1; }
+          fi
+
+          if [ "${{ env.USE_CUSTOM_DOMAIN }}" = "true" ]; then
+            test -n "${{ env.DOMAIN }}" || { echo "::error::Missing DOMAIN for custom topology"; exit 1; }
+            test -n "${{ env.CERT_DIR }}" || { echo "::error::Missing CERT_DIR for custom topology"; exit 1; }
+            test -n "${{ env.CERT_CRT }}" || { echo "::error::Missing CERT_CRT for custom topology"; exit 1; }
+            test -n "${{ env.CERT_KEY }}" || { echo "::error::Missing CERT_KEY for custom topology"; exit 1; }
+          fi
 
       - name: Test SSH connection to VPS
         uses: appleboy/ssh-action@v1
@@ -181,6 +214,9 @@ jobs:
               APP_PATH_BASE="$ROUTE_PREFIX"
             fi
 
+            OAUTH_ENV_DIR="/etc/$APP_NAME"
+            OAUTH_ENV_FILE="$OAUTH_ENV_DIR/$APP_NAME.env"
+
             echo "Using ASP.NET Core port: $APP_PORT"
             if command -v ss >/dev/null 2>&1; then
               if ss -ltn | awk '{print $4}' | grep -qE "[:.]$APP_PORT$"; then
@@ -190,6 +226,18 @@ jobs:
             fi
 
             if command -v apt-get >/dev/null 2>&1; then
+              if [ -f /etc/os-release ]; then
+                . /etc/os-release
+                if [ "$ID" != "debian" ] || [ "$VERSION_ID" != "11" ]; then
+                  echo "ERROR: Unsupported OS detected: ${ID:-unknown} ${VERSION_ID:-unknown}. This deploy workflow supports Debian 11 only."
+                  exit 1
+                fi
+                echo "Detected supported OS: Debian 11"
+              else
+                echo "ERROR: Cannot determine OS. Missing /etc/os-release"
+                exit 1
+              fi
+
               if ! command -v wget >/dev/null 2>&1; then
                 sudo_run apt-get update
                 sudo_run apt-get install -y wget
@@ -203,7 +251,6 @@ jobs:
 
               if ! dotnet --list-runtimes 2>/dev/null | grep -q '^Microsoft.NETCore.App {{DOTNET_RUNTIME_MAJOR}}\.'; then
                 echo "Installing missing .NET {{DOTNET_RUNTIME_MAJOR}} runtime on VPS..."
-                . /etc/os-release
                 wget -q "https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb" -O /tmp/packages-microsoft-prod.deb
                 sudo_run dpkg -i /tmp/packages-microsoft-prod.deb || true
                 sudo_run apt-get update
@@ -216,6 +263,14 @@ jobs:
 
             sudo_run mkdir -p "$TARGET_DIR"
             sudo_run chown -R "$SSH_DEPLOY_USER:www-data" "$TARGET_DIR"
+
+            sudo_run mkdir -p "$OAUTH_ENV_DIR"
+            cat > "/tmp/$APP_NAME.oauth.env" <<EOF
+            GitHub__ClientId=${{ env.DECAP_GITHUB_CLIENT_ID }}
+            GitHub__ClientSecret=${{ env.DECAP_GITHUB_CLIENT_SECRET }}
+            EOF
+            sudo_run install -m 600 "/tmp/$APP_NAME.oauth.env" "$OAUTH_ENV_FILE"
+            sudo_run chown root:root "$OAUTH_ENV_FILE"
 
             cat > "/tmp/$APP_NAME.service" <<SERVICE
             [Unit]
@@ -232,7 +287,9 @@ jobs:
             User=$SSH_DEPLOY_USER
             Environment=ASPNETCORE_ENVIRONMENT=Production
             Environment=ASPNETCORE_URLS=http://127.0.0.1:$APP_PORT
+            Environment=DOTNET_ROOT=/usr/share/dotnet
             Environment=PATH_BASE=$APP_PATH_BASE
+            EnvironmentFile=-$OAUTH_ENV_FILE
 
             [Install]
             WantedBy=multi-user.target
@@ -372,13 +429,20 @@ jobs:
             ${{ env.SSH_PASSWORD }}
             __SUDO_PASS__
             )"
+            OAUTH_ENV_FILE="/etc/${{ env.APP_NAME }}/${{ env.APP_NAME }}.env"
 
             if [ "$(id -u)" -eq 0 ]; then
+              if [ -f "$OAUTH_ENV_FILE" ]; then
+                chmod 600 "$OAUTH_ENV_FILE"
+              fi
+              systemctl daemon-reload
               systemctl restart "${{ env.APP_NAME }}.service"
               systemctl --no-pager --full status "${{ env.APP_NAME }}.service"
               nginx -t
               systemctl reload nginx
             else
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' sh -c "if [ -f '$OAUTH_ENV_FILE' ]; then chmod 600 '$OAUTH_ENV_FILE'; fi"
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl daemon-reload
               printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl restart "${{ env.APP_NAME }}.service"
               printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl --no-pager --full status "${{ env.APP_NAME }}.service"
               printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' nginx -t

@@ -101,7 +101,11 @@ app.MapGet("/auth", (HttpContext ctx, IConfiguration config) =>
     }
 
     var scope = "repo,user";
-    var authUrl = $"https://github.com/login/oauth/authorize?client_id={clientId}&redirect_uri={Uri.EscapeDataString(redirectUri)}&scope={scope}";
+    var authUrl =
+        "https://github.com/login/oauth/authorize" +
+        $"?client_id={Uri.EscapeDataString(clientId)}" +
+        $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
+        $"&scope={Uri.EscapeDataString(scope)}";
     return Results.Redirect(authUrl);
 });
 
@@ -175,6 +179,7 @@ app.MapGet("/callback", async (HttpContext ctx, IConfiguration config, IHttpClie
     }
 
     var origin = $"{ctx.Request.Scheme}://{ctx.Request.Host}";
+    var originJson = JsonSerializer.Serialize(origin);
     var html = $$"""
         <!DOCTYPE html>
         <html>
@@ -188,8 +193,8 @@ app.MapGet("/callback", async (HttpContext ctx, IConfiguration config, IHttpClie
               return;
             }
 
-            function receiveMessage(e) {
-              if (e.origin !== "{{origin}}" || e.data !== "authorizing:github") {
+                        function receiveMessage(e) {
+                            if (e.origin !== {{originJson}} || e.data !== "authorizing:github") {
                 return;
               }
 
@@ -202,7 +207,7 @@ app.MapGet("/callback", async (HttpContext ctx, IConfiguration config, IHttpClie
             }
 
             window.addEventListener("message", receiveMessage, false);
-            window.opener.postMessage("authorizing:github", "{{origin}}");
+                        window.opener.postMessage("authorizing:github", {{originJson}});
           })();
         </script>
         </body>
@@ -210,6 +215,13 @@ app.MapGet("/callback", async (HttpContext ctx, IConfiguration config, IHttpClie
         """;
 
     return Results.Content(html, "text/html");
+});
+
+// Compatibility alias for Decap configurations using /auth/callback
+app.MapGet("/auth/callback", async (HttpContext ctx) =>
+{
+        var query = ctx.Request.QueryString.HasValue ? ctx.Request.QueryString.Value : string.Empty;
+        return Results.Redirect($"{ctx.Request.PathBase}/callback{query}");
 });
 
 // ── Razor Pages ────────────────────────────────────────────────────────────────

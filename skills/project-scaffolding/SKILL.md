@@ -402,47 +402,100 @@ Read `PROJECT_ROADMAP-{project-name}.md` and extract:
 
 ```yaml
 backend:
-  name: git-gateway
+  name: github
+  repo: {github-owner}/{project-name}
   branch: main
-  base_url: https://example.decapcms.com  # User configures this
-  auth_endpoint: admin/auth
+  # IMPORTANT (subpath deploy): base_url must be ORIGIN ONLY
+  #   shared-domain example: https://hechoenmargarita.com
+  #   custom-domain example: https://purewipe.com
+  base_url: https://{origin-domain}
+  # IMPORTANT (subpath deploy): auth_endpoint carries the route prefix when needed
+  #   shared-domain example: purewipe/auth
+  #   custom-domain example: auth
+  auth_endpoint: {route-prefix-no-leading-slash}/auth
 
-media_folder: public/uploads
-public_folder: /uploads
+publish_mode: simple
+
+media_folder: wwwroot/images/uploads
+public_folder: /images/uploads
 
 site_url: https://{client-domain-placeholder}
 display_url: https://{client-domain-placeholder}
 logo_url: /logo.png
 
 collections:
-  - label: "Pages"
-    name: "pages"
-    folder: "content/pages"
-    format: "frontmatter"
+  - name: blog
+    label: Blog
+    label_singular: Artículo
+    folder: wwwroot/content/blog
     create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Slug", name: "slug", widget: "string" }
-      - { label: "Content", name: "body", widget: "markdown" }
+      - { label: Título, name: title, widget: string }
+      - { label: Fecha, name: date, widget: datetime }
+      - { label: Imagen, name: image, widget: image, required: false }
+      - { label: Descripción SEO, name: seo_description, widget: text }
+      - label: Categoría
+        name: category
+        widget: select
+        options:
+          - { label: Tips Mascotas, value: mascotas }
+          - { label: Adultos Mayores, value: adultos-mayores }
+          - { label: Eco Tips, value: ecologica }
+          - { label: Multiuso, value: multiuso }
+      - { label: Contenido, name: body, widget: markdown }
 
-  # (If dynamic-content-grid detected):
-  - label: "Products"
-    name: "products"
-    folder: "content/products"
-    format: "frontmatter"
+  - name: productos
+    label: Productos
+    label_singular: Producto
+    folder: wwwroot/content/products
     create: true
+    slug: "{{slug}}"
+    extension: json
+    format: json
     fields:
-      - { label: "Product Name", name: "name", widget: "string" }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Price", name: "price", widget: "number" }
+      - { label: Nombre, name: name, widget: string }
+      - { label: Slug, name: slug, widget: string }
+      - { label: Descripción, name: description, widget: text }
+      - { label: Ingredientes, name: ingredients, widget: text }
+      - { label: Modo de Uso, name: usage, widget: text }
+      - label: Categoría
+        name: category
+        widget: select
+        options:
+          - { label: Adultos Mayores, value: adultos-mayores }
+          - { label: Mascotas, value: mascotas }
+          - { label: Ecológica, value: ecologica }
+          - { label: Multiuso Hogar, value: multiuso }
+      - { label: Imagen URL, name: imageUrl, widget: image, required: false }
+      - label: Certificaciones
+        name: certifications
+        widget: list
+        field: { label: Certificación, name: cert, widget: string }
+      - { label: Destacado, name: featured, widget: boolean, default: false }
+```
+
+**Decap auth endpoint rule (blocking):**
+- For shared-domain topology (`https://domain.com/{route}`):
+  - `base_url` must be origin only (`https://domain.com`)
+  - `auth_endpoint` must include route prefix (`{route}/auth`)
+- For custom-domain topology (`https://app-domain.com`):
+  - `base_url` is full origin (`https://app-domain.com`)
+  - `auth_endpoint` is `auth`
+
+If this rule is not met, record:
+```
+BLOCKER: Decap OAuth origin/path mismatch in config.yml (base_url/auth_endpoint invalid for topology)
 ```
 
 **Create placeholder content directories:**
 
 ```bash
-mkdir -p ./{project-name}/content/pages
-mkdir -p ./{project-name}/content/products           # if needed
-mkdir -p ./{project-name}/public/uploads
+mkdir -p ./{project-name}/wwwroot/content/blog
+mkdir -p ./{project-name}/wwwroot/content/products
+mkdir -p ./{project-name}/wwwroot/images/uploads
 ```
 
 ### Step 7 — Setup GitHub Workflows (CI/CD Template)

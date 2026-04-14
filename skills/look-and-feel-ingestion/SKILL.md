@@ -67,6 +67,10 @@ GO signal must be present in PROJECT_ROADMAP-{project-name}.md:
 - Stitch chosen but MCP server not active → `BLOCKER: Stitch MCP not active — configure server or switch to image/URL source`
 - Images chosen but homepage desktop image not provided → `BLOCKER: homepage-desktop image required as minimum input`
 
+If only homepage visual is provided:
+- do NOT block implementation.
+- generate an extrapolation section in the style contract for internal pages (blog, products, detail, privacy, contact, etc.).
+
 ## Process
 
 ### Step 1 - Gather Visual Inputs
@@ -119,6 +123,13 @@ Create `DESIGN_STYLE_CONTRACT-{project-name}.md` with:
 - responsive rules
 - accessibility constraints
 - do and do not list to prevent style drift
+
+Include mandatory section:
+- `## Internal Page Extrapolation Rules` containing:
+  - mapping from homepage tokens to internal templates (list/detail/form/article)
+  - section rhythm defaults (heading spacing, card spacing, CTA placement)
+  - fallback image policy when no section-specific visual exists
+  - rules for keeping navigation/footer/CTA continuity across all routes
 
 ### Step 6 - Update Roadmap and Handover
 Update `PROJECT_ROADMAP-{project-name}.md`:
