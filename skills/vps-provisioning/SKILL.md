@@ -140,14 +140,33 @@ Topology rules:
 - If `USE_SHARED_DOMAIN=true`: set `ROUTE_PREFIX`, `SHARED_DOMAIN`, `SHARED_SITE_FILE`; set `USE_CUSTOM_DOMAIN=false`; leave `DOMAIN`/`CERT_*` as empty strings.
 - If `USE_CUSTOM_DOMAIN=true`: set `DOMAIN`, `CERT_DIR`, `CERT_CRT`, `CERT_KEY`; set `USE_SHARED_DOMAIN=false`; leave `SHARED_DOMAIN`/`ROUTE_PREFIX` as empty strings.
 
-**Required GitHub repository secrets** — record in `deploy/README.md` and instruct the operator to set them in repo Settings → Secrets and variables → Actions:
+**GitHub credentials/config required** — record in `deploy/README.md` and instruct the operator to set them in repo Settings → Secrets and variables → Actions:
 
-| Secret | Value | Required |
+| Type | Name | Value | Required |
+|---|---|---|---|
+| Secret | `PASSWORD` | SSH password (also used for sudo escalation) | always |
+| Variable (preferred) or Secret | `SERVER_IP` | VPS IP address or hostname | always |
+| Variable (preferred) or Secret | `USERNAME` | SSH user with sudo rights | always |
+| Variable (preferred) or Secret | `PORT` | SSH port | optional — defaults to 22 |
+
+**Not secrets (topology/deploy context):**
+
+These values are NOT credentials and must not be requested as GitHub Secrets by default.
+They are collected in Orchestrator VPS intake (`current_state-{project-name}.json`) and substituted into the generated workflow/template:
+
+| Value | Default storage | Notes |
 |---|---|---|
-| `SERVER_IP` | VPS IP address or hostname | always |
-| `USERNAME` | SSH user with sudo rights | always |
-| `PASSWORD` | SSH password (also used for sudo escalation) | always |
-| `PORT` | SSH port | optional — defaults to 22 |
+| `USE_SHARED_DOMAIN` | hub state + workflow template | topology flag |
+| `SHARED_DOMAIN` | hub state + workflow template | base domain |
+| `SHARED_SITE_FILE` | hub state + workflow template | nginx sites-available file |
+| `ROUTE_PREFIX` | hub state + workflow template | app path prefix under shared domain |
+| `TARGET_DIR` | hub state + workflow template | VPS deploy path |
+| `USE_CUSTOM_DOMAIN` | hub state + workflow template | topology flag |
+| `DOMAIN` | hub state + workflow template | custom domain |
+| `CERT_DIR`, `CERT_CRT`, `CERT_KEY` | hub state + workflow template | custom-domain cert paths/files |
+
+Optional: teams may store non-secret values as GitHub Variables (`vars.*`) if they prefer runtime configurability,
+but WFO default is deterministic template substitution from state.
 
 > ⚠️ If the repo already has a working `.github/workflows/deploy.yml`, compare it against the template before overwriting. In adoption mode, preserve the existing workflow unless the operator explicitly approves replacement.
 
@@ -228,10 +247,19 @@ sudo systemctl start {project-name}
 ## Required GitHub Secrets
 | Secret | Description |
 |---|---|
-| `VPS_HOST` | VPS IP or hostname |
-| `VPS_USER` | SSH deploy user (non-root) |
-| `VPS_SSH_KEY` | Private SSH key — no passphrase |
-| `DEPLOY_DIR` | e.g. `/var/www/{project-name}` |
+| `SERVER_IP` (Variable preferida, o Secret) | VPS IP o hostname |
+| `USERNAME` (Variable preferida, o Secret) | SSH deploy user (non-root) |
+| `PASSWORD` (Secret obligatorio) | SSH password (también para sudo) |
+| `PORT` (Variable preferida, o Secret) | SSH port (opcional, default 22) |
+
+## Not GitHub Secrets (context values)
+| Value | Source |
+|---|---|
+| `SHARED_DOMAIN`, `SHARED_SITE_FILE`, `ROUTE_PREFIX` | Orchestrator VPS intake (`vps_config`) |
+| `DOMAIN`, `CERT_DIR`, `CERT_CRT`, `CERT_KEY` | Orchestrator VPS intake (`vps_config`) |
+| `TARGET_DIR`, `APP_PORT` | Orchestrator VPS intake (`vps_config`) |
+
+These are deployment context values, not credentials. WFO writes them into generated files via token substitution.
 
 ## TLS Certificate Renewal
 Certbot auto-renews. Verify timer: `systemctl status certbot.timer`

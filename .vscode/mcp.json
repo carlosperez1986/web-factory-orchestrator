@@ -1,9 +1,9 @@
 {
   "inputs": [
     {
-      "id": "github-pat",
+      "id": "wfo-gh-pat",
       "type": "promptString",
-      "description": "GitHub Personal Access Token (minimum scopes: repo, workflow; org repos also require org create-repository permission)",
+      "description": "GitHub PAT for Orchestrator (minimum scopes: repo, workflow)",
       "password": true
     }
   ],
@@ -12,7 +12,7 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github-pat}"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:wfo-gh-pat}"
       }
     }
   }

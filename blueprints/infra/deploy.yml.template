@@ -21,10 +21,17 @@
 #   {{CERT_KEY}}             → key filename, e.g. SSL1234.priv
 #
 # GitHub repository secrets required (set in repo Settings → Secrets and variables → Actions):
+#   PASSWORD   → SSH password (also used for sudo escalation)
+#
+# GitHub Variables recommended for non-sensitive connection values:
 #   SERVER_IP  → VPS IP address or hostname
 #   USERNAME   → SSH user (must have sudo rights)
-#   PASSWORD   → SSH password (also used for sudo escalation)
 #   PORT       → SSH port (optional — defaults to 22)
+#
+# Not GitHub secrets by default (topology/deploy context):
+#   USE_SHARED_DOMAIN, SHARED_DOMAIN, SHARED_SITE_FILE, ROUTE_PREFIX,
+#   TARGET_DIR, USE_CUSTOM_DOMAIN, DOMAIN, CERT_DIR, CERT_CRT, CERT_KEY
+# These are injected by vps-provisioning token substitution from orchestrator state.
 #
 # Do NOT modify this template directly — changes must go through vps-provisioning skill review.
 # ─────────────────────────────────────────────────────────────────────────────
@@ -46,10 +53,10 @@ jobs:
       DOTNET_VERSION: "{{DOTNET_VERSION_GA}}"
       APP_DLL: "{{APP_DLL}}"
       APP_PORT: "{{APP_PORT}}"
-      SSH_HOST: ${{ secrets.SERVER_IP }}
-      SSH_USER: ${{ secrets.USERNAME }}
+      SSH_HOST: ${{ vars.SERVER_IP || secrets.SERVER_IP }}
+      SSH_USER: ${{ vars.USERNAME || secrets.USERNAME }}
       SSH_PASSWORD: ${{ secrets.PASSWORD }}
-      SSH_PORT: ${{ secrets.PORT || '22' }}
+      SSH_PORT: ${{ vars.PORT || secrets.PORT || '22' }}
 
       # Topology A — multiple apps under one shared domain
       # Example: https://{{SHARED_DOMAIN}}/{{APP_NAME}}
@@ -73,8 +80,8 @@ jobs:
       - name: Validate deploy secrets
         shell: bash
         run: |
-          test -n "${{ env.SSH_HOST }}" || { echo "::error::Missing GitHub secret SERVER_IP"; exit 1; }
-          test -n "${{ env.SSH_USER }}" || { echo "::error::Missing GitHub secret USERNAME"; exit 1; }
+          test -n "${{ env.SSH_HOST }}" || { echo "::error::Missing SERVER_IP (configure as GitHub Variable or Secret)"; exit 1; }
+          test -n "${{ env.SSH_USER }}" || { echo "::error::Missing USERNAME (configure as GitHub Variable or Secret)"; exit 1; }
           test -n "${{ env.SSH_PASSWORD }}" || { echo "::error::Missing GitHub secret PASSWORD"; exit 1; }
 
       - name: Test SSH connection to VPS

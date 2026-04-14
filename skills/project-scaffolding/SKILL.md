@@ -38,7 +38,7 @@ request blueprint completion instead of generating code from scratch.
 If the project already has a repository with working code and CI/CD, this skill switches to an adoption mode:
 - preserve existing application code,
 - preserve existing `.github/workflows/` unless user explicitly approves replacement,
-- import the project into WFO by adding `current_state-{project-name}.json` and `PROJECT_ROADMAP-{project-name}.md`,
+- import the project into WFO by updating hub-side `current_state-{project-name}.json` and `PROJECT_ROADMAP-{project-name}.md` only,
 - document any architectural drift between the live repo and WFO standards.
 
 ## When to Use
@@ -135,6 +135,14 @@ If targeting an organization repo, also ensure your account/token can create rep
 
 Reply "updated" once permissions are fixed to retry bootstrap.
 ```
+
+Fine-grained PAT reference (when user uses fine-grained instead of classic):
+- Repository access must be `All repositories` to create a new repository automatically.
+- `Selected repositories` only works for existing repos and will fail for new repo bootstrap.
+- Minimum repository permissions:
+  - `Contents`: Read and write
+  - `Administration`: Read and write (needed for repository creation/management flows)
+  - `Actions`: Read and write (if workflows/secrets are managed in automation)
 
 **Only proceed if user replies "yes" or "confirm".**
 
@@ -504,7 +512,7 @@ git commit -m "chore: init WFO project scaffold — $(date +%Y-%m-%d)
 - Initialize .NET 9 Razor Pages project
 - Setup Decap CMS admin structure
 - Seed GitHub Actions CI/CD pipelines
-- Add project state and roadmap
+- Enforce project-code-only repository boundary
 
 Ready for Phase 2 (Build)."
 ```
@@ -512,6 +520,9 @@ Ready for Phase 2 (Build)."
 **Push to GitHub:**
 
 ```bash
+# Never embed PAT in remote URL. Use standard remote and authenticated environment.
+# Preferred non-interactive push when needed:
+# git -c http.extraHeader="Authorization: Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}" push origin main
 git push origin main
 ```
 
@@ -552,15 +563,8 @@ If build fails in Actions:
 }
 ```
 
-**Also in repo, update `current_state-{project-name}.json`:**
-
-```json
-{
-  "...same as above...",
-  "repo_initialized_at": "YYYY-MM-DD HH:MM:SS",
-  "scaffold_location": "github.com/{username}/{project-name}"
-}
-```
+Do NOT copy `current_state-{project-name}.json` into the client repository.
+State files remain in hub/orchestrator workspace only.
 
 ### Step 10 — Verify Repository is Ready
 
@@ -584,13 +588,13 @@ git log --oneline  # Should show initial commit
 git branch -a      # Should show main
 
 # 4. GitHub Actions status
-gh repo view {project-name} --web  # Opens browser to repo
+git ls-remote --heads origin
 # Manually check: https://github.com/{username}/{project-name}/actions
 ```
 
 **Success criteria:**
 - ✅ Repo exists on GitHub (private)
-- ✅ Local clone is up-to-date
+- ✅ Git remote is reachable (`git ls-remote --heads origin`)
 - ✅ .csproj builds without errors
 - ✅ Decap config.yml exists
 - ✅ Initial commit present
@@ -622,7 +626,7 @@ gh repo view {project-name} --web  # Opens browser to repo
 - Existing repo has working CI/CD but workflow files are overwritten anyway — operational regression
 - Existing repo is already deployed and `PathBase`, Nginx route, or service model are changed without explicit migration plan
 - Initial commit message does not mention "WFO" or date — hard to track which tool created it in future audits
-- `current_state-{project-name}.json` is not updated after scaffold completes — session resume loses phase context
+- Hub `current_state-{project-name}.json` is not updated after scaffold completes — session resume loses phase context
 - Repo is created as PUBLIC instead of PRIVATE — security issue
 - Build workflow succeeds but deploy workflow fails silently — no notification to user
 
@@ -639,8 +643,8 @@ The owning agent (@Architect) completes this checklist and writes evidence direc
 - [ ] `.NET 9 project builds locally` — evidence: `dotnet build` output showing ✅ successful build
 - [ ] `.csproj` has correct project name — evidence: `grep "<RootNamespace>" ./{project-name}/{project-name}.csproj`
 - [ ] `wwwroot/admin/config.yml` exists and is valid YAML — evidence: `cat wwwroot/admin/config.yml` (no parse errors)
-- [ ] `current_state.json` is copied to repo — evidence: `head -5 ./{project-name}/current_state-{project-name}.json`
-- [ ] `PROJECT_ROADMAP.md` is copied to repo — evidence: `head -10 ./{project-name}/PROJECT_ROADMAP-{project-name}.md`
+- [ ] `current_state-{project-name}.json` remains in hub only (not copied to client repo)
+- [ ] `PROJECT_ROADMAP-{project-name}.md` remains in hub only (not copied to client repo)
 - [ ] `.github/workflows/build.yml` is present and triggers on push — evidence: `grep "on:" ./{project-name}/.github/workflows/build.yml`
 - [ ] If repo existed before WFO adoption, existing CI/CD was assessed and either preserved or changed with explicit approval
 - [ ] If repo is new, scaffold files were copied from `/blueprints/**` with token substitution only (no generated custom logic)
