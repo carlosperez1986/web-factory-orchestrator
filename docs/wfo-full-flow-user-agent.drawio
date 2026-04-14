@@ -1,11 +1,11 @@
 <mxfile host="app.diagrams.net" modified="2026-04-13T20:00:00.000Z" agent="GitHub Copilot" version="24.7.17">
-  <diagram id="wfo-full-flow" name="WFO Full Flow — 1 Orchestrator + Skills">
+  <diagram id="wfo-full-flow" name="WFO Full Flow ï¿½ 1 Orchestrator + Skills">
     <mxGraphModel dx="1920" dy="1080" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1500" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
 
-        <mxCell id="title" value="WFO End-to-End Flow — 1 Orchestrator executes 9 Skills" style="text;html=1;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1;align=left;" vertex="1" parent="1">
+        <mxCell id="title" value="WFO End-to-End Flow ï¿½ 1 Orchestrator executes 9 Skills" style="text;html=1;strokeColor=none;fillColor=none;fontSize=20;fontStyle=1;align=left;" vertex="1" parent="1">
           <mxGeometry x="20" y="10" width="900" height="30" as="geometry"/>
         </mxCell>
 
@@ -13,7 +13,7 @@
           <mxGeometry x="40" y="90" width="180" height="70" as="geometry"/>
         </mxCell>
 
-        <mxCell id="orchestrator" value="@Orchestrator&#xa;tools: [read, edit, search, execute, todo]&#xa;Reads SKILL.md on demand — executes directly" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="orchestrator" value="@Orchestrator&#xa;tools: [read, edit, search, execute, todo]&#xa;Reads SKILL.md on demand ï¿½ executes directly" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="280" y="80" width="300" height="90" as="geometry"/>
         </mxCell>
 
@@ -29,7 +29,7 @@
           <mxGeometry x="990" y="120" width="240" height="70" as="geometry"/>
         </mxCell>
 
-        <mxCell id="sk-estimation" value="Skill: project-estimation-and-stack-selection&#xa;Token/time/cost — stack decision" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="sk-estimation" value="Skill: project-estimation-and-stack-selection&#xa;Token/time/cost ï¿½ stack decision" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="990" y="205" width="240" height="70" as="geometry"/>
         </mxCell>
 
@@ -53,15 +53,15 @@
           <mxGeometry x="1300" y="340" width="280" height="80" as="geometry"/>
         </mxCell>
 
-        <mxCell id="repoDecision" value="Repo Decision&#xa;existing or create?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+        <mxCell id="repoDecision" value="Repo Decision&#xa;existing URL required&#xa;(manual create if missing)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
           <mxGeometry x="660" y="475" width="220" height="110" as="geometry"/>
         </mxCell>
 
-        <mxCell id="sk-scaffold" value="Skill: project-scaffolding&#xa;Create/clone/adopt repo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        <mxCell id="sk-scaffold" value="Skill: project-scaffolding&#xa;Clone/adopt existing repo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="990" y="480" width="240" height="70" as="geometry"/>
         </mxCell>
 
-        <mxCell id="repo" value="Client Repository&#xa;Code + workflows + state/roadmap copy" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#d4e1f5;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="repo" value="Client Repository&#xa;Code + workflows&#xa;(state/roadmap stay in hub)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#d4e1f5;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="1300" y="480" width="280" height="80" as="geometry"/>
         </mxCell>
 
@@ -89,7 +89,7 @@
           <mxGeometry x="660" y="790" width="220" height="110" as="geometry"/>
         </mxCell>
 
-        <mxCell id="auditor" value="@Auditor&#xa;tools: [read, search, execute] — NO edit&#xa;Security gate — go/no-go" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="auditor" value="@Auditor&#xa;tools: [read, search, execute] ï¿½ NO edit&#xa;Security gate ï¿½ go/no-go" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="660" y="960" width="300" height="90" as="geometry"/>
         </mxCell>
 
@@ -105,7 +105,7 @@
           <mxGeometry x="1300" y="1060" width="280" height="90" as="geometry"/>
         </mxCell>
 
-        <mxCell id="legend" value="Design Rule: @Orchestrator executes ALL skills directly. @Auditor is the only exception — its tool restriction (no edit) cannot be expressed in a skill." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontStyle=2;" vertex="1" parent="1">
+        <mxCell id="legend" value="Design Rule: @Orchestrator executes ALL skills directly. @Auditor is the only exception ï¿½ its tool restriction (no edit) cannot be expressed in a skill." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontStyle=2;" vertex="1" parent="1">
           <mxGeometry x="40" y="1200" width="860" height="60" as="geometry"/>
         </mxCell>
 
@@ -122,7 +122,7 @@
         <mxCell id="e11" value="creates" style="endArrow=block;html=1;strokeColor=#9673a6;" edge="1" parent="1" source="sk-spec" target="implspec"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e12" value="ask repo mode" style="endArrow=block;html=1;strokeColor=#d79b00;" edge="1" parent="1" source="orchestrator" target="repoDecision"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e13" value="executes" style="endArrow=block;html=1;strokeColor=#82b366;" edge="1" parent="1" source="repoDecision" target="sk-scaffold"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e14" value="creates repo" style="endArrow=block;html=1;strokeColor=#6c8ebf;" edge="1" parent="1" source="sk-scaffold" target="repo"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e14" value="initializes scaffold" style="endArrow=block;html=1;strokeColor=#6c8ebf;" edge="1" parent="1" source="sk-scaffold" target="repo"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e15" value="executes" style="endArrow=block;html=1;strokeColor=#82b366;" edge="1" parent="1" source="orchestrator" target="sk-ghbootstrap"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e16" value="creates" style="endArrow=block;html=1;strokeColor=#6c8ebf;" edge="1" parent="1" source="sk-ghbootstrap" target="ghProject"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e17" value="executes" style="endArrow=block;html=1;strokeColor=#82b366;" edge="1" parent="1" source="orchestrator" target="sk-wiring"><mxGeometry relative="1" as="geometry"/></mxCell>
@@ -130,7 +130,7 @@
         <mxCell id="e19" value="then" style="endArrow=block;html=1;strokeColor=#82b366;" edge="1" parent="1" source="sk-ui" target="sk-seo"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e20" value="code review" style="endArrow=block;html=1;strokeColor=#d79b00;" edge="1" parent="1" source="orchestrator" target="approval2"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e21" value="not approved" style="endArrow=block;html=1;strokeColor=#d79b00;dashed=1;" edge="1" parent="1" source="approval2" target="orchestrator"><mxGeometry relative="1" as="geometry"/></mxCell>
-        <mxCell id="e22" value="approved — delegates" style="endArrow=block;html=1;strokeColor=#b85450;dashed=1;" edge="1" parent="1" source="approval2" target="auditor"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e22" value="approved ï¿½ delegates" style="endArrow=block;html=1;strokeColor=#b85450;dashed=1;" edge="1" parent="1" source="approval2" target="auditor"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e23" value="executes" style="endArrow=block;html=1;strokeColor=#b85450;" edge="1" parent="1" source="auditor" target="sk-audit"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e24" value="GO" style="endArrow=block;html=1;strokeColor=#82b366;" edge="1" parent="1" source="sk-audit" target="sk-vps"><mxGeometry relative="1" as="geometry"/></mxCell>
         <mxCell id="e25" value="deploys" style="endArrow=block;html=1;strokeColor=#2e7d32;" edge="1" parent="1" source="sk-vps" target="production"><mxGeometry relative="1" as="geometry"/></mxCell>

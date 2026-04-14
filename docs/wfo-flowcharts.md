@@ -34,7 +34,7 @@ flowchart TD
 
 ---
 
-## Phase 2 Activation: Repository Detection & Creation
+## Phase 2 Activation: Repository Detection (Manual Create Prerequisite)
 
 ```mermaid
 flowchart TD
@@ -44,18 +44,18 @@ flowchart TD
     
     C --> D{Repo exists?}
     
-    D -->|Yes| E["Step 2: Clone repo<br/>gh repo clone user/project-name"]
-    D -->|No| F["Step 3: Create repo<br/>Confirm with user first"]
+    D -->|Yes| E["Step 2: Clone repo<br/>use provided repo URL"]
+    D -->|No| F["BLOCKER: Create repo manually<br/>in GitHub Web first"]
     
-    F --> F1["Ask: 'Create new repo?<br/>Location: github.com/user/{project-name}'"]
+    F --> F1["Ask user to create repo manually<br/>and share URL"]
     F1 -->|User: No| F2["Abort Phase 2<br/>Roadmap stays in hub"]
-    F1 -->|User: Yes| G["gh repo create {project-name} --private --clone"]
+    F1 -->|User: Yes| G["User provides existing repo URL"]
     
     E --> E1{"Existing app/CI-CD already working?"}
     E1 -->|Yes| E2["Adoption mode<br/>Assess Program.cs, .csproj,<br/>Decap config, workflows"]
     E1 -->|No| H
     E2 --> H
-    G --> H
+    G --> E
     
     H --> I["Step 5: Initialize or augment scaffold<br/>Copy blueprints only if missing"]
     
@@ -213,7 +213,7 @@ stateDiagram-v2
     
     APPROVED: phase: "define"<br/>awaiting Phase 2
     
-    APPROVED --> BUILD: project-scaffolding<br/>creates repo
+    APPROVED --> BUILD: project-scaffolding<br/>uses existing repo URL
     
     BUILD: phase: "build"<br/>active_agent: @Developer<br/>location: client repo
     

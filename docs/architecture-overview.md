@@ -104,7 +104,7 @@
 **Location:** Per-client repository (NEW)  
 **Owner:** @Developer, @FrontendUI  
 **Skills:**
-4. `project-scaffolding` — Detect, create, or adopt GitHub repo
+4. `project-scaffolding` — Detect/adopt existing GitHub repo (manual creation prerequisite)
 5. `look-and-feel-ingestion` — Capture style from image/URL/Stitch and generate design style contract
 6. `github-project-bootstrap` — Convert roadmap/spec into issues and board tracking
 7. `content-service-and-data-wiring` — Implement models/services/PageModel bindings
@@ -124,9 +124,9 @@ Orchestrator asks (or auto-detects):
     → Clone it → Assess codebase and CI/CD → Copy state/roadmap → Continue without overwriting working infrastructure
     
   Option B: "Create new repo"
-    → Run: gh repo create {project-name} --private --clone
-    → Copy state/roadmap into new repo
-    → Commit scaffold commit
+    → User creates repo manually in GitHub Web
+    → User provides repo URL to Orchestrator
+    → Orchestrator resumes at clone/adoption
     → Continue to Step 5
 ```
 
@@ -336,7 +336,7 @@ DEPLOYED ✅
 ### Repo Detection
 ✅ **Dual-Path Support (NEW):**
 1. Existing repo: Clone → copy state/roadmap → continue
-2. New repo: Create via `gh repo create` → populate scaffold → commit
+2. New repo: User creates manually in GitHub Web → shares URL → orchestrator resumes clone/adoption
 
 ### Blueprints as Read-Only Library
 ✅ **No Dynamic Template Mutations:**

@@ -71,7 +71,8 @@ After roadmap and estimation are presented:
 - Do not place WFO orchestrator internals in client repo (`skills/`, `.github/agents/`, `current_state-*.json`, `PROJECT_ROADMAP-*.md`, hub docs).
 - Keep orchestration/state files in the hub workspace only.
 - Never ask the user whether project code exists locally before bootstrap.
-- Orchestrator must generate scaffold code in its own execution context and push to the client repository automatically.
+- Repository creation is a manual prerequisite done by the user in GitHub Web.
+- Orchestrator only continues after user provides an existing repository URL.
 
 1. **Detect existing GitHub repository:**
    - Ask: *"Does a GitHub repository already exist for {project-name}?"*
@@ -79,51 +80,18 @@ After roadmap and estimation are presented:
      - Set `repo_url` in state file
      - Proceed to next step (will clone it)
    - If user replies "no" or "create new":
-     - Proceed to project-scaffolding skill
-
-    **GitHub MCP Credential Readiness (required before Step 2):**
-    Ask and confirm:
-    - MCP GitHub server is configured and reachable.
-      - PAT exists and is loaded in the remote runtime environment (for example `GITHUB_PERSONAL_ACCESS_TOKEN` or `GH_TOKEN`).
-    - Minimal token scopes are present:
-       - `repo` (required to create private repos and push code)
-       - `workflow` (required to create/update `.github/workflows/*`)
-    - If target is a GitHub Organization: account/token must be authorized to create repositories in that org.
-
-    If any item is missing:
-    - Set `repo_status: "blocked-missing-permissions"` in `current_state-{project-name}.json`
-    - Emit `BLOCKER`
-    - Ask user to update token scopes/organization permissions
-    - Do not continue to repo bootstrap until confirmed
+       - Set `repo_status: "blocked-awaiting-manual-repo-create"` in `current_state-{project-name}.json`
+       - Emit `BLOCKER`
+       - Ask user to create the repo manually in GitHub Web and provide the repo URL.
+       - Do not continue until a valid repo URL is provided.
 
 2. **Delegate to `project-scaffolding` skill:**
    - Read the full skill definition at `skills/project-scaffolding/SKILL.md`.
-   - If repo doesn't exist: skill creates it via MCP GitHub server (same authenticated account), private and empty.
-   - If repo exists: skill may clone it locally for scaffold execution.
+   - The repository must already exist before this step.
+   - Skill clones/adopts the existing repository for scaffold execution.
    - Human clone is optional and can be done later using the returned `repo_url`.
    - Execute skill **exactly as written** — all 10 steps
    - Skill will initialize .NET scaffold, seed Decap CMS, and push initial commit (project-code-only scope)
-
-   **GitHub MCP/Network Failure Protocol (Blocking):**
-   If MCP repository creation fails OR `git ls-remote --heads origin` fails with auth/network/proxy error (`authentication required`, `401`, `403`, timeout, DNS):
-   - Set `repo_status: "blocked-github-mcp"` (or `blocked-github-communication` when remote check fails) in `current_state-{project-name}.json`
-   - Emit `BLOCKER` and stop workflow immediately.
-   - Do NOT proceed to any later skill until connectivity is resolved.
-   - Ask the user:
-
-   ```
-   ⚠️ GitHub MCP communication blocked — repository bootstrap is blocked.
-
-   This flow is MCP-only and fully automatic.
-   Restore remote MCP GitHub connectivity/authentication and retry.
-
-   Workflow resumes only after BOTH checks pass:
-   1. MCP repository creation succeeds
-   2. `git ls-remote --heads origin` succeeds
-   ```
-
-   - No manual fallback branch is allowed in this workflow.
-   - Do not continue until communication check passes.
 
 3. **Monitor completion:**
    - Wait for `project-scaffolding` to complete all steps
@@ -132,7 +100,7 @@ After roadmap and estimation are presented:
 
 4. **No local-code confirmation prompts (non-negotiable):**
    - Do NOT ask questions like: "Do you have the code locally ready to push?"
-   - If repository bootstrap and credentials are valid, proceed autonomously:
+   - If repository URL is provided and remote git connectivity is valid, proceed autonomously:
      1) generate scaffold,
      2) commit,
      3) push to `main`,
