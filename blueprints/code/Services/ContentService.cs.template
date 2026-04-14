@@ -41,7 +41,7 @@ public class ContentService
     public IReadOnlyList<T> GetJsonCollection<T>(string collectionName) where T : class, new()
     {
         var cacheKey = $"collection_{collectionName}";
-        return _cache.GetOrCreate(cacheKey, entry =>
+        return _cache.GetOrCreate<IReadOnlyList<T>>(cacheKey, entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheTtlMinutes);
             var items = new List<T>();
@@ -77,7 +77,7 @@ public class ContentService
     // ── Specific collection: BlogPosts ────────────────────────────────────────
     public IReadOnlyList<BlogPost> GetBlogPosts()
     {
-        return _cache.GetOrCreate("blogposts", entry =>
+        return _cache.GetOrCreate<IReadOnlyList<BlogPost>>("blogposts", entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheTtlMinutes);
             var posts = new List<BlogPost>();
@@ -110,7 +110,7 @@ public class ContentService
     public BlogPost? GetPostBySlug(string slug)
     {
         var cacheKey = $"blogpost_{slug}";
-        return _cache.GetOrCreate(cacheKey, entry =>
+        return _cache.GetOrCreate<BlogPost?>(cacheKey, entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheTtlMinutes);
             var contentPath = Path.Combine(_env.WebRootPath, "content", "blog");
