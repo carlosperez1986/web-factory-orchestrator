@@ -1,0 +1,411 @@
+name: Deploy ASP.NET Core App to VPS
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      APP_NAME: "mimascota"
+      PROJECT_PATH: "./MiMascota.csproj"
+      DOTNET_VERSION: "9.0.x"
+      APP_DLL: "MiMascota.dll"
+      APP_PORT: "5010"
+      SSH_HOST: ${{ vars.SERVER_IP || secrets.SERVER_IP }}
+      SSH_USER: ${{ vars.USERNAME || secrets.USERNAME }}
+      SSH_PASSWORD: ${{ secrets.PASSWORD }}
+      SSH_PORT: ${{ vars.PORT || secrets.PORT || '22' }}
+      DECAP_GITHUB_CLIENT_ID: ${{ secrets.DECAP_GITHUB_CLIENT_ID }}
+      DECAP_GITHUB_CLIENT_SECRET: ${{ secrets.DECAP_GITHUB_CLIENT_SECRET }}
+
+      # Topology A — multiple apps under one shared domain
+      # Example: https:///mimascota
+      USE_SHARED_DOMAIN: "false"
+      SHARED_DOMAIN: ""
+      SHARED_SITE_FILE: ""
+      ROUTE_PREFIX: ""
+      TARGET_DIR: "/var/www/mimascota"
+
+      # Topology B — dedicated custom domain for this app only
+      USE_CUSTOM_DOMAIN: "true"
+      DOMAIN: "mimascota.com.co"
+      CERT_DIR: "/etc/ssl/certs/mimascota"
+      CERT_CRT: "SSL_MIMASCOTA.pem"
+      CERT_KEY: "SSL_MIMASCOTA.priv"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate deploy secrets
+        shell: bash
+        run: |
+          test -n "${{ env.SSH_HOST }}" || { echo "::error::Missing SERVER_IP (configure as GitHub Variable or Secret)"; exit 1; }
+          test -n "${{ env.SSH_USER }}" || { echo "::error::Missing USERNAME (configure as GitHub Variable or Secret)"; exit 1; }
+          test -n "${{ env.SSH_PASSWORD }}" || { echo "::error::Missing GitHub secret PASSWORD"; exit 1; }
+          test -n "${{ env.DECAP_GITHUB_CLIENT_ID }}" || { echo "::error::Missing GitHub secret DECAP_GITHUB_CLIENT_ID"; exit 1; }
+          test -n "${{ env.DECAP_GITHUB_CLIENT_SECRET }}" || { echo "::error::Missing GitHub secret DECAP_GITHUB_CLIENT_SECRET"; exit 1; }
+
+      - name: Validate topology configuration
+        shell: bash
+        run: |
+          set -e
+          if [ "${{ env.USE_SHARED_DOMAIN }}" = "true" ] && [ "${{ env.USE_CUSTOM_DOMAIN }}" = "true" ]; then
+            echo "::error::Invalid topology: USE_SHARED_DOMAIN and USE_CUSTOM_DOMAIN cannot both be true"
+            exit 1
+          fi
+
+          if [ "${{ env.USE_SHARED_DOMAIN }}" != "true" ] && [ "${{ env.USE_CUSTOM_DOMAIN }}" != "true" ]; then
+            echo "::error::Invalid topology: one of USE_SHARED_DOMAIN or USE_CUSTOM_DOMAIN must be true"
+            exit 1
+          fi
+
+          if [ "${{ env.USE_SHARED_DOMAIN }}" = "true" ]; then
+            test -n "${{ env.SHARED_DOMAIN }}" || { echo "::error::Missing SHARED_DOMAIN for shared topology"; exit 1; }
+            test -n "${{ env.SHARED_SITE_FILE }}" || { echo "::error::Missing SHARED_SITE_FILE for shared topology"; exit 1; }
+            test -n "${{ env.ROUTE_PREFIX }}" || { echo "::error::Missing ROUTE_PREFIX for shared topology"; exit 1; }
+          fi
+
+          if [ "${{ env.USE_CUSTOM_DOMAIN }}" = "true" ]; then
+            test -n "${{ env.DOMAIN }}" || { echo "::error::Missing DOMAIN for custom topology"; exit 1; }
+            test -n "${{ env.CERT_DIR }}" || { echo "::error::Missing CERT_DIR for custom topology"; exit 1; }
+            test -n "${{ env.CERT_CRT }}" || { echo "::error::Missing CERT_CRT for custom topology"; exit 1; }
+            test -n "${{ env.CERT_KEY }}" || { echo "::error::Missing CERT_KEY for custom topology"; exit 1; }
+          fi
+
+      - name: Test SSH connection to VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          timeout: 30s
+          command_timeout: 20s
+          script: |
+            set -e
+            echo "SSH connection successful"
+            whoami
+            hostname
+            pwd
+
+            SUDO_PASSWORD="$(cat <<'__SUDO_PASS__'
+            ${{ env.SSH_PASSWORD }}
+            __SUDO_PASS__
+            )"
+
+            if [ "$(id -u)" -eq 0 ]; then
+              echo "Running as root: sudo not required"
+            else
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' -v
+              echo "sudo validation successful"
+            fi
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
+
+      - name: Build
+        run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --no-build --output ./publish
+
+      - name: Provision VPS, systemd and Nginx
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          script: |
+            set -e
+
+            APP_NAME="${{ env.APP_NAME }}"
+            APP_DLL="${{ env.APP_DLL }}"
+            APP_PORT="${{ env.APP_PORT }}"
+            USE_SHARED_DOMAIN="${{ env.USE_SHARED_DOMAIN }}"
+            USE_CUSTOM_DOMAIN="${{ env.USE_CUSTOM_DOMAIN }}"
+            SHARED_DOMAIN="${{ env.SHARED_DOMAIN }}"
+            SHARED_SITE_FILE="${{ env.SHARED_SITE_FILE }}"
+            ROUTE_PREFIX="${{ env.ROUTE_PREFIX }}"
+            TARGET_DIR="${{ env.TARGET_DIR }}"
+            DOMAIN="${{ env.DOMAIN }}"
+            CERT_DIR="${{ env.CERT_DIR }}"
+            CERT_CRT="${{ env.CERT_CRT }}"
+            CERT_KEY="${{ env.CERT_KEY }}"
+            SSH_DEPLOY_USER="${{ env.SSH_USER }}"
+
+            SUDO_PASSWORD="$(cat <<'__SUDO_PASS__'
+            ${{ env.SSH_PASSWORD }}
+            __SUDO_PASS__
+            )"
+
+            sudo_run() {
+              if [ "$(id -u)" -eq 0 ]; then
+                "$@"
+              else
+                printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' "$@"
+              fi
+            }
+
+            sudo_sh() {
+              if [ "$(id -u)" -eq 0 ]; then
+                sh -c "$1"
+              else
+                printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' sh -c "$1"
+              fi
+            }
+
+            if [ "$(id -u)" -ne 0 ]; then
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' -v || { echo "ERROR: sudo failed."; exit 1; }
+            fi
+
+            APP_PATH_BASE=""
+            if [ "$USE_SHARED_DOMAIN" = "true" ]; then
+              APP_PATH_BASE="$ROUTE_PREFIX"
+            fi
+
+            OAUTH_ENV_DIR="/etc/$APP_NAME"
+            OAUTH_ENV_FILE="$OAUTH_ENV_DIR/$APP_NAME.env"
+
+            echo "Using ASP.NET Core port: $APP_PORT"
+            if command -v ss >/dev/null 2>&1; then
+              if ss -ltn | awk '{print $4}' | grep -qE "[:.]$APP_PORT$"; then
+                echo "WARNING: Port $APP_PORT is already listening on the VPS"
+                sudo_run ss -ltnp | grep ":$APP_PORT " || true
+              fi
+            fi
+
+            if command -v apt-get >/dev/null 2>&1; then
+              if [ -f /etc/os-release ]; then
+                . /etc/os-release
+                if [ "$ID" != "debian" ] || [ "$VERSION_ID" != "11" ]; then
+                  echo "ERROR: Unsupported OS detected: ${ID:-unknown} ${VERSION_ID:-unknown}. This deploy workflow supports Debian 11 only."
+                  exit 1
+                fi
+                echo "Detected supported OS: Debian 11"
+              else
+                echo "ERROR: Cannot determine OS. Missing /etc/os-release"
+                exit 1
+              fi
+
+              if ! command -v wget >/dev/null 2>&1; then
+                sudo_run apt-get update
+                sudo_run apt-get install -y wget
+              fi
+
+              if ! command -v nginx >/dev/null 2>&1; then
+                sudo_run apt-get update
+                sudo_run apt-get install -y nginx
+                sudo_run systemctl enable nginx
+              fi
+
+              if ! dotnet --list-runtimes 2>/dev/null | grep -q '^Microsoft.NETCore.App 9.0\.'; then
+                echo "Installing missing .NET 9.0 runtime on VPS..."
+                wget -q "https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb" -O /tmp/packages-microsoft-prod.deb
+                sudo_run dpkg -i /tmp/packages-microsoft-prod.deb || true
+                sudo_run apt-get update
+                sudo_run apt-get install -y aspnetcore-runtime-9.0
+              fi
+
+              echo "Available runtimes on VPS:"
+              dotnet --list-runtimes || true
+            fi
+
+            sudo_run mkdir -p "$TARGET_DIR"
+            sudo_run chown -R "$SSH_DEPLOY_USER:www-data" "$TARGET_DIR"
+
+            sudo_run mkdir -p "$OAUTH_ENV_DIR"
+            cat > "/tmp/$APP_NAME.oauth.env" <<EOF
+            GitHub__ClientId=${{ env.DECAP_GITHUB_CLIENT_ID }}
+            GitHub__ClientSecret=${{ env.DECAP_GITHUB_CLIENT_SECRET }}
+            EOF
+            sudo_run install -m 600 "/tmp/$APP_NAME.oauth.env" "$OAUTH_ENV_FILE"
+            sudo_run chown root:root "$OAUTH_ENV_FILE"
+
+            cat > "/tmp/$APP_NAME.service" <<SERVICE
+            [Unit]
+            Description=$APP_NAME ASP.NET Core application
+            After=network.target
+
+            [Service]
+            WorkingDirectory=$TARGET_DIR
+            ExecStart=/usr/bin/dotnet $TARGET_DIR/$APP_DLL
+            Restart=always
+            RestartSec=5
+            KillSignal=SIGINT
+            SyslogIdentifier=$APP_NAME
+            User=$SSH_DEPLOY_USER
+            Environment=ASPNETCORE_ENVIRONMENT=Production
+            Environment=ASPNETCORE_URLS=http://127.0.0.1:$APP_PORT
+            Environment=DOTNET_ROOT=/usr/share/dotnet
+            Environment=PATH_BASE=$APP_PATH_BASE
+            EnvironmentFile=-$OAUTH_ENV_FILE
+
+            [Install]
+            WantedBy=multi-user.target
+            SERVICE
+            sudo_run install -m 644 "/tmp/$APP_NAME.service" "/etc/systemd/system/$APP_NAME.service"
+
+            if [ "$USE_SHARED_DOMAIN" = "true" ]; then
+              SHARED_CONF="/etc/nginx/sites-available/$SHARED_SITE_FILE"
+              ROUTES_DIR="/etc/nginx/shared-routes/$SHARED_DOMAIN"
+              ROUTE_FILE="$ROUTES_DIR/$APP_NAME.conf"
+
+              if ! sudo_run test -f "$SHARED_CONF"; then
+                echo "ERROR: No existe la configuración base de Nginx: $SHARED_CONF"
+                exit 1
+              fi
+
+              sudo_run mkdir -p "$ROUTES_DIR"
+
+              cat > "/tmp/$APP_NAME.route.conf" <<ROUTE
+              location = $ROUTE_PREFIX {
+                  return 301 $ROUTE_PREFIX/;
+              }
+
+              location ^~ $ROUTE_PREFIX/ {
+                  proxy_pass http://127.0.0.1:$APP_PORT;
+                  proxy_http_version 1.1;
+                  proxy_set_header Host \$host;
+                  proxy_set_header X-Real-IP \$remote_addr;
+                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto \$scheme;
+                  proxy_set_header X-Forwarded-Prefix $ROUTE_PREFIX;
+                  proxy_set_header Upgrade \$http_upgrade;
+                  proxy_set_header Connection "keep-alive";
+                  proxy_cache_bypass \$http_upgrade;
+              }
+            ROUTE
+              sudo_run install -m 644 "/tmp/$APP_NAME.route.conf" "$ROUTE_FILE"
+
+              INCLUDE_LINE="include /etc/nginx/shared-routes/$SHARED_DOMAIN/*.conf;"
+              sudo_sh "grep -Fq '$INCLUDE_LINE' '$SHARED_CONF' || sed -i '\$i\\    $INCLUDE_LINE' '$SHARED_CONF'"
+
+            elif [ "$USE_CUSTOM_DOMAIN" = "true" ]; then
+              cat > "/tmp/$APP_NAME.nginx.conf" <<NGINX
+              server {
+                  listen 80;
+                  server_name $DOMAIN www.$DOMAIN;
+                  return 301 https://\$host\$request_uri;
+              }
+
+              server {
+                  listen 443 ssl;
+                  server_name $DOMAIN www.$DOMAIN;
+
+                  ssl_certificate $CERT_DIR/$CERT_CRT;
+                  ssl_certificate_key $CERT_DIR/$CERT_KEY;
+
+                  ssl_protocols TLSv1.2 TLSv1.3;
+                  ssl_prefer_server_ciphers on;
+
+                  location / {
+                      proxy_pass http://127.0.0.1:$APP_PORT;
+                      proxy_http_version 1.1;
+                      proxy_set_header Host \$host;
+                      proxy_set_header X-Real-IP \$remote_addr;
+                      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                      proxy_set_header X-Forwarded-Proto \$scheme;
+                  }
+              }
+            NGINX
+              sudo_run install -m 644 "/tmp/$APP_NAME.nginx.conf" "/etc/nginx/sites-available/$APP_NAME"
+              sudo_run ln -sf "/etc/nginx/sites-available/$APP_NAME" "/etc/nginx/sites-enabled/$APP_NAME"
+            fi
+
+            sudo_run systemctl daemon-reload
+            sudo_run systemctl enable "$APP_NAME.service"
+            sudo_run nginx -t
+            sudo_run systemctl restart nginx
+
+      - name: Copy published files to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          source: "publish/*"
+          target: "${{ env.TARGET_DIR }}"
+          strip_components: 1
+
+      - name: Copy certificate files to VPS (only custom domain)
+        if: env.USE_CUSTOM_DOMAIN == 'true'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          source: "certs/*"
+          target: "/home/${{ env.SSH_USER }}/certs_tmp"
+          strip_components: 1
+
+      - name: Install certificates on VPS (only custom domain)
+        if: env.USE_CUSTOM_DOMAIN == 'true'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          script: |
+            SUDO_PASSWORD="$(cat <<'__SUDO_PASS__'
+            ${{ env.SSH_PASSWORD }}
+            __SUDO_PASS__
+            )"
+
+            if [ "$(id -u)" -eq 0 ]; then
+              mkdir -p "${{ env.CERT_DIR }}"
+              cp -f /home/${{ env.SSH_USER }}/certs_tmp/* "${{ env.CERT_DIR }}/" || true
+              chown root:root "${{ env.CERT_DIR }}"/* || true
+              chmod 600 "${{ env.CERT_DIR }}"/* || true
+            else
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' mkdir -p "${{ env.CERT_DIR }}"
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' cp -f /home/${{ env.SSH_USER }}/certs_tmp/* "${{ env.CERT_DIR }}/" || true
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' chown root:root "${{ env.CERT_DIR }}"/* || true
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' chmod 600 "${{ env.CERT_DIR }}"/* || true
+            fi
+
+      - name: Restart ASP.NET Core service
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          script: |
+            SUDO_PASSWORD="$(cat <<'__SUDO_PASS__'
+            ${{ env.SSH_PASSWORD }}
+            __SUDO_PASS__
+            )"
+            OAUTH_ENV_FILE="/etc/${{ env.APP_NAME }}/${{ env.APP_NAME }}.env"
+
+            if [ "$(id -u)" -eq 0 ]; then
+              if [ -f "$OAUTH_ENV_FILE" ]; then
+                chmod 600 "$OAUTH_ENV_FILE"
+              fi
+              systemctl daemon-reload
+              systemctl restart "${{ env.APP_NAME }}.service"
+              systemctl --no-pager --full status "${{ env.APP_NAME }}.service"
+              nginx -t
+              systemctl reload nginx
+            else
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' sh -c "if [ -f '$OAUTH_ENV_FILE' ]; then chmod 600 '$OAUTH_ENV_FILE'; fi"
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl daemon-reload
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl restart "${{ env.APP_NAME }}.service"
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl --no-pager --full status "${{ env.APP_NAME }}.service"
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' nginx -t
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl reload nginx
+            fi
+___BEGIN___COMMAND_DONE_MARKER___0

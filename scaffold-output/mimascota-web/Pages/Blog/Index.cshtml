@@ -1,0 +1,61 @@
+@page
+@model MiMascota.Pages.Blog.IndexModel
+@{
+    ViewData["Title"] = "Blog — Consejos para tu mascota";
+    ViewData["SeoDescription"] = "Artículos sobre higiene, bienestar y cuidado responsable de mascotas. Consejos de nuestros veterinarios.";
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <span class="text-uppercase fw-bold small" style="color: var(--color-eco); letter-spacing: 0.08em;">BLOG</span>
+        <h1 class="fw-bold mt-1" style="color: var(--color-navy);">Consejos para tu mascota</h1>
+    </div>
+
+    <!-- Category filter -->
+    @if (Model.Categories.Any())
+    {
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="/blog" class="badge rounded-pill text-decoration-none px-3 py-2 @(string.IsNullOrEmpty(Model.ActiveCategory) ? "text-white" : "text-dark")"
+               style="background: @(string.IsNullOrEmpty(Model.ActiveCategory) ? "var(--color-primary)" : "var(--color-surface-alt)");">Todos</a>
+            @foreach (var cat in Model.Categories)
+            {
+                <a href="/blog?categoria=@cat" class="badge rounded-pill text-decoration-none px-3 py-2"
+                   style="background: @(Model.ActiveCategory == cat ? "var(--color-primary)" : "var(--color-surface-alt)"); color: @(Model.ActiveCategory == cat ? "white" : "var(--color-text-body)");">
+                    @cat
+                </a>
+            }
+        </div>
+    }
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var post in Model.Posts)
+        {
+            <div class="col">
+                <div class="card border-0 h-100 blog-card"
+                     style="border-radius: var(--radius-card); box-shadow: var(--shadow-card); overflow: hidden;">
+                    <div class="position-relative">
+                        <img src="/@post.FeaturedImage" alt="@post.Title"
+                             class="card-img-top"
+                             style="height: 220px; object-fit: cover;"
+                             onerror="this.style.display='none'" />
+                        <span class="badge rounded-pill position-absolute top-0 start-0 m-3"
+                              style="background: var(--color-badge-pet); color: var(--color-primary);">
+                            @post.Category
+                        </span>
+                    </div>
+                    <div class="card-body d-flex flex-column" style="padding: var(--card-padding);">
+                        <p class="small text-muted mb-1">@post.Date.ToString("dd MMM yyyy")</p>
+                        <h5 class="fw-bold mb-2" style="color: var(--color-navy); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">@post.Title</h5>
+                        <p class="text-muted small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">@post.Excerpt</p>
+                        <a href="/blog/@post.Slug" class="fw-semibold text-decoration-none mt-2" style="color: var(--color-primary);">Leer más →</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Posts.Any())
+    {
+        <p class="text-muted text-center py-5">No hay artículos en esta categoría todavía.</p>
+    }
+</div>

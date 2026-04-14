@@ -1,0 +1,23 @@
+## .NET 9
+obj/
+bin/
+*.user
+.vs/
+.idea/
+*.suo
+
+## Published output
+publish/
+
+## Secrets (NEVER commit)
+appsettings.Production.json
+appsettings.Secrets.json
+.env
+
+## OS
+.DS_Store
+Thumbs.db
+
+## User uploads (managed by Decap CMS, stored in wwwroot/images/uploads)
+# Uncomment the next line if uploads should not be tracked in Git:
+# wwwroot/images/uploads/

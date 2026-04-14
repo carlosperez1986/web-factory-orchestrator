@@ -1,0 +1,37 @@
+{
+  "slug": "toallitas-gatos-pure-wipe",
+  "name": "Toallitas Pure Wipe Gatos",
+  "line": "mascotas",
+  "description": "Toallitas húmedas biodegradables formuladas para la piel sensible de los gatos. Fórmula extra suave sin fragancias fuertes, libre de ingredientes que puedan afectar al sistema felino. Perfectas para limpieza entre baños o cuando tu gato no tolera el agua.",
+  "ingredients": [
+    "Agua purificada",
+    "Extracto de Aloe Vera",
+    "Pantenol (Pro-Vitamina B5)",
+    "Glicerina vegetal",
+    "Ácido cítrico",
+    "Gluconolactona",
+    "Fibra de celulosa 100% biodegradable"
+  ],
+  "certifications": [
+    "Libre de parabenos",
+    "Libre de alcohol",
+    "Sin fragancias artificiales",
+    "Seguro para gatos",
+    "Biodegradable en 90 días"
+  ],
+  "usage_instructions": "Saca una toallita y limpia suavemente el pelaje y las patas de tu gato. Apta para orejas externas y zona abdominal. No aplicar en heridas ni mucosas. No requiere enjuague.",
+  "warnings": "Solo para uso externo. No ingerir. Si el gato lame la zona limpiada, la fórmula es segura — sin embargo no está diseñada para ingestión. Si persiste lamido excesivo, consultar veterinario.",
+  "presentations": [
+    "Paquete x 20 unidades",
+    "Paquete x 50 unidades"
+  ],
+  "gallery_images": [
+    "images/products/toallitas-gatos-1.jpg",
+    "images/products/toallitas-gatos-2.jpg"
+  ],
+  "related_products": [
+    "toallitas-perros-pure-wipe"
+  ],
+  "cta_text": "Solicitar pedido",
+  "cta_url": "/contacto"
+}

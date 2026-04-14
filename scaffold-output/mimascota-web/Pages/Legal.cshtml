@@ -1,0 +1,86 @@
+@page
+@model MiMascota.Pages.LegalModel
+@{
+    ViewData["Title"] = "Información Legal — Mi Mascota";
+    ViewData["SeoDescription"] = "Términos y condiciones, política de privacidad (Ley 1581) y política de devolución de Mi Mascota.";
+}
+
+<div class="container py-5">
+    <h1 class="fw-bold mb-4" style="color: var(--color-navy);">Información Legal</h1>
+
+    @if (Model.Legal is null)
+    {
+        <p class="text-muted">Contenido legal no disponible.</p>
+        return;
+    }
+
+    <div class="accordion" id="legalAccordion">
+
+        <!-- Terms -->
+        <div class="accordion-item border-0 mb-3 rounded-4 overflow-hidden shadow-sm">
+            <h2 class="accordion-header">
+                <button class="accordion-button fw-semibold" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseTerms"
+                        style="color: var(--color-navy); background: var(--color-surface-alt);">
+                    Términos y Condiciones
+                </button>
+            </h2>
+            <div id="collapseTerms" class="accordion-collapse collapse show" data-bs-parent="#legalAccordion">
+                <div class="accordion-body" style="color: var(--color-text-body); line-height: var(--line-height-body);">
+                    @Html.Raw(Model.TermsHtml)
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy -->
+        <div class="accordion-item border-0 mb-3 rounded-4 overflow-hidden shadow-sm">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed fw-semibold" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapsePrivacy"
+                        style="color: var(--color-navy); background: var(--color-surface-alt);">
+                    Política de Privacidad (Ley 1581 de 2012)
+                </button>
+            </h2>
+            <div id="collapsePrivacy" class="accordion-collapse collapse" data-bs-parent="#legalAccordion">
+                <div class="accordion-body" style="color: var(--color-text-body); line-height: var(--line-height-body);">
+                    @Html.Raw(Model.PrivacyHtml)
+                </div>
+            </div>
+        </div>
+
+        <!-- Returns -->
+        <div class="accordion-item border-0 mb-3 rounded-4 overflow-hidden shadow-sm">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed fw-semibold" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseReturns"
+                        style="color: var(--color-navy); background: var(--color-surface-alt);">
+                    Política de Devolución y Garantía
+                </button>
+            </h2>
+            <div id="collapseReturns" class="accordion-collapse collapse" data-bs-parent="#legalAccordion">
+                <div class="accordion-body" style="color: var(--color-text-body); line-height: var(--line-height-body);">
+                    @Html.Raw(Model.ReturnsHtml)
+                </div>
+            </div>
+        </div>
+
+        <!-- Fiscal info (optional) -->
+        @if (!string.IsNullOrEmpty(Model.Legal.FiscalInfo))
+        {
+            <div class="accordion-item border-0 mb-3 rounded-4 overflow-hidden shadow-sm">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-semibold" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseFiscal"
+                            style="color: var(--color-navy); background: var(--color-surface-alt);">
+                        Información Fiscal y Legal
+                    </button>
+                </h2>
+                <div id="collapseFiscal" class="accordion-collapse collapse" data-bs-parent="#legalAccordion">
+                    <div class="accordion-body" style="color: var(--color-text-body); line-height: var(--line-height-body);">
+                        @Html.Raw(Model.FiscalHtml)
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

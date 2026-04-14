@@ -1,0 +1,212 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Inicio";
+    ViewData["SeoDescription"] = "Mi Mascota — Higiene segura para tu mascota. Toallitas biodegradables con ingredientes 100% seguros para perros y gatos.";
+}
+
+<!-- ── HERO BANNER ────────────────────────────────────────────────────── -->
+<section id="hero" class="hero-section"
+         style="@(Model.Hero?.BackgroundImage != null ? $"background-image: url('/{Model.Hero.BackgroundImage}');" : string.Empty)"
+         data-aos="fade-in">
+    <div class="container">
+        <div class="row align-items-center" style="min-height: var(--hero-min-height, 520px);">
+            <!-- Text col -->
+            <div class="col-lg-5 py-5" data-aos="fade-right" data-aos-delay="100">
+                <h1 class="hero-title display-4 fw-bold"
+                    style="font-family: var(--font-display); color: var(--color-navy); font-size: var(--font-size-hero); line-height: var(--line-height-display);">
+                    @Html.Raw(Model.Hero?.Title ?? "Higiene segura para tu mascota")
+                </h1>
+                <p class="hero-subtitle mt-3"
+                   style="color: var(--color-text-muted); font-size: var(--font-size-body); max-width: 480px; line-height: var(--line-height-body);">
+                    @(Model.Hero?.Subtitle ?? "Toallitas biodegradables con ingredientes 100% seguros para perros y gatos.")
+                </p>
+                <div class="hero-ctas mt-4 d-flex flex-wrap gap-3">
+                    <a href="@(Model.Hero?.CtaPrimaryUrl ?? "/productos")"
+                       class="btn btn-dark btn-lg rounded-pill px-4">
+                        @(Model.Hero?.CtaPrimaryText ?? "Ver productos") <i class="bi bi-chevron-right ms-1"></i>
+                    </a>
+                    @if (!string.IsNullOrEmpty(Model.Hero?.CtaSecondaryText))
+                    {
+                        <a href="@Model.Hero.CtaSecondaryUrl"
+                           class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                            @Model.Hero.CtaSecondaryText
+                        </a>
+                    }
+                </div>
+            </div>
+            <!-- Image col (placeholder — integrate-ui-component adds product image) -->
+            <div class="col-lg-7 text-center py-4" data-aos="fade-left" data-aos-delay="200">
+                <div class="position-relative d-inline-block">
+                    <span class="badge rounded-pill border border-2 p-2 position-absolute top-0 end-0"
+                          style="border-color: var(--color-eco) !important; color: var(--color-eco); background: white; font-size: 0.7rem; transform: translate(20%, -20%);">
+                        🌿 Biodegradable
+                    </span>
+                    <img src="/images/hero-bg.jpg" alt="Toallita Pure Wipe para mascotas"
+                         class="img-fluid rounded-4 shadow" style="max-height: 400px; object-fit: cover;"
+                         onerror="this.style.display='none'" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── VALUES STRIP ──────────────────────────────────────────────────── -->
+<section id="values" class="py-4" style="background: var(--color-surface-alt);">
+    <div class="container">
+        <div class="row row-cols-2 row-cols-md-4 g-0 text-center">
+            <div class="col py-4 border-end">
+                <div style="color: var(--color-primary); font-size: 2rem;">🧼</div>
+                <h5 class="fw-bold mt-2 mb-1" style="font-size: var(--font-size-h3);">Higiene</h5>
+                <p class="text-muted small mb-0">Fórmulas sin tóxicos</p>
+            </div>
+            <div class="col py-4 border-end">
+                <div style="color: var(--color-primary); font-size: 2rem;">🌿</div>
+                <h5 class="fw-bold mt-2 mb-1" style="font-size: var(--font-size-h3);">Ingredientes</h5>
+                <p class="text-muted small mb-0">100% naturales</p>
+            </div>
+            <div class="col py-4 border-end">
+                <div style="color: var(--color-eco); font-size: 2rem;">♻️</div>
+                <h5 class="fw-bold mt-2 mb-1" style="font-size: var(--font-size-h3);">Ecología</h5>
+                <p class="text-muted small mb-0">Biodegradable en 90 días</p>
+            </div>
+            <div class="col py-4">
+                <div style="color: var(--color-primary); font-size: 2rem;">✅</div>
+                <h5 class="fw-bold mt-2 mb-1" style="font-size: var(--font-size-h3);">Calidad</h5>
+                <p class="text-muted small mb-0">Aprobado por veterinarios</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── PRODUCT LINES ──────────────────────────────────────────────────── -->
+<section id="product-lines" class="py-5">
+    <div class="container">
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-3">
+                <span class="text-uppercase fw-bold small" style="color: var(--color-eco); letter-spacing: 0.08em;">NUESTRAS SOLUCIONES 🌿</span>
+                <h2 class="mt-2 fw-bold" style="font-size: var(--font-size-h2); color: var(--color-navy);">Productos para cada momento</h2>
+                <p style="color: var(--color-text-body);">Higiene segura y biodegradable para toda la familia.</p>
+                <a href="/productos" class="fw-semibold text-decoration-none" style="color: var(--color-primary);">Conoce toda la línea →</a>
+            </div>
+            <div class="col-lg-9">
+                <div class="row row-cols-2 row-cols-md-4 g-3">
+                    @foreach (var line in (Model.ProductLines?.Lines ?? new()))
+                    {
+                        <div class="col">
+                            <a href="@line.CtaUrl" class="text-decoration-none">
+                                <div class="card border-0 h-100 product-line-card"
+                                     style="border-radius: var(--radius-card); box-shadow: var(--shadow-card); transition: var(--transition-card);">
+                                    <img src="/@line.Image" class="card-img-top" alt="@line.Name"
+                                         style="height: 160px; object-fit: cover; border-radius: var(--radius-card) var(--radius-card) 0 0;"
+                                         onerror="this.style.display='none'" />
+                                    <div class="card-body" style="padding: var(--card-padding);">
+                                        <h6 class="fw-bold mb-1" style="color: var(--color-navy);">@line.Name</h6>
+                                        <p class="small text-muted mb-2">@line.Description</p>
+                                        <span class="fw-semibold small" style="color: var(--color-primary);">Ver más →</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── ECO BANNER ────────────────────────────────────────────────────── -->
+<section id="eco-commitment" class="py-5 text-white"
+         style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-3">Dejamos una huella positiva</h2>
+                <p class="mb-4 opacity-75">El 100% de nuestros empaques son reciclables y nuestras toallitas se biodegradan en menos de 90 días. El 1% de nuestras ventas netas apoya programas de reforestación en Colombia.</p>
+                <a href="/nosotros#eco-commitment" class="btn btn-outline-light rounded-pill px-4">Conocer nuestro compromiso</a>
+            </div>
+            <div class="col-lg-6">
+                <div class="row row-cols-3 g-3 text-center">
+                    <div class="col">
+                        <div style="font-size: 2.5rem;">🌱</div>
+                        <p class="small mt-2 mb-0 opacity-75">100% Biodegradable</p>
+                    </div>
+                    <div class="col">
+                        <div style="font-size: 2.5rem;">🧪</div>
+                        <p class="small mt-2 mb-0 opacity-75">Sin tóxicos</p>
+                    </div>
+                    <div class="col">
+                        <div style="font-size: 2.5rem;">♻️</div>
+                        <p class="small mt-2 mb-0 opacity-75">Empaque reciclable</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TESTIMONIALS ───────────────────────────────────────────────────── -->
+@if (Model.Testimonials?.Items?.Any() == true)
+{
+    <section id="testimonials" class="py-5" style="background: var(--color-surface);">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-4" style="color: var(--color-navy); font-size: var(--font-size-h2);">Lo que dicen nuestros clientes</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var t in Model.Testimonials.Items.Take(3))
+                {
+                    <div class="col">
+                        <div class="card border-0 h-100 p-4"
+                             style="border-radius: var(--radius-card); box-shadow: var(--shadow-card);">
+                            <div class="mb-2" style="color: #ffc107;">
+                                @for (int i = 0; i < t.Rating; i++) { <span>★</span> }
+                            </div>
+                            <p class="mb-3" style="color: var(--color-text-body); line-height: var(--line-height-body);">"@t.Text"</p>
+                            <p class="fw-semibold mb-0 small" style="color: var(--color-text-muted);">— @t.Author</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- ── BLOG PREVIEW ───────────────────────────────────────────────────── -->
+@if (Model.LatestPosts.Any())
+{
+    <section id="blog-preview" class="py-5" style="background: var(--color-surface-alt);">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <span class="text-uppercase fw-bold small" style="color: var(--color-eco); letter-spacing: 0.08em;">CONSEJOS PARA TU MASCOTA</span>
+                    <h2 class="fw-bold mt-1 mb-0" style="font-size: var(--font-size-h2); color: var(--color-navy);">Artículos recientes</h2>
+                </div>
+                <a href="/blog" class="fw-semibold text-decoration-none d-none d-md-inline" style="color: var(--color-primary);">Ver todos →</a>
+            </div>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var post in Model.LatestPosts)
+                {
+                    <div class="col">
+                        <div class="card border-0 h-100 blog-card"
+                             style="border-radius: var(--radius-card); box-shadow: var(--shadow-card); overflow: hidden;">
+                            <div class="position-relative">
+                                <img src="/@post.FeaturedImage" alt="@post.Title"
+                                     class="card-img-top"
+                                     style="height: 220px; object-fit: cover;"
+                                     onerror="this.style.display='none'" />
+                                <span class="badge rounded-pill position-absolute top-0 start-0 m-3"
+                                      style="background: var(--color-badge-pet); color: var(--color-primary);">
+                                    @post.Category
+                                </span>
+                            </div>
+                            <div class="card-body" style="padding: var(--card-padding);">
+                                <h5 class="fw-bold mb-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">@post.Title</h5>
+                                <p class="text-muted small mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">@post.Excerpt</p>
+                                <a href="/blog/@post.Slug" class="fw-semibold text-decoration-none" style="color: var(--color-primary);">Leer más →</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}

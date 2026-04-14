@@ -1,0 +1,152 @@
+@page "/productos/{slug}"
+@model MiMascota.Pages.Productos.DetalleModel
+@{
+    ViewData["Title"] = Model.Product?.Name ?? "Producto";
+    ViewData["SeoDescription"] = Model.Product?.Description ?? string.Empty;
+}
+
+@if (Model.Product is null)
+{
+    <div class="container py-5 text-center">
+        <h2>Producto no encontrado</h2>
+        <a href="/productos" class="btn btn-primary rounded-pill mt-3">Ver catálogo</a>
+    </div>
+    return;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" style="color: var(--color-primary);">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="/productos" style="color: var(--color-primary);">Productos</a></li>
+            <li class="breadcrumb-item active">@Model.Product.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Gallery (Swiper) -->
+        <div class="col-lg-6">
+            <div class="swiper product-gallery-swiper rounded-4 overflow-hidden shadow">
+                <div class="swiper-wrapper">
+                    @foreach (var img in Model.Product.GalleryImages)
+                    {
+                        <div class="swiper-slide">
+                            <img src="/@img" alt="@Model.Product.Name"
+                                 class="w-100" style="height: 400px; object-fit: cover;"
+                                 onerror="this.style.display='none'" />
+                        </div>
+                    }
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="col-lg-6">
+            <span class="badge rounded-pill mb-3" style="background: var(--color-badge-pet); color: var(--color-primary);">@Model.Product.Line</span>
+            <h1 class="fw-bold mb-3" style="color: var(--color-navy);">@Model.Product.Name</h1>
+            <p style="color: var(--color-text-body); line-height: var(--line-height-body);">@Model.Product.Description</p>
+
+            @if (Model.Product.Certifications?.Any() == true)
+            {
+                <div class="mt-3 d-flex flex-wrap gap-2">
+                    @foreach (var cert in Model.Product.Certifications)
+                    {
+                        <span class="badge rounded-pill" style="background: var(--color-badge-eco); color: var(--color-eco);">✓ @cert</span>
+                    }
+                </div>
+            }
+
+            <div class="mt-4">
+                <h5 class="fw-bold" style="color: var(--color-navy);">Presentaciones</h5>
+                <ul class="list-unstyled">
+                    @foreach (var p in Model.Product.Presentations)
+                    {
+                        <li class="mb-1"><i class="bi bi-check-circle-fill me-2" style="color: var(--color-eco);"></i>@p</li>
+                    }
+                </ul>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Product.Warnings))
+            {
+                <div class="alert alert-warning rounded-3 mt-3 small">
+                    <strong>Advertencias:</strong> @Model.Product.Warnings
+                </div>
+            }
+
+            <div class="mt-4">
+                <a href="@(Model.Product.CtaUrl ?? "/contacto")"
+                   class="btn btn-dark btn-lg rounded-pill px-4">
+                    @(Model.Product.CtaText ?? "Solicitar pedido")
+                </a>
+                <a href="/productos" class="btn btn-outline-secondary btn-lg rounded-pill px-4 ms-2">
+                    ← Catálogo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingredients -->
+    <div class="row mt-5 g-4">
+        <div class="col-md-6">
+            <h4 class="fw-bold mb-3" style="color: var(--color-navy);">Ingredientes</h4>
+            <ul class="list-group list-group-flush">
+                @foreach (var ing in Model.Product.Ingredients)
+                {
+                    <li class="list-group-item border-0 px-0 py-2 small">
+                        <i class="bi bi-dot me-1" style="color: var(--color-primary);"></i>@ing
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h4 class="fw-bold mb-3" style="color: var(--color-navy);">Instrucciones de uso</h4>
+            <div class="card border-0 rounded-4 p-4" style="background: var(--color-surface-alt);">
+                <p class="mb-0 small" style="color: var(--color-text-body); line-height: var(--line-height-body);">
+                    @Model.Product.UsageInstructions
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related products -->
+    @if (Model.RelatedProducts.Any())
+    {
+        <div class="mt-5">
+            <h4 class="fw-bold mb-4" style="color: var(--color-navy);">Productos relacionados</h4>
+            <div class="row row-cols-2 row-cols-md-4 g-4">
+                @foreach (var rel in Model.RelatedProducts)
+                {
+                    <div class="col">
+                        <a href="/productos/@rel.Slug" class="text-decoration-none">
+                            <div class="card border-0 h-100 product-line-card"
+                                 style="border-radius: var(--radius-card); box-shadow: var(--shadow-card);">
+                                <img src="/@(rel.GalleryImages.FirstOrDefault() ?? string.Empty)"
+                                     class="card-img-top" alt="@rel.Name"
+                                     style="height: 160px; object-fit: cover;"
+                                     onerror="this.style.display='none'" />
+                                <div class="card-body" style="padding: var(--card-padding);">
+                                    <h6 class="fw-bold small mb-0" style="color: var(--color-navy);">@rel.Name</h6>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Swiper('.product-gallery-swiper', {
+                loop: true,
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
+            });
+        });
+    </script>
+}

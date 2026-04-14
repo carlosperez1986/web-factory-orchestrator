@@ -1,0 +1,83 @@
+@page
+@model MiMascota.Pages.GaleriaModel
+@{
+    ViewData["Title"] = "Galería";
+    ViewData["SeoDescription"] = "Fotos y videos de nuestros productos Mi Mascota en acción. Higiene biodegradable para mascotas.";
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <span class="text-uppercase fw-bold small" style="color: var(--color-eco); letter-spacing: 0.08em;">GALERÍA</span>
+        <h1 class="fw-bold mt-1" style="color: var(--color-navy);">Mi Mascota en acción</h1>
+    </div>
+
+    <!-- Line filter badges -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <button class="btn btn-sm rounded-pill gallery-filter active" data-filter="all"
+                style="background: var(--color-primary); color: white;">Todos</button>
+        @foreach (var line in Model.Lines)
+        {
+            <button class="btn btn-sm rounded-pill gallery-filter"
+                    data-filter="@line"
+                    style="background: var(--color-surface-alt); color: var(--color-text-body);">@line</button>
+        }
+    </div>
+
+    <!-- Gallery grid -->
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="gallery-grid">
+        @foreach (var item in Model.Items)
+        {
+            <div class="col gallery-item" data-line="@(item.Line ?? "all")">
+                <div class="position-relative rounded-4 overflow-hidden"
+                     style="aspect-ratio: 1; box-shadow: var(--shadow-card);">
+                    @if (item.Type == "video")
+                    {
+                        <video src="/@item.Image" class="w-100 h-100"
+                               style="object-fit: cover;" controls muted playsinline></video>
+                    }
+                    else
+                    {
+                        <img src="/@item.Image" alt="@(item.Caption ?? "Mi Mascota")"
+                             class="w-100 h-100"
+                             style="object-fit: cover; cursor: pointer;"
+                             onerror="this.parentElement.parentElement.style.display='none'" />
+                    }
+                    @if (!string.IsNullOrEmpty(item.Caption))
+                    {
+                        <div class="position-absolute bottom-0 start-0 end-0 p-2"
+                             style="background: linear-gradient(transparent, rgba(0,0,0,0.5)); color: white; font-size: 0.75rem;">
+                            @item.Caption
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Items.Any())
+    {
+        <p class="text-muted text-center py-5">La galería estará disponible próximamente.</p>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.gallery-filter').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.gallery-filter').forEach(b => {
+                    b.style.background = 'var(--color-surface-alt)';
+                    b.style.color = 'var(--color-text-body)';
+                    b.classList.remove('active');
+                });
+                this.style.background = 'var(--color-primary)';
+                this.style.color = 'white';
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    item.style.display = (filter === 'all' || item.dataset.line === filter) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+}

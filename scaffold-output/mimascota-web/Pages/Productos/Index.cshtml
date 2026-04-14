@@ -1,0 +1,80 @@
+@page
+@model MiMascota.Pages.Productos.IndexModel
+@{
+    ViewData["Title"] = "Productos";
+    ViewData["SeoDescription"] = "Catálogo completo de toallitas biodegradables Mi Mascota — mascotas, adultos mayores, ecológica y multiuso hogar.";
+}
+
+<div class="container py-5">
+    <h1 class="fw-bold mb-2" style="color: var(--color-navy);">Nuestros Productos</h1>
+    <p class="text-muted mb-4">Higiene segura y biodegradable para toda la familia.</p>
+
+    <!-- Line filter tabs -->
+    <ul class="nav nav-tabs mb-4" id="lineFilter" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#all" type="button">Todos</button>
+        </li>
+        @foreach (var line in (Model.ProductLines?.Lines ?? new()))
+        {
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#line-@line.Id" type="button">@line.Name</button>
+            </li>
+        }
+    </ul>
+
+    <!-- All products tab -->
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="all">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+                @foreach (var p in Model.Products)
+                {
+                    <div class="col">
+                        <a href="/productos/@p.Slug" class="text-decoration-none">
+                            <div class="card border-0 h-100 product-line-card"
+                                 style="border-radius: var(--radius-card); box-shadow: var(--shadow-card);">
+                                <img src="/@(p.GalleryImages.FirstOrDefault() ?? string.Empty)"
+                                     class="card-img-top"
+                                     alt="@p.Name"
+                                     style="height: 200px; object-fit: cover; border-radius: var(--radius-card) var(--radius-card) 0 0;"
+                                     onerror="this.style.display='none'" />
+                                <div class="card-body" style="padding: var(--card-padding);">
+                                    <span class="badge rounded-pill mb-2" style="background: var(--color-badge-pet); color: var(--color-primary);">@p.Line</span>
+                                    <h6 class="fw-bold" style="color: var(--color-navy);">@p.Name</h6>
+                                    <p class="small text-muted" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">@p.Description</p>
+                                    <span class="fw-semibold small" style="color: var(--color-primary);">Ver ficha →</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @foreach (var line in (Model.ProductLines?.Lines ?? new()))
+        {
+            <div class="tab-pane fade" id="line-@line.Id">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+                    @foreach (var p in Model.Products.Where(x => x.Line == line.Id))
+                    {
+                        <div class="col">
+                            <a href="/productos/@p.Slug" class="text-decoration-none">
+                                <div class="card border-0 h-100 product-line-card"
+                                     style="border-radius: var(--radius-card); box-shadow: var(--shadow-card);">
+                                    <img src="/@(p.GalleryImages.FirstOrDefault() ?? string.Empty)"
+                                         class="card-img-top" alt="@p.Name"
+                                         style="height: 200px; object-fit: cover;"
+                                         onerror="this.style.display='none'" />
+                                    <div class="card-body" style="padding: var(--card-padding);">
+                                        <h6 class="fw-bold" style="color: var(--color-navy);">@p.Name</h6>
+                                        <p class="small text-muted">@p.Description</p>
+                                        <span class="fw-semibold small" style="color: var(--color-primary);">Ver ficha →</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

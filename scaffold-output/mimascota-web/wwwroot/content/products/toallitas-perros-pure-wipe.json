@@ -1,0 +1,40 @@
+{
+  "slug": "toallitas-perros-pure-wipe",
+  "name": "Toallitas Pure Wipe Perros",
+  "line": "mascotas",
+  "description": "Toallitas húmedas biodegradables formuladas específicamente para perros. Limpian, desodorizan y acondicionan el pelaje sin necesidad de enjuague. Fórmula con aloe vera y extracto de manzanilla, sin alcohol ni parabenos. Aprobadas por veterinarios y seguras para uso diario.",
+  "ingredients": [
+    "Agua purificada",
+    "Extracto de Aloe Vera",
+    "Extracto de Manzanilla",
+    "Glicerina vegetal",
+    "Ácido cítrico (pH balanceador)",
+    "Gluconolactona (conservante natural)",
+    "Fibra de celulosa 100% biodegradable"
+  ],
+  "certifications": [
+    "Libre de parabenos",
+    "Libre de alcohol",
+    "pH balanceado 6.5–7.0",
+    "Biodegradable en 90 días",
+    "Aprobado por veterinarios"
+  ],
+  "usage_instructions": "Saca una toallita y limpia suavemente el pelaje, patas, orejas y pliegues de la piel de tu perro. No es necesario enjuague. Para uso externo solamente. Evitar contacto directo con ojos y boca.",
+  "warnings": "Solo para uso externo. No ingerir. Mantener fuera del alcance de niños. Si se presenta irritación, suspender uso y consultar al veterinario.",
+  "presentations": [
+    "Paquete x 20 unidades",
+    "Paquete x 50 unidades",
+    "Paquete x 100 unidades (uso profesional)"
+  ],
+  "gallery_images": [
+    "images/products/toallitas-perros-1.jpg",
+    "images/products/toallitas-perros-2.jpg",
+    "images/products/toallitas-perros-3.jpg"
+  ],
+  "related_products": [
+    "toallitas-gatos-pure-wipe",
+    "toallitas-ecologicas-pure-wipe"
+  ],
+  "cta_text": "Solicitar pedido",
+  "cta_url": "/contacto"
+}

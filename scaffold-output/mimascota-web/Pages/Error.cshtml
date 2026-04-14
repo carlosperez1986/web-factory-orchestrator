@@ -1,0 +1,12 @@
+@page "/error"
+@model MiMascota.Pages.ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container py-5 text-center">
+    <h1 class="fw-bold" style="color: var(--color-navy);">Algo salió mal</h1>
+    <p class="text-muted mt-3 mb-4">Ocurrió un error inesperado. Por favor intenta de nuevo.</p>
+    <p class="small text-muted">ID de solicitud: @Model.RequestId</p>
+    <a href="/" class="btn btn-dark rounded-pill mt-3 px-4">Volver al inicio</a>
+</div>

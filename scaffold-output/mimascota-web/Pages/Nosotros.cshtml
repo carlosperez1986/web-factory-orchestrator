@@ -1,0 +1,99 @@
+@page
+@model MiMascota.Pages.NosotrosModel
+@{
+    ViewData["Title"] = "Nosotros — Mi Mascota";
+    ViewData["SeoDescription"] = "Conoce la historia, misión, equipo y compromiso ecológico de Mi Mascota — higiene biodegradable para tu mascota.";
+}
+
+<div class="container py-5">
+
+    <!-- Brand story -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <span class="text-uppercase fw-bold small" style="color: var(--color-eco); letter-spacing: 0.08em;">NUESTRA HISTORIA</span>
+            <h1 class="fw-bold mt-1 mb-4" style="color: var(--color-navy);">Quiénes somos</h1>
+            <div style="color: var(--color-text-body); line-height: var(--line-height-body);">
+                @Html.Raw(Model.About?.BrandStory?.Replace("\n", "<br/>") ?? string.Empty)
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission / Vision / Values -->
+    @if (Model.About is not null)
+    {
+        <div class="row g-4 mb-5" style="background: var(--color-surface-alt); border-radius: var(--radius-card);" data-aos="fade-up">
+            <div class="col-md-4 p-4">
+                <div style="font-size: 2rem; color: var(--color-primary);">🎯</div>
+                <h4 class="fw-bold mt-2 mb-2" style="color: var(--color-navy);">Misión</h4>
+                <p class="text-muted mb-0">@Model.About.Mission</p>
+            </div>
+            <div class="col-md-4 p-4 border-start border-end">
+                <div style="font-size: 2rem; color: var(--color-eco);">🌍</div>
+                <h4 class="fw-bold mt-2 mb-2" style="color: var(--color-navy);">Visión</h4>
+                <p class="text-muted mb-0">@Model.About.Vision</p>
+            </div>
+            <div class="col-md-4 p-4">
+                <div style="font-size: 2rem; color: var(--color-primary);">✨</div>
+                <h4 class="fw-bold mt-2 mb-2" style="color: var(--color-navy);">Valores</h4>
+                <ul class="list-unstyled mb-0">
+                    @foreach (var v in (Model.About.Values ?? new()))
+                    {
+                        <li class="small text-muted mb-1"><i class="bi bi-check-circle-fill me-2" style="color: var(--color-eco);"></i>@v</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    <!-- Eco commitment -->
+    @if (!string.IsNullOrEmpty(Model.About?.EcoCommitment))
+    {
+        <section id="eco-commitment" class="py-5 rounded-4 px-4 mb-5 text-white"
+                 style="background: linear-gradient(135deg, var(--color-eco) 0%, var(--color-eco-dark) 100%);"
+                 data-aos="fade-up">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🌱</div>
+                    <h2 class="fw-bold mb-3">Nuestro compromiso ecológico</h2>
+                    <div style="opacity: 0.9; line-height: var(--line-height-body);">
+                        @Html.Raw(Model.About.EcoCommitment.Replace("\n", "<br/>"))
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+
+    <!-- Team -->
+    @if (Model.About?.Team?.Any() == true)
+    {
+        <div class="mb-5" data-aos="fade-up">
+            <h2 class="fw-bold mb-4 text-center" style="color: var(--color-navy);">Nuestro equipo</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+                @foreach (var member in Model.About.Team)
+                {
+                    <div class="col">
+                        <div class="card border-0 text-center p-4"
+                             style="border-radius: var(--radius-card); box-shadow: var(--shadow-card);">
+                            @if (!string.IsNullOrEmpty(member.Photo))
+                            {
+                                <img src="/@member.Photo" alt="@member.Name"
+                                     class="rounded-circle mx-auto d-block mb-3"
+                                     style="width: 100px; height: 100px; object-fit: cover;"
+                                     onerror="this.style.display='none'" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle mx-auto d-block mb-3 d-flex align-items-center justify-content-center fw-bold"
+                                     style="width: 100px; height: 100px; background: var(--color-surface-alt); color: var(--color-primary); font-size: 2rem;">
+                                    @member.Name[0]
+                                </div>
+                            }
+                            <h5 class="fw-bold mb-1" style="color: var(--color-navy);">@member.Name</h5>
+                            <p class="text-muted small mb-0">@member.Role</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

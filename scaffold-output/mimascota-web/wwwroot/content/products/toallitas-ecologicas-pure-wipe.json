@@ -1,0 +1,40 @@
+{
+  "slug": "toallitas-ecologicas-pure-wipe",
+  "name": "Toallitas Ecológicas Pure Wipe",
+  "line": "ecologica",
+  "description": "Nuestra línea 100% ecológica: fabricadas con fibra de bambú orgánico certificado, compostables en condiciones domésticas. Limpieza efectiva para toda la familia sin impacto ambiental. Empaque biodegradable y sin plásticos. El paso más consciente hacia una higiene responsable.",
+  "ingredients": [
+    "Agua purificada",
+    "Extracto orgánico de Aloe Vera",
+    "Extracto de Té Verde",
+    "Glicerina vegetal orgánica",
+    "Ácido cítrico",
+    "Lactobacillus ferment (conservante 100% natural)",
+    "Fibra de bambú orgánico certificado"
+  ],
+  "certifications": [
+    "100% biodegradable en 60 días",
+    "Fibra de bambú certificada FSC",
+    "Libre de plástico",
+    "Empaque compostable",
+    "Orgánico certificado"
+  ],
+  "usage_instructions": "Usar como toallita de limpieza multiusos: piel, superficies del hogar seguras para alimentos, frutas y verduras. Para mascotas, personas y superficies. Compostar en condiciones aeróbicas domésticas.",
+  "warnings": "No apta para uso en heridas. No ingerir. Para compostaje correcto, no mezclar con plásticos.",
+  "presentations": [
+    "Paquete x 30 unidades",
+    "Paquete x 60 unidades",
+    "Caja x 120 unidades (eco-refill)"
+  ],
+  "gallery_images": [
+    "images/products/toallitas-eco-1.jpg",
+    "images/products/toallitas-eco-2.jpg",
+    "images/products/toallitas-eco-3.jpg"
+  ],
+  "related_products": [
+    "toallitas-hogar-pure-wipe",
+    "toallitas-perros-pure-wipe"
+  ],
+  "cta_text": "Comprar ahora",
+  "cta_url": "/contacto"
+}

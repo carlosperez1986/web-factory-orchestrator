@@ -1,0 +1,147 @@
+@page
+@model MiMascota.Pages.ContactoModel
+@{
+    ViewData["Title"] = "Contacto";
+    ViewData["SeoDescription"] = "Contacta con Mi Mascota. Formulario, WhatsApp Business y listado de distribuidores autorizados en Colombia.";
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <span class="text-uppercase fw-bold small" style="color: var(--color-eco); letter-spacing: 0.08em;">CONTACTO</span>
+        <h1 class="fw-bold mt-1" style="color: var(--color-navy);">¿Hablamos?</h1>
+    </div>
+
+    <div class="row g-5">
+        <!-- Contact form -->
+        <div class="col-lg-7">
+            <form id="contact-form" method="post" asp-antiforgery="true" novalidate>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nombre completo</label>
+                    <input type="text" class="form-control" name="Name" required
+                           style="border-color: var(--color-border); border-radius: var(--radius-input);" />
+                    <div class="invalid-feedback">Por favor ingresa tu nombre.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Correo electrónico</label>
+                    <input type="email" class="form-control" name="Email" required
+                           style="border-color: var(--color-border); border-radius: var(--radius-input);" />
+                    <div class="invalid-feedback">Por favor ingresa un correo válido.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Motivo de contacto</label>
+                    <select class="form-select" name="Reason"
+                            style="border-color: var(--color-border); border-radius: var(--radius-input);">
+                        <option value="">Selecciona una opción</option>
+                        <option value="Consulta">Consulta sobre productos</option>
+                        <option value="Pedido">Realizar un pedido</option>
+                        <option value="Distribucion">Quiero ser distribuidor</option>
+                        <option value="PQR">PQR — Petición, Queja o Reclamo</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Mensaje</label>
+                    <textarea class="form-control" name="Message" rows="5" required
+                              style="border-color: var(--color-border); border-radius: var(--radius-input);"></textarea>
+                    <div class="invalid-feedback">Por favor escribe tu mensaje.</div>
+                </div>
+                <button type="submit" class="btn btn-dark btn-lg rounded-pill w-100">
+                    Enviar mensaje <i class="bi bi-send ms-2"></i>
+                </button>
+                <div id="form-success" class="alert alert-success mt-3 d-none rounded-3">
+                    ✅ Mensaje enviado correctamente. Te contactaremos pronto.
+                </div>
+                <div id="form-error" class="alert alert-danger mt-3 d-none rounded-3">
+                    Ocurrió un error al enviar. Por favor intenta de nuevo o contáctanos por WhatsApp.
+                </div>
+            </form>
+        </div>
+
+        <!-- Contact info -->
+        <div class="col-lg-5">
+            <!-- WhatsApp CTA -->
+            @if (Model.Contact is not null)
+            {
+                <a href="@Model.Contact.WhatsappUrl" target="_blank" rel="noopener"
+                   class="btn btn-success btn-lg rounded-pill d-flex align-items-center gap-2 mb-4 w-100 justify-content-center">
+                    💬 Escribir por WhatsApp
+                </a>
+
+                <!-- Social links -->
+                @if (Model.Contact.SocialLinks is not null)
+                {
+                    <div class="d-flex gap-3 mb-4">
+                        @if (!string.IsNullOrEmpty(Model.Contact.SocialLinks.Instagram))
+                        {
+                            <a href="@Model.Contact.SocialLinks.Instagram" target="_blank" rel="noopener"
+                               class="btn btn-outline-secondary btn-sm rounded-pill">Instagram</a>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Contact.SocialLinks.Facebook))
+                        {
+                            <a href="@Model.Contact.SocialLinks.Facebook" target="_blank" rel="noopener"
+                               class="btn btn-outline-secondary btn-sm rounded-pill">Facebook</a>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Contact.SocialLinks.TikTok))
+                        {
+                            <a href="@Model.Contact.SocialLinks.TikTok" target="_blank" rel="noopener"
+                               class="btn btn-outline-secondary btn-sm rounded-pill">TikTok</a>
+                        }
+                    </div>
+                }
+            }
+
+            <!-- Distributors -->
+            @if (Model.Contact?.Distributors?.Any() == true)
+            {
+                <h5 class="fw-bold mb-3" style="color: var(--color-navy);">Distribuidores autorizados</h5>
+                <ul class="list-group list-group-flush">
+                    @foreach (var d in Model.Contact.Distributors)
+                    {
+                        <li class="list-group-item border-0 px-0 py-2">
+                            <div class="fw-semibold small">@d.Name <span class="badge rounded-pill ms-1" style="background: var(--color-badge-pet); color: var(--color-primary);">@d.City</span></div>
+                            @if (!string.IsNullOrEmpty(d.Address))
+                            {
+                                <div class="small text-muted">📍 @d.Address</div>
+                            }
+                            @if (!string.IsNullOrEmpty(d.Phone))
+                            {
+                                <div class="small text-muted">📞 @d.Phone</div>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const form = document.getElementById('contact-form');
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+                const data = new FormData(form);
+                try {
+                    const res = await fetch(form.action || '/Contacto', {
+                        method: 'POST',
+                        body: data,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    if (res.ok) {
+                        document.getElementById('form-success').classList.remove('d-none');
+                        form.reset();
+                        form.classList.remove('was-validated');
+                    } else {
+                        document.getElementById('form-error').classList.remove('d-none');
+                    }
+                } catch {
+                    document.getElementById('form-error').classList.remove('d-none');
+                }
+            });
+        })();
+    </script>
+}

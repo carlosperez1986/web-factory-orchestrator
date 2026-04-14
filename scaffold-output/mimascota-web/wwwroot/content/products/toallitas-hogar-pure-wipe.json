@@ -1,0 +1,38 @@
+{
+  "slug": "toallitas-hogar-pure-wipe",
+  "name": "Toallitas Multiuso Hogar Pure Wipe",
+  "line": "hogar",
+  "description": "Toallitas multiusos para superficies del hogar: cocina, baño, mesones, juguetes de mascotas y áreas de descanso. Fórmula sin tóxicos, segura para hogares con niños y mascotas. Eliminan el 99.9% de bacterias comunes del hogar. Perfume suave a fresco cítrico.",
+  "ingredients": [
+    "Agua purificada",
+    "Laureth-7 (surfactante de origen vegetal)",
+    "Glicerina vegetal",
+    "Extracto de limón",
+    "Ácido cítrico",
+    "Gluconolactona",
+    "Fibra de celulosa biodegradable"
+  ],
+  "certifications": [
+    "Libre de cloro",
+    "Sin amoniaco",
+    "Seguro para superficies con alimentos (enjuague no necesario)",
+    "Aprobado para hogares con mascotas",
+    "Biodegradable"
+  ],
+  "usage_instructions": "Sacar una toallita y limpiar la superficie deseada. Para mesones de cocina con alimentos, no requiere enjuague. Para equipos electrónicos, escurrir levemente antes de usar. Desechar en caneca.",
+  "warnings": "No mezclar con lejía u otros desinfectantes. No usar en madera no tratada ni mármol poroso.",
+  "presentations": [
+    "Paquete x 40 unidades",
+    "Paquete x 80 unidades",
+    "Repuesto dispensador x 100 unidades"
+  ],
+  "gallery_images": [
+    "images/products/toallitas-hogar-1.jpg",
+    "images/products/toallitas-hogar-2.jpg"
+  ],
+  "related_products": [
+    "toallitas-ecologicas-pure-wipe"
+  ],
+  "cta_text": "Solicitar pedido",
+  "cta_url": "/contacto"
+}

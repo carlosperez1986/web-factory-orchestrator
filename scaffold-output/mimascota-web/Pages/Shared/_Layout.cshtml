@@ -1,0 +1,217 @@
+@using MiMascota.Services
+@inject ContentService _content
+@{
+    var contact = _content.GetContactConfig();
+    var currentPath = Context.Request.Path.ToString();
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+
+    <title>@ViewData["Title"] | Mi Mascota</title>
+    <meta name="description" content="@(ViewData["SeoDescription"] ?? "Toallitas biodegradables con ingredientes 100% seguros para perros y gatos.")" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mi Mascota" />
+    <meta property="og:title" content="@ViewData["Title"] | Mi Mascota" />
+    <meta property="og:description" content="@(ViewData["SeoDescription"] ?? "Toallitas biodegradables con ingredientes 100% seguros para perros y gatos.")" />
+    <meta property="og:image" content="/images/og-default.jpg" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Swiper -->
+    <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet" />
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+    <!-- Design tokens + brand styles -->
+    <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Head", required: false)
+</head>
+<body>
+
+<!-- ── NAVBAR ─────────────────────────────────────────────────────────── -->
+<header class="sticky-top" style="z-index: 1030;">
+    <nav class="navbar navbar-expand-lg bg-white" id="main-nav"
+         style="box-shadow: none; transition: box-shadow 0.2s ease; height: var(--nav-height);">
+        <div class="container">
+            <!-- Brand logo -->
+            <a class="navbar-brand fw-bold" href="/"
+               style="font-family: var(--font-display); color: var(--color-navy); font-size: 1.4rem;">
+                🐾 Mi Mascota
+            </a>
+
+            <!-- Mobile toggler -->
+            <button class="navbar-toggler border-0" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navMenu"
+                    aria-controls="navMenu" aria-expanded="false" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Nav links -->
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav mx-auto gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold @(currentPath == "/" ? "active" : "")"
+                           href="/" style="font-size: 0.95rem;">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold @(currentPath.StartsWith("/productos") ? "active" : "")"
+                           href="/productos" style="font-size: 0.95rem;">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold @(currentPath.StartsWith("/galeria") ? "active" : "")"
+                           href="/galeria" style="font-size: 0.95rem;">Galería</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold @(currentPath.StartsWith("/blog") ? "active" : "")"
+                           href="/blog" style="font-size: 0.95rem;">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold @(currentPath.StartsWith("/nosotros") ? "active" : "")"
+                           href="/nosotros" style="font-size: 0.95rem;">Nosotros</a>
+                    </li>
+                </ul>
+                <!-- CTA button -->
+                <a href="/contacto" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                    <i class="bi bi-geo-alt-fill me-1"></i> Contacto
+                </a>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- ── PAGE CONTENT ───────────────────────────────────────────────────── -->
+<main>
+    @RenderBody()
+</main>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
+<footer class="py-5" style="background: var(--color-navy); color: white;">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Brand col -->
+            <div class="col-lg-3">
+                <div class="fw-bold mb-2" style="font-family: var(--font-display); font-size: 1.3rem;">
+                    🐾 Mi Mascota
+                </div>
+                <p class="small mb-3" style="opacity: 0.6; line-height: var(--line-height-body);">
+                    Higiene biodegradable segura para tu mascota y toda la familia.
+                </p>
+                <!-- Social icons -->
+                @if (contact?.SocialLinks is not null)
+                {
+                    <div class="d-flex gap-2">
+                        @if (!string.IsNullOrEmpty(contact.SocialLinks.Instagram))
+                        {
+                            <a href="@contact.SocialLinks.Instagram" target="_blank" rel="noopener"
+                               class="text-white-50 text-decoration-none" style="font-size: 1.2rem;"
+                               aria-label="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        }
+                        @if (!string.IsNullOrEmpty(contact.SocialLinks.Facebook))
+                        {
+                            <a href="@contact.SocialLinks.Facebook" target="_blank" rel="noopener"
+                               class="text-white-50 text-decoration-none" style="font-size: 1.2rem;"
+                               aria-label="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                        }
+                        @if (!string.IsNullOrEmpty(contact.SocialLinks.TikTok))
+                        {
+                            <a href="@contact.SocialLinks.TikTok" target="_blank" rel="noopener"
+                               class="text-white-50 text-decoration-none" style="font-size: 1.2rem;"
+                               aria-label="TikTok">
+                                <i class="bi bi-tiktok"></i>
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Nav col -->
+            <div class="col-sm-6 col-lg-2">
+                <h6 class="fw-semibold mb-3 text-uppercase small" style="letter-spacing: 0.08em;">Páginas</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/" class="text-white-50 text-decoration-none small">Inicio</a></li>
+                    <li class="mb-2"><a href="/productos" class="text-white-50 text-decoration-none small">Productos</a></li>
+                    <li class="mb-2"><a href="/galeria" class="text-white-50 text-decoration-none small">Galería</a></li>
+                    <li class="mb-2"><a href="/blog" class="text-white-50 text-decoration-none small">Blog</a></li>
+                    <li class="mb-2"><a href="/nosotros" class="text-white-50 text-decoration-none small">Nosotros</a></li>
+                    <li class="mb-2"><a href="/contacto" class="text-white-50 text-decoration-none small">Contacto</a></li>
+                </ul>
+            </div>
+
+            <!-- Legal col -->
+            <div class="col-sm-6 col-lg-2">
+                <h6 class="fw-semibold mb-3 text-uppercase small" style="letter-spacing: 0.08em;">Legal</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/legal" class="text-white-50 text-decoration-none small">Términos y Condiciones</a></li>
+                    <li class="mb-2"><a href="/legal" class="text-white-50 text-decoration-none small">Política de Privacidad</a></li>
+                    <li class="mb-2"><a href="/legal" class="text-white-50 text-decoration-none small">Devoluciones</a></li>
+                </ul>
+            </div>
+
+            <!-- WhatsApp col -->
+            <div class="col-lg-3 ms-auto">
+                <h6 class="fw-semibold mb-3 text-uppercase small" style="letter-spacing: 0.08em;">¿Preguntas?</h6>
+                @if (contact is not null)
+                {
+                    <a href="@contact.WhatsappUrl" target="_blank" rel="noopener"
+                       class="btn btn-success rounded-pill d-inline-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-whatsapp"></i> Escribir por WhatsApp
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Legal line -->
+        <div class="mt-4 pt-3 text-center small"
+             style="border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4);">
+            © @DateTime.Now.Year Mi Mascota · Oclara Group ·
+            <a href="/legal" class="text-white-50 text-decoration-none">Información legal</a>
+        </div>
+    </div>
+</footer>
+
+<!-- ── FLOATING WHATSAPP ──────────────────────────────────────────────── -->
+@if (contact is not null)
+{
+    <a href="@contact.WhatsappUrl"
+       target="_blank"
+       rel="noopener"
+       class="btn btn-success rounded-circle shadow position-fixed d-flex align-items-center justify-content-center"
+       style="width: 56px; height: 56px; bottom: 1.5rem; right: 1.5rem; z-index: 1050; font-size: 1.5rem;"
+       aria-label="Contactar por WhatsApp">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+}
+
+<!-- ── SCRIPTS ────────────────────────────────────────────────────────── -->
+<!-- Bootstrap 5 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Swiper -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<!-- AOS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<!-- Site JS -->
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

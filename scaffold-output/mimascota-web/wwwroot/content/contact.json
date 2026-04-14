@@ -1,0 +1,41 @@
+{
+  "whatsapp_number": "+573001234567",
+  "whatsapp_message": "Hola Mi Mascota! Me gustaría saber más sobre sus productos.",
+  "social_links": {
+    "instagram": "https://www.instagram.com/mimascotacol",
+    "facebook": "https://www.facebook.com/mimascotacol",
+    "tiktok": "https://www.tiktok.com/@mimascotacol"
+  },
+  "distributors": [
+    {
+      "city": "Bogotá",
+      "name": "Veterinaria El Bosque",
+      "address": "Cra 15 #82-46, Chapinero",
+      "phone": "+5713456789"
+    },
+    {
+      "city": "Bogotá",
+      "name": "PetShop Paloquemao",
+      "address": "Av. Eldorado #36-45, Local 120",
+      "phone": "+5714567890"
+    },
+    {
+      "city": "Medellín",
+      "name": "Zoomercado El Poblado",
+      "address": "Cl 10 #43C-24, El Poblado",
+      "phone": "+5744321098"
+    },
+    {
+      "city": "Cali",
+      "name": "Maskotas del Valle",
+      "address": "Cra 5 #15-30, Granada",
+      "phone": "+5723456789"
+    },
+    {
+      "city": "Barranquilla",
+      "name": "TiendaVet Caribe",
+      "address": "Cra 54 #70-12, El Prado",
+      "phone": "+5755678901"
+    }
+  ]
+}

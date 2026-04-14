@@ -1,0 +1,39 @@
+{
+  "slug": "toallitas-adultos-mayores-pure-wipe",
+  "name": "Toallitas Pure Wipe Adultos Mayores",
+  "line": "adultos-mayores",
+  "description": "Toallitas húmedas especialmente formuladas para la piel sensible de adultos mayores. Proporcionan limpieza e hidratación profunda sin irritar. Ideales para cuidado diario, higiene en cama y limpieza de zonas de pliegues. Dermatológicamente probadas y recomendadas por enfermeros y cuidadores.",
+  "ingredients": [
+    "Agua purificada",
+    "Glicerina vegetal",
+    "Extracto de Aloe Vera",
+    "Tocoferol (Vitamina E)",
+    "Dexpantenol (Pro-Vitamina B5)",
+    "Ácido cítrico",
+    "Gluconolactona",
+    "Fibra de viscosa suave"
+  ],
+  "certifications": [
+    "Dermatológicamente probadas",
+    "Libre de parabenos",
+    "Libre de alcohol",
+    "pH balanceado 5.5",
+    "Hipoalergénicas"
+  ],
+  "usage_instructions": "Abrir el paquete y extraer una toallita. Limpiar suavemente la piel del área a tratar. Para higiene íntima usar en dirección anteroposterior. No requiere enjuague. Desechar en caneca (no en inodoro).",
+  "warnings": "Solo para uso externo. No ingerir. Evitar contacto con ojos. Si hay heridas abiertas o dermatitis activa, consultar al médico antes de usar.",
+  "presentations": [
+    "Paquete x 20 unidades",
+    "Paquete x 40 unidades",
+    "Dispensador x 80 unidades (uso institucional)"
+  ],
+  "gallery_images": [
+    "images/products/toallitas-adultos-1.jpg",
+    "images/products/toallitas-adultos-2.jpg"
+  ],
+  "related_products": [
+    "toallitas-ecologicas-pure-wipe"
+  ],
+  "cta_text": "Solicitar pedido institucional",
+  "cta_url": "/contacto"
+}

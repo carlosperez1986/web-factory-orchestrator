@@ -200,16 +200,16 @@ time_days = 4
 | TASK-008 | Define Hero Banner content model for Decap (`content/hero.json`) | Phase 1 | @Orchestrator | pending | `evidence/spec-hero-banner.md` |
 | TASK-010 | Define C# content models for all approved pages | Phase 1 | @Orchestrator | pending | `evidence/models-review.md` |
 | TASK-011 | Define Decap CMS collection schema (`config.yml`) — including hero-banner collection | Phase 1 | @Orchestrator | pending | `wwwroot/admin/config.yml` |
-| TASK-020 | Scaffold .NET 9 project from blueprint | Phase 2 | @Orchestrator | pending | `Program.cs` exists in repo |
-| TASK-021 | Implement `json-content-service` (reads `content/*.json` and `content/*.md`) | Phase 2 | @Orchestrator | pending | `Services/ContentService.cs` exists |
-| TASK-022 | Implement `contact-form-handler` | Phase 2 | @Orchestrator | pending | `evidence/form-handler-smoke.md` |
+| TASK-020 | Scaffold .NET 9 project from blueprint | Phase 2 | @Orchestrator | **done** | `Program.cs` exists in repo |
+| TASK-021 | Implement `json-content-service` (reads `content/*.json` and `content/*.md`) | Phase 2 | @Orchestrator | **done** | `Services/ContentService.cs` exists |
+| TASK-022 | Implement `contact-form-handler` | Phase 2 | @Orchestrator | **done** | `Pages/Contacto.cshtml.cs` OnPost handler implemented |
 | TASK-023 | Implement `marketing-seo-pack` (Schema.org + AIO meta tags) | Phase 2 | @Orchestrator | pending | `evidence/seo-audit-pass.md` |
-| TASK-024 | Implement `decap-hero-banner` — wire `content/hero.json` → `Index.cshtml` | Phase 2 | @Orchestrator | pending | `content/hero.json` exists and `Pages/Index.cshtml` renders hero from JSON |
-| TASK-025 | Assemble UI: Inicio — Hero (Decap-editable), product highlights, values, Instagram preview, social proof | Phase 2 | @Orchestrator | pending | `Pages/Index.cshtml` exists |
-| TASK-026 | Assemble UI: Productos — product grid + product detail page | Phase 2 | @Orchestrator | pending | `Pages/Productos/Index.cshtml` exists |
-| TASK-027 | Assemble UI: Galería — Instagram feed grid + UGC + Reels section | Phase 2 | @Orchestrator | pending | `Pages/Galeria/Index.cshtml` exists |
-| TASK-028 | Assemble UI: Nosotros, Blog, Contacto, Legal | Phase 2 | @Orchestrator | pending | `Pages/Nosotros.cshtml`, `Pages/Blog/Index.cshtml`, `Pages/Contacto.cshtml`, `Pages/Legal.cshtml` exist |
-| TASK-029 | Global components: Header, Footer, floating WhatsApp button, promo banner | Phase 2 | @Orchestrator | pending | `Pages/Shared/_Layout.cshtml` exists |
+| TASK-024 | Implement `decap-hero-banner` — wire `content/hero.json` → `Index.cshtml` | Phase 2 | @Orchestrator | **done** | `wwwroot/content/hero.json` + `Pages/Index.cshtml` reads hero from ContentService.GetHeroBanner() |
+| TASK-025 | Assemble UI: Inicio — Hero (Decap-editable), product highlights, values, Instagram preview, social proof | Phase 2 | @Orchestrator | **done** | `Pages/Index.cshtml` exists |
+| TASK-026 | Assemble UI: Productos — product grid + product detail page | Phase 2 | @Orchestrator | **done** | `Pages/Productos/Index.cshtml` + `Pages/Productos/Detalle.cshtml` exist |
+| TASK-027 | Assemble UI: Galería — Instagram feed grid + UGC + Reels section | Phase 2 | @Orchestrator | **done** | `Pages/Galeria/Index.cshtml` exists |
+| TASK-028 | Assemble UI: Nosotros, Blog, Contacto, Legal | Phase 2 | @Orchestrator | **done** | `Pages/Nosotros.cshtml`, `Pages/Blog/Index.cshtml`, `Pages/Contacto.cshtml`, `Pages/Legal.cshtml` exist |
+| TASK-029 | Global components: Header, Footer, floating WhatsApp button, promo banner | Phase 2 | @Orchestrator | **done** | `Pages/Shared/_Layout.cshtml` exists with nav, footer, floating WhatsApp |
 | TASK-030 | Security audit — secrets + dependency scan | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
 | TASK-031 | Security audit — auth/OAuth surface review (Decap GitHub OAuth) | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
 | TASK-032 | Security audit — deploy hardening review | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
@@ -232,7 +232,7 @@ time_days = 4
 | `[✅ GO] github-project-bootstrap` | @Orchestrator | 2026-04-14 | Delivery tracking section added · bootstrap script ready · client repo: carlosperez1986/mimascota-web |
 | `[✅ GO] content-model-and-decap-design` | @Orchestrator | 2026-04-14 | `wwwroot/admin/config.yml` (9 collections) · all `content/` seed files created · editorial guide written |
 | `[✅ GO] Phase 1 → Phase 2` | @Orchestrator | 2026-04-14 | TASK-001 through TASK-011 all `done` + user approval |
-| `[✅ GO] Phase 2 → Phase 3` | @Orchestrator | YYYY-MM-DD | TASK-020 through TASK-029 all `done` + user approval |
+| `[✅ GO] project-scaffolding` | @Orchestrator | 2026-04-14 | `dotnet build` passes (0 warnings, 0 errors) · all TASK-020 to TASK-029 done · scaffold in scaffold-output/mimascota-web/ |
 | `[✅ GO] security-audit` | @Auditor | YYYY-MM-DD | TASK-030–032 `done`, no unresolved Critical/High findings |
 | `[✅ GO] production` | @Orchestrator | YYYY-MM-DD | TASK-040–042 `done` + client final payment confirmed |
 

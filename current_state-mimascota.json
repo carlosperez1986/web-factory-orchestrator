@@ -1,10 +1,10 @@
 {
   "project": "mimascota",
   "phase": "build",
-  "active_skill": "content-model-and-decap-design",
+  "active_skill": "project-scaffolding",
   "active_agent": "@Orchestrator",
-  "last_completed_step": "content-model-and-decap-design → content contracts locked: wwwroot/admin/config.yml (9 collections) + all content/ seed files",
-  "next_step": "project-scaffolding → Step 1 (Batch 0: scaffold .NET 9 project)",
+  "last_completed_step": "project-scaffolding → scaffold complete: dotnet build passes (0 warnings, 0 errors); scaffold in scaffold-output/mimascota-web/; push via scripts/push-scaffold-mimascota.sh",
+  "next_step": "content-service-and-data-wiring → Batch 1 (Hero Banner: GetHeroBanner() → Index.cshtml)",
   "token_budget_remaining": null,
   "roadmap_ref": "PROJECT_ROADMAP-mimascota.md",
   "strategy_contract_ref": "STRATEGY_CONTRACT-mimascota.json",
@@ -15,6 +15,9 @@
   "bootstrap_script": "scripts/bootstrap-github-mimascota.sh",
   "issue_tracking_enabled": true,
   "content_model_locked": true,
+  "scaffold_output": "scaffold-output/mimascota-web/",
+  "scaffold_build_status": "PASS — 0 warnings, 0 errors (net9.0)",
+  "scaffold_push_script": "scripts/push-scaffold-mimascota.sh",
   "decap_config": "wwwroot/admin/config.yml",
   "content_files": {
     "hero": "content/hero.json",

@@ -1,0 +1,68 @@
+@page "/blog/{slug}"
+@model MiMascota.Pages.Blog.PostModel
+@{
+    ViewData["Title"] = Model.Post?.Title ?? "Artículo";
+    ViewData["SeoDescription"] = Model.Post?.Excerpt ?? string.Empty;
+}
+
+@if (Model.Post is null)
+{
+    <div class="container py-5 text-center">
+        <h2>Artículo no encontrado</h2>
+        <a href="/blog" class="btn btn-primary rounded-pill mt-3">Ver blog</a>
+    </div>
+    return;
+}
+
+<article class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" style="color: var(--color-primary);">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="/blog" style="color: var(--color-primary);">Blog</a></li>
+            <li class="breadcrumb-item active">@Model.Post.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <span class="badge rounded-pill mb-3" style="background: var(--color-badge-pet); color: var(--color-primary);">@Model.Post.Category</span>
+            <h1 class="fw-bold mb-3" style="color: var(--color-navy); font-size: var(--font-size-h2);">@Model.Post.Title</h1>
+            <p class="text-muted small mb-4">Publicado el @Model.Post.Date.ToString("dd MMMM yyyy")</p>
+
+            @if (!string.IsNullOrEmpty(Model.Post.FeaturedImage))
+            {
+                <img src="/@Model.Post.FeaturedImage" alt="@Model.Post.Title"
+                     class="img-fluid rounded-4 w-100 mb-4"
+                     style="max-height: 420px; object-fit: cover;"
+                     onerror="this.style.display='none'" />
+            }
+
+            <div class="blog-body" style="line-height: var(--line-height-body); color: var(--color-text-body);">
+                @Html.Raw(Model.Post.BodyHtml)
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Post.RelatedProduct) && Model.RelatedProduct is not null)
+            {
+                <div class="alert mt-5 rounded-4 p-4 border-0" style="background: var(--color-surface-alt);">
+                    <h5 class="fw-bold mb-2" style="color: var(--color-navy);">Producto relacionado</h5>
+                    <p class="mb-3 text-muted">@Model.RelatedProduct.Description</p>
+                    <a href="/productos/@Model.RelatedProduct.Slug"
+                       class="btn btn-dark rounded-pill px-4">
+                        Ver @Model.RelatedProduct.Name →
+                    </a>
+                </div>
+            }
+
+            <!-- Social share -->
+            <div class="mt-5 pt-4 border-top d-flex gap-3 align-items-center">
+                <span class="text-muted small">Compartir:</span>
+                <a href="https://wa.me/?text=@Uri.EscapeDataString(Model.Post.Title + " " + Request.Scheme + "://" + Request.Host + "/blog/" + Model.Post.Slug)"
+                   target="_blank" rel="noopener"
+                   class="btn btn-outline-success btn-sm rounded-pill">WhatsApp</a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=@Uri.EscapeDataString(Request.Scheme + "://" + Request.Host + "/blog/" + Model.Post.Slug)"
+                   target="_blank" rel="noopener"
+                   class="btn btn-outline-primary btn-sm rounded-pill">Facebook</a>
+            </div>
+        </div>
+    </div>
+</article>
