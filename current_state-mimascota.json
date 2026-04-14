@@ -1,13 +1,14 @@
 {
   "project": "mimascota",
-  "phase": "define",
-  "active_skill": "project-estimation-and-stack-selection",
+  "phase": "build",
+  "active_skill": "spec-driven-architecture",
   "active_agent": "@Orchestrator",
-  "last_completed_step": "project-estimation-and-stack-selection → Step 6: Stack decision locked (net9.0, Decap CMS /admin/)",
-  "next_step": "spec-driven-architecture → Step 1 (awaiting user approval of roadmap)",
+  "last_completed_step": "spec-driven-architecture → Step 7: IMPLEMENTATION_SPEC-mimascota.md written 2026-04-14",
+  "next_step": "look-and-feel-ingestion → awaiting visual sources from user",
   "token_budget_remaining": null,
   "roadmap_ref": "PROJECT_ROADMAP-mimascota.md",
   "strategy_contract_ref": "STRATEGY_CONTRACT-mimascota.json",
+  "implementation_spec_ref": "IMPLEMENTATION_SPEC-mimascota.md",
   "stack": {
     "target_framework": "net9.0",
     "fallback_framework": "net8.0",

@@ -5,7 +5,8 @@
 **Value:** USD $850.00
 **Briefing source:** `inbox/pure_wipe_cotizacion (1).pdf`
 **Date initialized:** 2026-04-14
-**Skill executed:** `briefing-synthesis` → `project-estimation-and-stack-selection`
+**Skill executed:** `briefing-synthesis` → `project-estimation-and-stack-selection` → `spec-driven-architecture`
+**Implementation Spec:** `IMPLEMENTATION_SPEC-mimascota.md` ← Architecture spec locked 2026-04-14
 
 ---
 
@@ -224,7 +225,9 @@ time_days = 4
 |--------|-----------|------|-----------|
 | `[✅ GO] briefing-synthesis` | @Orchestrator | 2026-04-14 | Steps 1–5 complete, sitemap + strategy contract written |
 | `[✅ GO] project-estimation-and-stack-selection` | @Orchestrator | 2026-04-14 | Steps 1–7 complete, stack locked at net9.0 |
-| `[✅ GO] Phase 1 → Phase 2` | @Orchestrator | YYYY-MM-DD | TASK-001 through TASK-011 all `done` + user approval |
+| `[✅ GO] Phase 1 → Phase 2 (user approved)` | @Orchestrator | 2026-04-14 | Human operator approved roadmap — "Proceed" received |
+| `[✅ GO] spec-driven-architecture` | @Orchestrator | 2026-04-14 | IMPLEMENTATION_SPEC-mimascota.md written, all routes/contracts/batches defined |
+| `[✅ GO] Phase 1 → Phase 2` | @Orchestrator | 2026-04-14 | TASK-001 through TASK-011 all `done` + user approval |
 | `[✅ GO] Phase 2 → Phase 3` | @Orchestrator | YYYY-MM-DD | TASK-020 through TASK-029 all `done` + user approval |
 | `[✅ GO] security-audit` | @Auditor | YYYY-MM-DD | TASK-030–032 `done`, no unresolved Critical/High findings |
 | `[✅ GO] production` | @Orchestrator | YYYY-MM-DD | TASK-040–042 `done` + client final payment confirmed |
