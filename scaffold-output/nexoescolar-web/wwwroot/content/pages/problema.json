@@ -1,0 +1,9 @@
+{
+  "headline": "La gestión escolar no puede depender de procesos dispersos.",
+  "cards": [
+    { "icon": "exclamation-circle", "title": "Asistencia manual",    "body": "Registros en papel que se pierden y llegan tarde a dirección." },
+    { "icon": "chat-dots",          "title": "Comunicación rota",    "body": "Circulares que no llegan y WhatsApps sin trazabilidad." },
+    { "icon": "grid",               "title": "Grupos desconectados", "body": "Docentes sin visibilidad del estado real de sus grupos." },
+    { "icon": "clock",              "title": "Reportes lentos",      "body": "Informes semanales que consumen horas de trabajo administrativo." }
+  ]
+}

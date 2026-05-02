@@ -1,0 +1,12 @@
+{
+  "headline": "Gestión escolar en tiempo real para colegios que quieren operar mejor.",
+  "subheadline": "La plataforma que conecta a directivos, docentes y familias en un solo lugar.",
+  "cta_label": "Quiero mi demo",
+  "cta_href": "#demo",
+  "dashboard_chips": [
+    { "label": "Asistencia hoy", "value": "94%" },
+    { "label": "Comunicados",    "value": "12"  },
+    { "label": "Grupos",         "value": "8"   }
+  ],
+  "phone_notification": "Tu hijo Marco llegó tarde hoy — Colegio Nexo"
+}

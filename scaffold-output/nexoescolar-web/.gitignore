@@ -1,0 +1,9 @@
+obj/
+bin/
+.vs/
+*.user
+*.suo
+*.swp
+appsettings.Production.json
+appsettings.Staging.json
+.env

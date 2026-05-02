@@ -1,0 +1,15 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container py-5 text-center" style="min-height:60vh;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+    <h1 class="display-4 fw-bold" style="color:var(--ne-teal);">Algo salió mal</h1>
+    <p class="lead text-white-50 mt-3">Lo sentimos. Por favor intenta de nuevo o vuelve al inicio.</p>
+    <a href="/" class="btn btn-amber mt-4 px-4">Volver al inicio</a>
+    @if (Model.ShowRequestId)
+    {
+        <p class="mt-4 text-white-50 small">Request ID: <code>@Model.RequestId</code></p>
+    }
+</div>

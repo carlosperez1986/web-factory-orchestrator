@@ -198,16 +198,16 @@ time_days = 4 + (5 × 0.4) + (4 × 0.7) + (0 × 0.5) + (1 × 0.5)
 | TASK-003 | Define Decap CMS collection schema (`config.yml`) for hero, features, FAQ, trust | Phase 1 | @Orchestrator | **done** | `IMPLEMENTATION_SPEC-nexoescolar.md` § Content Contracts + Batch 1 |
 | TASK-004 | Design Style Contract — color palette, typography scale, glassmorphism tokens | Phase 1 | @Orchestrator | **done** | `IMPLEMENTATION_SPEC-nexoescolar.md` § Component Map → CSS Custom Properties |
 | TASK-005 | Resolve stack conflict — operator decision A or B | Phase 1 | @Orchestrator | **done** | `current_state-nexoescolar.json` field `stack_decision_confirmed: true` |
-| TASK-020 | Scaffold .NET 9 project from WFO blueprint (Option A) | Phase 2 | @Orchestrator | pending | `Program.cs` exists in client repo |
-| TASK-021 | Implement `json-content-service` (ContentService.cs with GetPage<T>/GetCollection<T>) | Phase 2 | @Orchestrator | pending | `Services/ContentService.cs` exists |
-| TASK-022 | Implement `contact-form-handler` — Demo form (Nombre, Colegio, Correo, WhatsApp) | Phase 2 | @Orchestrator | pending | `evidence/form-handler-smoke.md` |
-| TASK-023 | Implement `marketing-seo-pack` (Schema.org JSON-LD + AIO meta, Plus Jakarta Sans font load) | Phase 2 | @Orchestrator | pending | `evidence/seo-audit-pass.md` |
-| TASK-024 | Assemble UI: Navbar sticky glass | Phase 2 | @Orchestrator | pending | `Pages/Shared/_Layout.cshtml` exists |
-| TASK-025 | Assemble UI: Hero section with coded mockup (admin dashboard + phone frame) | Phase 2 | @Orchestrator | pending | `Pages/Index.cshtml` — section#hero |
-| TASK-026 | Assemble UI: Problema section (4 pain-point cards) | Phase 2 | @Orchestrator | pending | `Pages/Index.cshtml` — section#problema |
-| TASK-027 | Assemble UI: Beneficios Interactive Hub (SVG + Bootstrap Tabs mobile fallback) | Phase 2 | @Orchestrator | pending | `Pages/Index.cshtml` — section#beneficios |
-| TASK-028 | Assemble UI: Funciones Bento Grid (5 feature cards, responsive) | Phase 2 | @Orchestrator | pending | `Pages/Index.cshtml` — section#funciones |
-| TASK-029 | Assemble UI: App showcase, Trust visuals, Demo form (Glassmorphism card), FAQ Accordion, Footer | Phase 2 | @Orchestrator | pending | `Pages/Index.cshtml` — sections #app #trust #demo #faq #footer |
+| TASK-020 | Scaffold .NET 9 project from WFO blueprint (Option A) | Phase 2 | @Orchestrator | **done** | `evidence/project-scaffolding-nexoescolar-pass.md` |
+| TASK-021 | Implement `json-content-service` (ContentService.cs with GetPage<T>/GetCollection<T>) | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Services/ContentService.cs` |
+| TASK-022 | Implement `contact-form-handler` — Demo form (Nombre, Colegio, Correo, WhatsApp) | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Pages/Index.cshtml.cs` — OnPostAsync + DispatchLeadAsync |
+| TASK-023 | Implement `marketing-seo-pack` (Schema.org JSON-LD + AIO meta, Plus Jakarta Sans font load) | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Pages/Shared/_Layout.cshtml` — Schema.org JSON-LD; robots.txt; sitemap.xml |
+| TASK-024 | Assemble UI: Navbar sticky glass | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Pages/Shared/_Layout.cshtml` — sticky glass navbar |
+| TASK-025 | Assemble UI: Hero section with coded mockup (admin dashboard + phone frame) | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Pages/Index.cshtml` — section#hero |
+| TASK-026 | Assemble UI: Problema section (4 pain-point cards) | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Pages/Index.cshtml` — section#problema |
+| TASK-027 | Assemble UI: Beneficios Interactive Hub (SVG + Bootstrap Tabs mobile fallback) | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Pages/Index.cshtml` — section#beneficios |
+| TASK-028 | Assemble UI: Funciones Bento Grid (5 feature cards, responsive) | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Pages/Index.cshtml` — section#funciones |
+| TASK-029 | Assemble UI: App showcase, Trust visuals, Demo form (Glassmorphism card), FAQ Accordion, Footer | Phase 2 | @Orchestrator | **done** | `scaffold-output/nexoescolar-web/Pages/Index.cshtml` — sections #app #trust #demo #faq #footer |
 | TASK-030 | Security audit — secrets + dependency scan | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
 | TASK-031 | Security audit — auth/OAuth surface (Decap GitHub OAuth) | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
 | TASK-032 | Security audit — deploy hardening review | Phase 3 | @Auditor | pending | `evidence/security-audit-report.md` |
@@ -226,6 +226,7 @@ time_days = 4 + (5 × 0.4) + (4 × 0.7) + (0 × 0.5) + (1 × 0.5)
 | `[✅ GO] project-estimation-and-stack-selection` | @Orchestrator | 2026-05-02 | Token/time/cost/stack written; gross margin 85.4% ✅ |
 | `[✅ GO] spec-driven-architecture` | @Orchestrator | 2026-05-02 | `IMPLEMENTATION_SPEC-nexoescolar.md` written; all contracts defined; batches 1–7 planned |
 | `[✅ GO] Phase 1 → Phase 2` | @Orchestrator | 2026-05-02 | Option A confirmed; "Proceed" received; client repo `carlosperez1986/nexoescolar` provided |
+| `[✅ GO] project-scaffolding` | @Orchestrator | 2026-05-02 | Scaffold complete in `scaffold-output/nexoescolar-web/`; build verified 0 errors 0 warnings; TASK-020–029 all done; push script at `scripts/push-scaffold-nexoescolar.sh` |
 | `[ ] GO Phase 2 → Phase 3` | @Orchestrator | — | TASK-020–029 all `done` + user approval |
 | `[ ] GO security-audit` | @Auditor | — | TASK-030–032 `done`, no unresolved Critical/High findings |
 | `[ ] GO production` | @Orchestrator | — | TASK-040–042 `done` + client final payment confirmed |
