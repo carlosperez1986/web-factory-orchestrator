@@ -1,0 +1,45 @@
+{
+  "project": "nexoescolar",
+  "components": [
+    {
+      "id": "json-content-service",
+      "required": true,
+      "trigger": "Every project — no exceptions",
+      "wfo_implementation": "Services/ContentService.cs with GetPage<T> and GetCollection<T>"
+    },
+    {
+      "id": "marketing-seo-pack",
+      "required": true,
+      "trigger": "Every project — AIO always required",
+      "wfo_implementation": "Schema.org JSON-LD + AIO meta tags in _Layout.cshtml"
+    },
+    {
+      "id": "decap-admin-panel",
+      "required": true,
+      "trigger": "Every project — /admin/ default",
+      "wfo_implementation": "wwwroot/admin/config.yml + index.html"
+    },
+    {
+      "id": "contact-form-handler",
+      "required": true,
+      "trigger": "Lead Generation motive detected — 'Quiero mi demo' form with Nombre, Colegio, Correo, WhatsApp fields",
+      "wfo_implementation": "Pages/Demo.cshtml.cs OnPostAsync handler + email/webhook dispatch"
+    }
+  ],
+  "stack_conflict": {
+    "client_requested": ["React 18+", "Tailwind CSS", "shadcn/ui", "Framer Motion"],
+    "wfo_mandated": [".NET 9 Razor Pages", "Bootstrap 5", "AOS.js", "CSS transitions"],
+    "status": "BLOCKER — requires @Architect approval or operator override to proceed with React stack",
+    "wfo_mapping": {
+      "React 18+": ".NET 9 Razor Pages",
+      "Tailwind CSS": "Bootstrap 5 (non-negotiable WFO constraint)",
+      "shadcn/ui Accordion": "Bootstrap 5 Accordion",
+      "shadcn/ui Tabs": "Bootstrap 5 Tabs",
+      "Framer Motion whileInView fadeUp": "AOS.js data-aos='fade-up' (whitelisted)",
+      "Framer Motion parallax": "CSS transform + vanilla JS scroll listener",
+      "Lucide icons": "Bootstrap Icons or SVG inline",
+      "shadcn/ui Input/Button/Form": "Bootstrap 5 form-control, btn components",
+      "Tailwind glassmorphism utilities": "Custom CSS utility class (Bootstrap 5 gap — allowed)"
+    }
+  }
+}

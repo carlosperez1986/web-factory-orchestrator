@@ -1,0 +1,8 @@
+{
+  "headline": "Diseñado para colegios que necesitan orden, velocidad y trazabilidad.",
+  "blocks": [
+    { "icon": "shield-check",  "title": "Datos protegidos",   "body": "Cifrado en tránsito y en reposo. Cumplimiento LOPD/GDPR." },
+    { "icon": "check-circle",  "title": "Siempre disponible", "body": "99.9% uptime garantizado. Sin mantenimientos en horario escolar." },
+    { "icon": "lock",          "title": "Acceso por roles",   "body": "Cada usuario ve sólo lo que le corresponde. Sin excepciones." }
+  ]
+}

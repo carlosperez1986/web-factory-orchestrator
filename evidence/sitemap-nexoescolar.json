@@ -1,0 +1,11 @@
+{
+  "nav": [
+    { "label": "Inicio",     "slug": "/",           "template": "home",    "rule": "C — always required root page" },
+    { "label": "Funciones",  "slug": "/#funciones",  "template": "home",    "rule": "B — Product/features catalog detected (Bento Grid features section)" },
+    { "label": "Beneficios", "slug": "/#beneficios", "template": "home",    "rule": "Brand Info — interactive hub section for Directivos, Docentes, Padres" },
+    { "label": "App",        "slug": "/#app",        "template": "home",    "rule": "Brand Info — mobile app showcase section" },
+    { "label": "Demo",       "slug": "/#demo",       "template": "home",    "rule": "A — Lead Generation detected (Quiero mi demo form)" }
+  ],
+  "architecture": "single-page-landing",
+  "note": "All nav items are anchor links within a single home page. WFO implements as single Razor Page (Index.cshtml) with anchor sections."
+}

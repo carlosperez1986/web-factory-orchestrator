@@ -1,0 +1,19 @@
+{
+  "project": "nexoescolar",
+  "phase": "define",
+  "briefing_source": "inbox/briefing-nexoescolar.md",
+  "detected_motives": ["lead-generation", "brand-info", "product-catalog"],
+  "sitemap_ref": "evidence/sitemap-nexoescolar.json",
+  "feature_components_ref": "evidence/feature-components-nexoescolar.json",
+  "constraints": {
+    "max_nav_items": 7,
+    "data_layer": "git-json-md",
+    "admin": "decap"
+  },
+  "stack_conflict": {
+    "severity": "RESOLVED",
+    "detail": "Operator selected Option A — WFO-native stack (.NET 9 / Razor Pages / Bootstrap 5 / AOS.js). Stack conflict closed 2026-05-02.",
+    "resolution": "Option A confirmed",
+    "pending_operator_decision": false
+  }
+}

@@ -1,0 +1,27 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore NexoEscolar.csproj
+
+      - name: Build
+        run: dotnet build NexoEscolar.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish NexoEscolar.csproj --configuration Release --output ./publish --no-build

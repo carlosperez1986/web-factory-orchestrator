@@ -1,0 +1,40 @@
+{
+  "project": "nexoescolar",
+  "phase": "build",
+  "active_skill": "project-scaffolding",
+  "active_agent": "@Orchestrator",
+  "last_completed_step": "OTQ resolution: OTQ-4 done (favicon.svg generated); OTQ-2 deferred (log-only); OTQ-3-notification = SMTP when needed; OTQ-1 = OAuth App required (instructions in roadmap); OTQ-3-domain still pending",
+  "next_step": "project-scaffolding → Step 14: push to carlosperez1986/nexoescolar.git (requires operator GITHUB_TOKEN); then @Auditor Phase 3 gate",
+  "scaffold_path": "scaffold-output/nexoescolar-web/",
+  "push_script": "scripts/push-scaffold-nexoescolar.sh",
+  "build_verified": true,
+  "build_result": "dotnet build NexoEscolar.csproj --configuration Release → Build succeeded. 0 Warning(s). 0 Error(s).",
+  "token_budget_remaining": null,
+  "roadmap_ref": "PROJECT_ROADMAP-nexoescolar.md",
+  "strategy_contract_ref": "STRATEGY_CONTRACT-nexoescolar.json",
+  "implementation_spec_ref": "IMPLEMENTATION_SPEC-nexoescolar.md",
+  "client_repo_url": "https://github.com/carlosperez1986/nexoescolar.git",
+  "stack_decision_confirmed": true,
+  "stack_decision": "A",
+  "stack": {
+    "framework": "net9.0",
+    "css": "Bootstrap 5",
+    "animation": "AOS.js",
+    "icons": "Bootstrap Icons",
+    "admin": "Decap CMS",
+    "admin_route": "/admin/"
+  },
+  "estimation": {
+    "total_tokens_expected": 52000,
+    "time_days": 9.3,
+    "effort_band": "HIGH",
+    "agentic_total_cost_eur": 124.2,
+    "gross_margin_percent": 85.4
+  },
+  "open_technical_questions": [
+    "OTQ-1: RESOLVED — operator must register a free GitHub OAuth App (2 min). Homepage URL = https://nexoescolar.com; Callback URL = https://nexoescolar.com/callback. Instructions in PROJECT_ROADMAP.",
+    "OTQ-2: DEFERRED — no lead notification needed yet; current code logs leads gracefully; SMTP (Gmail or Arsys) to be wired when ready",
+    "OTQ-3: OPEN — custom domain needed before VPS deploy (not blocking scaffold)",
+    "OTQ-4: RESOLVED — branded SVG favicon generated (NE initials, teal/navy) at wwwroot/favicon.svg; wired into _Layout.cshtml"
+  ]
+}

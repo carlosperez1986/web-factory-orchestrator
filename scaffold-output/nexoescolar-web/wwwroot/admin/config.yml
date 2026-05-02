@@ -1,0 +1,143 @@
+backend:
+  name: github
+  repo: carlosperez1986/nexoescolar
+  branch: main
+  base_url: https://nexoescolar.com
+  auth_endpoint: /auth
+
+# Use local_backend: true during development (no OAuth required)
+# local_backend: true
+
+media_folder: "wwwroot/media"
+public_folder: "/media"
+
+collections:
+
+  # ── Singleton pages ──────────────────────────────────────────────────────
+  - name: "pages"
+    label: "Páginas"
+    files:
+
+      - name: "hero"
+        label: "Hero — Portada principal"
+        file: "wwwroot/content/pages/hero.json"
+        format: json
+        fields:
+          - { label: "Titular", name: "headline", widget: "string" }
+          - { label: "Subtítulo", name: "subheadline", widget: "string" }
+          - { label: "Texto del botón CTA", name: "cta_label", widget: "string", default: "Quiero mi demo" }
+          - { label: "Enlace del CTA", name: "cta_href", widget: "string", default: "#demo" }
+          - label: "Chips del panel (dashboard)"
+            name: dashboard_chips
+            widget: list
+            fields:
+              - { label: "Etiqueta", name: "label", widget: "string" }
+              - { label: "Valor", name: "value", widget: "string" }
+          - { label: "Notificación del teléfono", name: "phone_notification", widget: "string" }
+
+      - name: "problema"
+        label: "Sección Problema"
+        file: "wwwroot/content/pages/problema.json"
+        format: json
+        fields:
+          - { label: "Titular", name: "headline", widget: "string" }
+          - label: "Tarjetas de problema"
+            name: cards
+            widget: list
+            fields:
+              - { label: "Icono (Bootstrap Icons)", name: "icon", widget: "string" }
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "Descripción", name: "body", widget: "text" }
+
+      - name: "beneficios"
+        label: "Sección Beneficios (Hub interactivo)"
+        file: "wwwroot/content/pages/beneficios.json"
+        format: json
+        fields:
+          - { label: "Titular", name: "headline", widget: "string" }
+          - { label: "Subtítulo", name: "subheadline", widget: "string" }
+          - label: "Roles"
+            name: roles
+            widget: list
+            fields:
+              - { label: "ID (sin espacios)", name: "id", widget: "string" }
+              - { label: "Etiqueta", name: "label", widget: "string" }
+              - { label: "Icono (Bootstrap Icons)", name: "icon", widget: "string" }
+              - label: "Beneficios"
+                name: benefits
+                widget: list
+                field: { label: "Beneficio", name: "benefit", widget: "string" }
+
+      - name: "app"
+        label: "Sección App Móvil"
+        file: "wwwroot/content/pages/app.json"
+        format: json
+        fields:
+          - { label: "Titular", name: "headline", widget: "string" }
+          - { label: "Subtítulo", name: "subheadline", widget: "string" }
+          - label: "Puntos destacados"
+            name: highlights
+            widget: list
+            field: { label: "Punto", name: "highlight", widget: "string" }
+          - label: "Notificaciones del teléfono"
+            name: notifications
+            widget: list
+            fields:
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "Cuerpo", name: "body", widget: "string" }
+              - { label: "Acento (teal | amber)", name: "accent", widget: "select", options: ["teal", "amber"], default: "teal" }
+
+      - name: "trust"
+        label: "Sección Trust / Confianza"
+        file: "wwwroot/content/pages/trust.json"
+        format: json
+        fields:
+          - { label: "Titular", name: "headline", widget: "string" }
+          - label: "Bloques de confianza"
+            name: blocks
+            widget: list
+            fields:
+              - { label: "Icono (Bootstrap Icons)", name: "icon", widget: "string" }
+              - { label: "Título", name: "title", widget: "string" }
+              - { label: "Descripción", name: "body", widget: "text" }
+
+      - name: "footer"
+        label: "Footer"
+        file: "wwwroot/content/pages/footer.json"
+        format: json
+        fields:
+          - { label: "Tagline", name: "tagline", widget: "string" }
+          - { label: "Copyright", name: "copyright", widget: "string" }
+
+  # ── Folder collection: Funciones ─────────────────────────────────────────
+  - name: "funciones"
+    label: "Funciones (Bento Grid)"
+    folder: "wwwroot/content/collections/funciones"
+    format: json
+    create: true
+    slug: "{{order}}-{{slug}}"
+    fields:
+      - { label: "Orden", name: "order", widget: "number", value_type: "int" }
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Icono (Bootstrap Icons)", name: "icon", widget: "string" }
+      - { label: "Descripción", name: "description", widget: "text" }
+      - label: "Tamaño en bento grid"
+        name: span
+        widget: select
+        options:
+          - { label: "Grande (col 7)", value: "large" }
+          - { label: "Mediano (col 5)", value: "medium" }
+          - { label: "Pequeño (col 4)", value: "small" }
+        default: "small"
+
+  # ── Folder collection: FAQ ────────────────────────────────────────────────
+  - name: "faq"
+    label: "FAQ (Preguntas frecuentes)"
+    folder: "wwwroot/content/collections/faq"
+    format: json
+    create: true
+    slug: "{{order}}-{{slug}}"
+    fields:
+      - { label: "Orden", name: "order", widget: "number", value_type: "int" }
+      - { label: "Pregunta", name: "question", widget: "string" }
+      - { label: "Respuesta", name: "answer", widget: "text" }
