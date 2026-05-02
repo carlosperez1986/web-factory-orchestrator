@@ -19,35 +19,29 @@
 
 ---
 
-## ⚠️ STACK CONFLICT — Operator Decision Required
+## ✅ STACK DECISION — Option A Confirmed (2026-05-02)
 
-> **This is a HIGH-severity flag. The WFO pipeline cannot proceed past this point until the operator makes a decision.**
+> Operator selected **Option A — WFO-Native Stack**.
 
-The client briefing explicitly requests a **React 18+ / Tailwind CSS / shadcn/ui / Framer Motion** stack.
+| Layer | Technology | WFO Mapping from client brief |
+|-------|-----------|-------------------------------|
+| Framework | **.NET 9 Razor Pages** | React 18+ → Razor Pages |
+| CSS | **Bootstrap 5** | Tailwind CSS → Bootstrap 5 utilities |
+| Components | **Bootstrap 5 Accordion/Tabs** | shadcn/ui Accordion/Tabs → Bootstrap 5 native |
+| Animation | **AOS.js** `data-aos="fade-up"` | Framer Motion whileInView → AOS.js (whitelisted) |
+| Parallax | **CSS transform + vanilla JS scroll listener** | Framer Motion parallax → CSS |
+| Icons | **Bootstrap Icons (SVG inline)** | Lucide icons → Bootstrap Icons |
+| Glassmorphism | **Custom CSS utility class** (Bootstrap 5 gap — allowed) | Tailwind `bg-white/5`, `backdrop-blur-md` → CSS vars |
+| Typography clamp() | **Retained as-is** | `clamp(28px, 5vw, 56px)` — pure CSS, no framework dependency |
 
-Under WFO global constraints, this stack is **FORBIDDEN**:
-- React → FORBIDDEN (heavy JS bundle; requires @Architect approval)
-- Tailwind CSS → FORBIDDEN for standard components (Bootstrap 5 is mandated)
-- shadcn/ui → not in WFO approved component library
-- Framer Motion → FORBIDDEN (heavy JS bundle; AOS.js is the approved animation library)
-
-**Resolution options:**
-
-| Option | Description | Impact |
-|--------|-------------|--------|
-| **A — WFO-Native Stack** | Proceed with .NET 9 / Razor Pages / Bootstrap 5 / AOS.js. All client UX goals are achievable within WFO constraints (glassmorphism, parallax, interactive hub, bento grid). | ✅ Standard 850 EUR scope, full WFO pipeline applies. |
-| **B — React Exception** | @Architect approves React 18+ / Tailwind stack. WFO departs from factory model. Scaffolding, content-service, and Decap wiring steps are replaced with Vite + React scaffold. | ⚠️ Non-standard scope. Price/timeline may differ. @Architect sign-off required. |
-
-**Operator must reply with Option A or Option B before Phase 2 begins.**
-
-> Current state: `pending-operator-stack-decision`
+Scope: **850 EUR standard — full WFO pipeline applies.**
 
 ---
 
 ## Sitemap
 
 > Rules applied: C (always Inicio), A (Lead Gen → Demo form), B (features catalog → Funciones), D (≤ 7 nav items).
-> Architecture: Single-page landing — all nav items are anchor links on `Index.cshtml` (WFO Option A) or `App.tsx` (Option B).
+> Architecture: Single-page landing — all nav items are anchor links on `Index.cshtml` (.NET 9 Razor Pages — Option A confirmed).
 
 ```json
 {
@@ -177,20 +171,18 @@ time_days = 4 + (5 × 0.4) + (4 × 0.7) + (0 × 0.5) + (1 × 0.5)
 
 ## Stack Decision
 
-> Locked by: `project-estimation-and-stack-selection`
+> Locked by: `project-estimation-and-stack-selection` · Confirmed: Option A (2026-05-02)
 
 | Parameter | Value |
 |-----------|-------|
 | `target_framework` | `net9.0` (.NET 9 LTS) |
-| `decision_basis` | Newest compatible LTS; SDK detected; no hosting constraints provided |
+| `decision_basis` | Newest compatible LTS; Operator confirmed WFO-native stack (Option A) |
 | `fallback_framework` | `net8.0` (.NET 8 LTS) |
 
-> ⚠️ **Stack conflict flag active** — see STACK CONFLICT section above. The `.NET 9` decision applies to **WFO Option A**. If the operator selects Option B (React exception), `target_framework` changes to `node20` with Vite and requires @Architect sign-off before proceeding.
-
-**Admin baseline (non-negotiable under both options):**
+**Admin baseline (non-negotiable):**
 - Admin system: `Decap CMS`
 - Admin route: `/admin/`
-- Required config path: `wwwroot/admin/config.yml` (Option A) or `public/admin/config.yml` (Option B)
+- Required config path: `wwwroot/admin/config.yml`
 - Content source: Git-based JSON/MD files
 
 ---
@@ -205,7 +197,7 @@ time_days = 4 + (5 × 0.4) + (4 × 0.7) + (0 × 0.5) + (1 × 0.5)
 | TASK-002 | Define C# content models for all landing sections | Phase 1 | @Orchestrator | pending | `evidence/models-review.md` |
 | TASK-003 | Define Decap CMS collection schema (`config.yml`) for hero, features, FAQ, trust | Phase 1 | @Orchestrator | pending | `wwwroot/admin/config.yml` |
 | TASK-004 | Design Style Contract — color palette, typography scale, glassmorphism tokens | Phase 1 | @Orchestrator | pending | `DESIGN_STYLE_CONTRACT-nexoescolar.md` |
-| TASK-005 | Resolve stack conflict — operator decision A or B | Phase 1 | @Orchestrator | blocked | `current_state-nexoescolar.json` field `stack_decision_confirmed: true` |
+| TASK-005 | Resolve stack conflict — operator decision A or B | Phase 1 | @Orchestrator | **done** | `current_state-nexoescolar.json` field `stack_decision_confirmed: true` |
 | TASK-020 | Scaffold .NET 9 project from WFO blueprint (Option A) | Phase 2 | @Orchestrator | pending | `Program.cs` exists in client repo |
 | TASK-021 | Implement `json-content-service` (ContentService.cs with GetPage<T>/GetCollection<T>) | Phase 2 | @Orchestrator | pending | `Services/ContentService.cs` exists |
 | TASK-022 | Implement `contact-form-handler` — Demo form (Nombre, Colegio, Correo, WhatsApp) | Phase 2 | @Orchestrator | pending | `evidence/form-handler-smoke.md` |

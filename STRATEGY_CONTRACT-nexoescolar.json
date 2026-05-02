@@ -11,12 +11,9 @@
     "admin": "decap"
   },
   "stack_conflict": {
-    "severity": "HIGH",
-    "detail": "Client briefing requests React 18+ / Tailwind CSS / shadcn/ui / Framer Motion. WFO global constraint mandates .NET 9 / Razor Pages / Bootstrap 5. React is FORBIDDEN under WFO rules unless @Architect approves.",
-    "resolution_options": [
-      "A) @Architect approves React exception — WFO builds outside standard factory model (scope/price may differ)",
-      "B) Operator confirms WFO-native stack — .NET 9 / Razor Pages / Bootstrap 5 / AOS.js proceeds as planned"
-    ],
-    "pending_operator_decision": true
+    "severity": "RESOLVED",
+    "detail": "Operator selected Option A — WFO-native stack (.NET 9 / Razor Pages / Bootstrap 5 / AOS.js). Stack conflict closed 2026-05-02.",
+    "resolution": "Option A confirmed",
+    "pending_operator_decision": false
   }
 }
