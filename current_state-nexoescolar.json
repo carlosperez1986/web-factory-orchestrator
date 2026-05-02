@@ -3,8 +3,8 @@
   "phase": "build",
   "active_skill": "project-scaffolding",
   "active_agent": "@Orchestrator",
-  "last_completed_step": "project-scaffolding → Scaffold complete; dotnet build 0 errors 0 warnings; all 14 models, ContentService, full Index.cshtml (8 sections), contact form handler, Decap CMS admin, CSS design tokens, 9 content seed JSON sources. Push script ready.",
-  "next_step": "project-scaffolding → Step 14: push to carlosperez1986/nexoescolar.git (requires GITHUB_TOKEN)",
+  "last_completed_step": "OTQ resolution: OTQ-4 done (favicon.svg generated); OTQ-2 deferred (log-only); OTQ-3-notification = SMTP when needed; OTQ-1 = OAuth App required (instructions in roadmap); OTQ-3-domain still pending",
+  "next_step": "project-scaffolding → Step 14: push to carlosperez1986/nexoescolar.git (requires operator GITHUB_TOKEN); then @Auditor Phase 3 gate",
   "scaffold_path": "scaffold-output/nexoescolar-web/",
   "push_script": "scripts/push-scaffold-nexoescolar.sh",
   "build_verified": true,
@@ -28,13 +28,13 @@
     "total_tokens_expected": 52000,
     "time_days": 9.3,
     "effort_band": "HIGH",
-    "agentic_total_cost_eur": 124.20,
+    "agentic_total_cost_eur": 124.2,
     "gross_margin_percent": 85.4
   },
   "open_technical_questions": [
-    "OTQ-1: GitHub OAuth App for Decap — client must provide client_id + client_secret",
-    "OTQ-2: Lead notification method — SMTP or webhook URL?",
-    "OTQ-3: Custom domain for staging and production",
-    "OTQ-4: Favicon and OG image — client asset or typographic fallback?"
+    "OTQ-1: RESOLVED — operator must register a free GitHub OAuth App (2 min). Homepage URL = https://nexoescolar.com; Callback URL = https://nexoescolar.com/callback. Instructions in PROJECT_ROADMAP.",
+    "OTQ-2: DEFERRED — no lead notification needed yet; current code logs leads gracefully; SMTP (Gmail or Arsys) to be wired when ready",
+    "OTQ-3: OPEN — custom domain needed before VPS deploy (not blocking scaffold)",
+    "OTQ-4: RESOLVED — branded SVG favicon generated (NE initials, teal/navy) at wwwroot/favicon.svg; wired into _Layout.cshtml"
   ]
 }

@@ -262,3 +262,14 @@ time_days = 4 + (5 × 0.4) + (4 × 0.7) + (0 × 0.5) + (1 × 0.5)
 | Final payment confirmed | pending | — |
 | Production deploy completed | pending | — |
 | Post-deploy smoke test | pending | — |
+
+---
+
+## Open Technical Questions — Resolution Log
+
+| OTQ | Question | Resolution | Date |
+|-----|----------|------------|------|
+| OTQ-1 | GitHub OAuth App for Decap CMS | **Required — register free OAuth App on GitHub (2 min).** A PAT cannot be used in browser code (security risk). The OAuth App lets Program.cs act as a secure token proxy. Steps: (1) github.com/settings/applications/new → Application name: "Nexo Escolar CMS" → Homepage URL: `https://nexoescolar.com` → Callback URL: `https://nexoescolar.com/callback` → Register. (2) Copy `Client ID` → `appsettings.json > GitHub:ClientId`. (3) Generate a client secret → `GitHub:ClientSecret`. | 2026-05-02 |
+| OTQ-2 | Lead notification method | **Deferred.** No webhook or SMTP needed yet. Current `DispatchLeadAsync` logs to server output when no URL is configured. SMTP (Gmail or Arsys) will be wired via `contact-form-handler` skill when operator decides it is needed. `appsettings.json` already has `Smtp:*` keys ready. | 2026-05-02 |
+| OTQ-3 | Custom domain for staging and production | **Open.** Domain must be provided before VPS deployment. Not blocking scaffold or Phase 3 audit. | 2026-05-02 |
+| OTQ-4 | Favicon / OG image | **Done.** Branded SVG favicon generated: `wwwroot/favicon.svg` — "NE" initials in teal (#00C9B1) on navy (#0F1B3C). Wired in `_Layout.cshtml`. No external asset required. | 2026-05-02 |
