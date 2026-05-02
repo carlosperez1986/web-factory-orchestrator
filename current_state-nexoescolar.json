@@ -1,13 +1,15 @@
 {
   "project": "nexoescolar",
-  "phase": "define",
-  "active_skill": "project-estimation-and-stack-selection",
+  "phase": "build",
+  "active_skill": "spec-driven-architecture",
   "active_agent": "@Orchestrator",
-  "last_completed_step": "project-estimation-and-stack-selection → Stack decision Option A confirmed by operator 2026-05-02",
-  "next_step": "spec-driven-architecture → Step 1 (awaiting user 'Proceed' signal)",
+  "last_completed_step": "spec-driven-architecture → Step 7: IMPLEMENTATION_SPEC-nexoescolar.md written; all contracts, batches, and review gates defined",
+  "next_step": "project-scaffolding → Step 1",
   "token_budget_remaining": null,
   "roadmap_ref": "PROJECT_ROADMAP-nexoescolar.md",
   "strategy_contract_ref": "STRATEGY_CONTRACT-nexoescolar.json",
+  "implementation_spec_ref": "IMPLEMENTATION_SPEC-nexoescolar.md",
+  "client_repo_url": "https://github.com/carlosperez1986/nexoescolar.git",
   "stack_decision_confirmed": true,
   "stack_decision": "A",
   "stack": {
@@ -24,5 +26,11 @@
     "effort_band": "HIGH",
     "agentic_total_cost_eur": 124.20,
     "gross_margin_percent": 85.4
-  }
+  },
+  "open_technical_questions": [
+    "OTQ-1: GitHub OAuth App for Decap — client must provide client_id + client_secret",
+    "OTQ-2: Lead notification method — SMTP or webhook URL?",
+    "OTQ-3: Custom domain for staging and production",
+    "OTQ-4: Favicon and OG image — client asset or typographic fallback?"
+  ]
 }

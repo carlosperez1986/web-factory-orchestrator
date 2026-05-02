@@ -193,10 +193,10 @@ time_days = 4 + (5 × 0.4) + (4 × 0.7) + (0 × 0.5) + (1 × 0.5)
 
 | ID | Task | Phase | Owner | Status | Evidence Required |
 |----|------|-------|-------|--------|-------------------|
-| TASK-001 | Define Razor Page spec: Inicio/Hero (`/`) with all anchor sections | Phase 1 | @Orchestrator | pending | `evidence/spec-inicio.md` |
-| TASK-002 | Define C# content models for all landing sections | Phase 1 | @Orchestrator | pending | `evidence/models-review.md` |
-| TASK-003 | Define Decap CMS collection schema (`config.yml`) for hero, features, FAQ, trust | Phase 1 | @Orchestrator | pending | `wwwroot/admin/config.yml` |
-| TASK-004 | Design Style Contract — color palette, typography scale, glassmorphism tokens | Phase 1 | @Orchestrator | pending | `DESIGN_STYLE_CONTRACT-nexoescolar.md` |
+| TASK-001 | Define Razor Page spec: Inicio/Hero (`/`) with all anchor sections | Phase 1 | @Orchestrator | **done** | `IMPLEMENTATION_SPEC-nexoescolar.md` § Route Matrix |
+| TASK-002 | Define C# content models for all landing sections | Phase 1 | @Orchestrator | **done** | `IMPLEMENTATION_SPEC-nexoescolar.md` § Data Contracts |
+| TASK-003 | Define Decap CMS collection schema (`config.yml`) for hero, features, FAQ, trust | Phase 1 | @Orchestrator | **done** | `IMPLEMENTATION_SPEC-nexoescolar.md` § Content Contracts + Batch 1 |
+| TASK-004 | Design Style Contract — color palette, typography scale, glassmorphism tokens | Phase 1 | @Orchestrator | **done** | `IMPLEMENTATION_SPEC-nexoescolar.md` § Component Map → CSS Custom Properties |
 | TASK-005 | Resolve stack conflict — operator decision A or B | Phase 1 | @Orchestrator | **done** | `current_state-nexoescolar.json` field `stack_decision_confirmed: true` |
 | TASK-020 | Scaffold .NET 9 project from WFO blueprint (Option A) | Phase 2 | @Orchestrator | pending | `Program.cs` exists in client repo |
 | TASK-021 | Implement `json-content-service` (ContentService.cs with GetPage<T>/GetCollection<T>) | Phase 2 | @Orchestrator | pending | `Services/ContentService.cs` exists |
@@ -224,7 +224,8 @@ time_days = 4 + (5 × 0.4) + (4 × 0.7) + (0 × 0.5) + (1 × 0.5)
 |--------|-----------|------|-----------|
 | `[✅ GO] briefing-synthesis` | @Orchestrator | 2026-05-02 | Steps 1–5 complete; roadmap generated; stack conflict flagged |
 | `[✅ GO] project-estimation-and-stack-selection` | @Orchestrator | 2026-05-02 | Token/time/cost/stack written; gross margin 85.4% ✅ |
-| `[ ] GO Phase 1 → Phase 2` | @Orchestrator | — | TASK-001–005 all `done` + operator stack decision + user "Proceed" |
+| `[✅ GO] spec-driven-architecture` | @Orchestrator | 2026-05-02 | `IMPLEMENTATION_SPEC-nexoescolar.md` written; all contracts defined; batches 1–7 planned |
+| `[✅ GO] Phase 1 → Phase 2` | @Orchestrator | 2026-05-02 | Option A confirmed; "Proceed" received; client repo `carlosperez1986/nexoescolar` provided |
 | `[ ] GO Phase 2 → Phase 3` | @Orchestrator | — | TASK-020–029 all `done` + user approval |
 | `[ ] GO security-audit` | @Auditor | — | TASK-030–032 `done`, no unresolved Critical/High findings |
 | `[ ] GO production` | @Orchestrator | — | TASK-040–042 `done` + client final payment confirmed |
@@ -253,7 +254,9 @@ time_days = 4 + (5 × 0.4) + (4 × 0.7) + (0 × 0.5) + (1 × 0.5)
 
 | Item | Status | Date |
 |------|--------|------|
-| Operator stack decision (A/B) | pending | — |
+| Operator stack decision (A/B) | ✅ done — Option A | 2026-05-02 |
+| Architecture spec locked | ✅ done — `IMPLEMENTATION_SPEC-nexoescolar.md` | 2026-05-02 |
+| Client repo provided | ✅ done — `github.com/carlosperez1986/nexoescolar` | 2026-05-02 |
 | Client review of staging URL | pending | — |
 | Final payment confirmed | pending | — |
 | Production deploy completed | pending | — |
