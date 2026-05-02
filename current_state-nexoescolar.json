@@ -1,0 +1,29 @@
+{
+  "project": "nexoescolar",
+  "phase": "define",
+  "active_skill": "project-estimation-and-stack-selection",
+  "active_agent": "@Orchestrator",
+  "last_completed_step": "project-estimation-and-stack-selection → Step 6: Stack decision locked (net9.0 LTS, Decap CMS /admin/); stack conflict flagged — awaiting operator decision",
+  "next_step": "spec-driven-architecture → Step 1 (awaiting user approval + stack conflict resolution)",
+  "token_budget_remaining": null,
+  "roadmap_ref": "PROJECT_ROADMAP-nexoescolar.md",
+  "strategy_contract_ref": "STRATEGY_CONTRACT-nexoescolar.json",
+  "stack_decision_confirmed": false,
+  "stack_conflict": {
+    "severity": "HIGH",
+    "client_requested": ["React 18+", "Tailwind CSS", "shadcn/ui", "Framer Motion"],
+    "wfo_mandated": [".NET 9", "Razor Pages", "Bootstrap 5", "AOS.js"],
+    "pending_operator_decision": true,
+    "options": {
+      "A": "WFO-native stack — .NET 9 / Razor Pages / Bootstrap 5 / AOS.js — 850 EUR standard scope",
+      "B": "React exception — React 18+ / Tailwind / Vite — requires @Architect approval, non-standard scope"
+    }
+  },
+  "estimation": {
+    "total_tokens_expected": 52000,
+    "time_days": 9.3,
+    "effort_band": "HIGH",
+    "agentic_total_cost_eur": 124.20,
+    "gross_margin_percent": 85.4
+  }
+}
