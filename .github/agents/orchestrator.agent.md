@@ -239,8 +239,6 @@ Necesito los siguientes valores:
 3. Prefijo de ruta       e.g. /purewipe  (URL prefix bajo el dominio base)
 4. Directorio en VPS     e.g. /var/www/purewipe
 5. Puerto Kestrel        e.g. 5010  (debe ser único por app en el servidor)
-6. GitHub OAuth ClientId para Decap
-7. GitHub OAuth ClientSecret para Decap
 
 Nota: APP_NAME y DOTNET_VERSION se toman del estado del proyecto.
 ```
@@ -255,20 +253,18 @@ Necesito los siguientes valores:
 1. Dominio               e.g. purewipe.com
 2. Directorio en VPS     e.g. /var/www/purewipe
 3. Puerto Kestrel        e.g. 5010  (debe ser único por app en el servidor)
-4. Directorio del cert   e.g. /etc/ssl/certs/purewipe
-5. Archivo .pem del cert e.g. SSL1234.pem
-6. Archivo .priv del key e.g. SSL1234.priv
-7. GitHub OAuth ClientId para Decap
-8. GitHub OAuth ClientSecret para Decap
+4. Confirmar secret TLS_CERT_B64 configurado en GitHub Actions (sí/no)
+5. Confirmar secret TLS_KEY_B64 configurado en GitHub Actions (sí/no)
 
-Nota: Los certificados SSL deben existir en el VPS o se incluirán en el paso de copia.
+Nota: El workflow decodifica estos secretos y crea los certificados TLS en el VPS.
 ```
 
-After collecting OAuth values, instruct user to set repository Actions secrets:
-- `DECAP_GITHUB_CLIENT_ID`
-- `DECAP_GITHUB_CLIENT_SECRET`
+Instruct user to set repository Actions secrets:
+- `PASSWORD`
+- `TLS_CERT_B64` (required for custom domain)
+- `TLS_KEY_B64` (required for custom domain)
 
-Do not write OAuth secret values into plain-text roadmap/state. Store only readiness flags.
+Do not write secret values into plain-text roadmap/state. Store only readiness flags.
 
 Once the user provides all values, write them into `current_state-{project-name}.json` under `vps_config`:
 
@@ -283,11 +279,8 @@ Once the user provides all values, write them into `current_state-{project-name}
   "route_prefix": "",
   "use_custom_domain": "true | false",
   "domain": "",
-  "cert_dir": "",
-  "cert_crt": "",
-   "cert_key": "",
-   "decap_oauth_client_id_set": true,
-   "decap_oauth_client_secret_set": true
+   "tls_cert_b64_set": true,
+   "tls_key_b64_set": true
 }
 ```
 

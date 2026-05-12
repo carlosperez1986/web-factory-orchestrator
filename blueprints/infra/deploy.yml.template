@@ -5,40 +5,30 @@
 # Substitutions applied by the vps-provisioning skill:
 #   {{APP_NAME}}             → project slug, lowercase, e.g. purewipe
 #   {{PROJECT_PATH}}         → relative path to .csproj, e.g. ./PureWipe.csproj
-#   {{DOTNET_VERSION_GA}}    → GitHub Actions format, e.g. 9.0.x  (NOT net9.0)
-#   {{DOTNET_RUNTIME_MAJOR}} → major.minor only, e.g. 9.0  (used inside bash apt-get)
+#   {{DOTNET_VERSION_GA}}    → GitHub Actions format, e.g. 9.0.x
+#   {{DOTNET_RUNTIME_MAJOR}} → major.minor only, e.g. 9.0
 #   {{APP_DLL}}              → published DLL filename, e.g. PureWipe.dll
 #   {{APP_PORT}}             → Kestrel localhost port, e.g. 5010
 #   {{USE_SHARED_DOMAIN}}    → "true" or "false"
-#   {{SHARED_DOMAIN}}        → primary domain hosting multiple apps, e.g. hechoenmargarita.com
-#   {{SHARED_SITE_FILE}}     → Nginx sites-available filename, usually same as SHARED_DOMAIN
+#   {{SHARED_DOMAIN}}        → primary domain for shared topology
+#   {{SHARED_SITE_FILE}}     → nginx sites-available file in shared topology
 #   {{ROUTE_PREFIX}}         → URL prefix for shared topology, e.g. /purewipe
 #   {{TARGET_DIR}}           → absolute deploy path on VPS, e.g. /var/www/purewipe
 #   {{USE_CUSTOM_DOMAIN}}    → "true" or "false"
-#   {{DOMAIN}}               → custom domain if USE_CUSTOM_DOMAIN=true, e.g. purewipe.com
-#   {{CERT_DIR}}             → SSL cert directory, e.g. /etc/ssl/certs/purewipe
-#   {{CERT_CRT}}             → cert filename, e.g. SSL1234.pem
-#   {{CERT_KEY}}             → key filename, e.g. SSL1234.priv
+#   {{DOMAIN}}               → dedicated domain for custom topology
 #
-# GitHub repository secrets required (set in repo Settings → Secrets and variables → Actions):
-#   PASSWORD   → SSH password (also used for sudo escalation)
-#   DECAP_GITHUB_CLIENT_ID     → GitHub OAuth ClientId for Decap backend auth
-#   DECAP_GITHUB_CLIENT_SECRET → GitHub OAuth ClientSecret for Decap backend auth
+# GitHub repository secrets required:
+#   PASSWORD      → SSH password (also used for sudo escalation)
+#   TLS_CERT_B64  → PEM certificate content encoded in base64
+#   TLS_KEY_B64   → PEM private key content encoded in base64
 #
 # GitHub Variables recommended for non-sensitive connection values:
-#   SERVER_IP  → VPS IP address or hostname
-#   USERNAME   → SSH user (must have sudo rights)
-#   PORT       → SSH port (optional — defaults to 22)
-#
-# Not GitHub secrets by default (topology/deploy context):
-#   USE_SHARED_DOMAIN, SHARED_DOMAIN, SHARED_SITE_FILE, ROUTE_PREFIX,
-#   TARGET_DIR, USE_CUSTOM_DOMAIN, DOMAIN, CERT_DIR, CERT_CRT, CERT_KEY
-# These are injected by vps-provisioning token substitution from orchestrator state.
+#   SERVER_IP, USERNAME, PORT
 #
 # Do NOT modify this template directly — changes must go through vps-provisioning skill review.
-# ─────────────────────────────────────────────────────────────────────────────
 
 name: Deploy ASP.NET Core App to VPS
+
 on:
   workflow_dispatch:
   push:
@@ -59,23 +49,17 @@ jobs:
       SSH_USER: ${{ vars.USERNAME || secrets.USERNAME }}
       SSH_PASSWORD: ${{ secrets.PASSWORD }}
       SSH_PORT: ${{ vars.PORT || secrets.PORT || '22' }}
-      DECAP_GITHUB_CLIENT_ID: ${{ secrets.DECAP_GITHUB_CLIENT_ID }}
-      DECAP_GITHUB_CLIENT_SECRET: ${{ secrets.DECAP_GITHUB_CLIENT_SECRET }}
 
-      # Topology A — multiple apps under one shared domain
-      # Example: https://{{SHARED_DOMAIN}}/{{APP_NAME}}
       USE_SHARED_DOMAIN: "{{USE_SHARED_DOMAIN}}"
       SHARED_DOMAIN: "{{SHARED_DOMAIN}}"
       SHARED_SITE_FILE: "{{SHARED_SITE_FILE}}"
       ROUTE_PREFIX: "{{ROUTE_PREFIX}}"
       TARGET_DIR: "{{TARGET_DIR}}"
 
-      # Topology B — dedicated custom domain for this app only
       USE_CUSTOM_DOMAIN: "{{USE_CUSTOM_DOMAIN}}"
       DOMAIN: "{{DOMAIN}}"
-      CERT_DIR: "{{CERT_DIR}}"
-      CERT_CRT: "{{CERT_CRT}}"
-      CERT_KEY: "{{CERT_KEY}}"
+      TLS_CERT_B64: ${{ secrets.TLS_CERT_B64 }}
+      TLS_KEY_B64: ${{ secrets.TLS_KEY_B64 }}
 
     steps:
       - name: Checkout code
@@ -87,8 +71,6 @@ jobs:
           test -n "${{ env.SSH_HOST }}" || { echo "::error::Missing SERVER_IP (configure as GitHub Variable or Secret)"; exit 1; }
           test -n "${{ env.SSH_USER }}" || { echo "::error::Missing USERNAME (configure as GitHub Variable or Secret)"; exit 1; }
           test -n "${{ env.SSH_PASSWORD }}" || { echo "::error::Missing GitHub secret PASSWORD"; exit 1; }
-          test -n "${{ env.DECAP_GITHUB_CLIENT_ID }}" || { echo "::error::Missing GitHub secret DECAP_GITHUB_CLIENT_ID"; exit 1; }
-          test -n "${{ env.DECAP_GITHUB_CLIENT_SECRET }}" || { echo "::error::Missing GitHub secret DECAP_GITHUB_CLIENT_SECRET"; exit 1; }
 
       - name: Validate topology configuration
         shell: bash
@@ -112,10 +94,23 @@ jobs:
 
           if [ "${{ env.USE_CUSTOM_DOMAIN }}" = "true" ]; then
             test -n "${{ env.DOMAIN }}" || { echo "::error::Missing DOMAIN for custom topology"; exit 1; }
-            test -n "${{ env.CERT_DIR }}" || { echo "::error::Missing CERT_DIR for custom topology"; exit 1; }
-            test -n "${{ env.CERT_CRT }}" || { echo "::error::Missing CERT_CRT for custom topology"; exit 1; }
-            test -n "${{ env.CERT_KEY }}" || { echo "::error::Missing CERT_KEY for custom topology"; exit 1; }
+            test -n "${{ env.TLS_CERT_B64 }}" || { echo "::error::Missing secret TLS_CERT_B64"; exit 1; }
+            test -n "${{ env.TLS_KEY_B64 }}" || { echo "::error::Missing secret TLS_KEY_B64"; exit 1; }
           fi
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
+
+      - name: Build
+        run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --no-build --output ./publish
 
       - name: Test SSH connection to VPS
         uses: appleboy/ssh-action@v1
@@ -145,44 +140,18 @@ jobs:
               echo "sudo validation successful"
             fi
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Restore dependencies
-        run: dotnet restore "${{ env.PROJECT_PATH }}"
-
-      - name: Build
-        run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
-
-      - name: Publish
-        run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --no-build --output ./publish
-
-      - name: Provision VPS, systemd and Nginx
+      - name: Provision VPS — Systemd + Nginx
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ env.SSH_HOST }}
           username: ${{ env.SSH_USER }}
           password: ${{ env.SSH_PASSWORD }}
           port: ${{ env.SSH_PORT }}
+          envs: APP_NAME,APP_DLL,APP_PORT,TARGET_DIR,ROUTE_PREFIX,DOMAIN,SHARED_DOMAIN,SHARED_SITE_FILE,SSH_USER,USE_SHARED_DOMAIN,USE_CUSTOM_DOMAIN,TLS_CERT_B64,TLS_KEY_B64
           script: |
             set -e
 
-            APP_NAME="${{ env.APP_NAME }}"
-            APP_DLL="${{ env.APP_DLL }}"
-            APP_PORT="${{ env.APP_PORT }}"
-            USE_SHARED_DOMAIN="${{ env.USE_SHARED_DOMAIN }}"
-            USE_CUSTOM_DOMAIN="${{ env.USE_CUSTOM_DOMAIN }}"
-            SHARED_DOMAIN="${{ env.SHARED_DOMAIN }}"
-            SHARED_SITE_FILE="${{ env.SHARED_SITE_FILE }}"
-            ROUTE_PREFIX="${{ env.ROUTE_PREFIX }}"
-            TARGET_DIR="${{ env.TARGET_DIR }}"
-            DOMAIN="${{ env.DOMAIN }}"
-            CERT_DIR="${{ env.CERT_DIR }}"
-            CERT_CRT="${{ env.CERT_CRT }}"
-            CERT_KEY="${{ env.CERT_KEY }}"
-            SSH_DEPLOY_USER="${{ env.SSH_USER }}"
+            SSH_DEPLOY_USER="$SSH_USER"
 
             SUDO_PASSWORD="$(cat <<'__SUDO_PASS__'
             ${{ env.SSH_PASSWORD }}
@@ -190,87 +159,33 @@ jobs:
             )"
 
             sudo_run() {
-              if [ "$(id -u)" -eq 0 ]; then
-                "$@"
-              else
-                printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' "$@"
-              fi
+              if [ "$(id -u)" -eq 0 ]; then "$@"
+              else printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' "$@"; fi
             }
 
             sudo_sh() {
-              if [ "$(id -u)" -eq 0 ]; then
-                sh -c "$1"
-              else
-                printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' sh -c "$1"
-              fi
+              if [ "$(id -u)" -eq 0 ]; then sh -c "$1"
+              else printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' sh -c "$1"; fi
             }
 
-            if [ "$(id -u)" -ne 0 ]; then
-              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' -v || { echo "ERROR: sudo failed."; exit 1; }
-            fi
-
-            APP_PATH_BASE=""
-            if [ "$USE_SHARED_DOMAIN" = "true" ]; then
-              APP_PATH_BASE="$ROUTE_PREFIX"
-            fi
-
-            OAUTH_ENV_DIR="/etc/$APP_NAME"
-            OAUTH_ENV_FILE="$OAUTH_ENV_DIR/$APP_NAME.env"
-
-            echo "Using ASP.NET Core port: $APP_PORT"
-            if command -v ss >/dev/null 2>&1; then
-              if ss -ltn | awk '{print $4}' | grep -qE "[:.]$APP_PORT$"; then
-                echo "WARNING: Port $APP_PORT is already listening on the VPS"
-                sudo_run ss -ltnp | grep ":$APP_PORT " || true
-              fi
-            fi
-
             if command -v apt-get >/dev/null 2>&1; then
-              if [ -f /etc/os-release ]; then
-                . /etc/os-release
-                if [ "$ID" != "debian" ] || [ "$VERSION_ID" != "11" ]; then
-                  echo "ERROR: Unsupported OS detected: ${ID:-unknown} ${VERSION_ID:-unknown}. This deploy workflow supports Debian 11 only."
-                  exit 1
-                fi
-                echo "Detected supported OS: Debian 11"
-              else
-                echo "ERROR: Cannot determine OS. Missing /etc/os-release"
-                exit 1
-              fi
-
-              if ! command -v wget >/dev/null 2>&1; then
-                sudo_run apt-get update
-                sudo_run apt-get install -y wget
-              fi
-
               if ! command -v nginx >/dev/null 2>&1; then
-                sudo_run apt-get update
-                sudo_run apt-get install -y nginx
+                sudo_run apt-get update && sudo_run apt-get install -y nginx
                 sudo_run systemctl enable nginx
               fi
-
+              if ! command -v openssl >/dev/null 2>&1; then
+                sudo_run apt-get update && sudo_run apt-get install -y openssl
+              fi
               if ! dotnet --list-runtimes 2>/dev/null | grep -q '^Microsoft.NETCore.App {{DOTNET_RUNTIME_MAJOR}}\.'; then
-                echo "Installing missing .NET {{DOTNET_RUNTIME_MAJOR}} runtime on VPS..."
+                . /etc/os-release
                 wget -q "https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb" -O /tmp/packages-microsoft-prod.deb
                 sudo_run dpkg -i /tmp/packages-microsoft-prod.deb || true
-                sudo_run apt-get update
-                sudo_run apt-get install -y aspnetcore-runtime-{{DOTNET_RUNTIME_MAJOR}}
+                sudo_run apt-get update && sudo_run apt-get install -y aspnetcore-runtime-{{DOTNET_RUNTIME_MAJOR}}
               fi
-
-              echo "Available runtimes on VPS:"
-              dotnet --list-runtimes || true
             fi
 
             sudo_run mkdir -p "$TARGET_DIR"
             sudo_run chown -R "$SSH_DEPLOY_USER:www-data" "$TARGET_DIR"
-
-            sudo_run mkdir -p "$OAUTH_ENV_DIR"
-            cat > "/tmp/$APP_NAME.oauth.env" <<EOF
-            GitHub__ClientId=${{ env.DECAP_GITHUB_CLIENT_ID }}
-            GitHub__ClientSecret=${{ env.DECAP_GITHUB_CLIENT_SECRET }}
-            EOF
-            sudo_run install -m 600 "/tmp/$APP_NAME.oauth.env" "$OAUTH_ENV_FILE"
-            sudo_run chown root:root "$OAUTH_ENV_FILE"
 
             cat > "/tmp/$APP_NAME.service" <<SERVICE
             [Unit]
@@ -287,24 +202,19 @@ jobs:
             User=$SSH_DEPLOY_USER
             Environment=ASPNETCORE_ENVIRONMENT=Production
             Environment=ASPNETCORE_URLS=http://127.0.0.1:$APP_PORT
-            Environment=DOTNET_ROOT=/usr/share/dotnet
-            Environment=PATH_BASE=$APP_PATH_BASE
-            EnvironmentFile=-$OAUTH_ENV_FILE
+            EnvironmentFile=-/etc/$APP_NAME/$APP_NAME.env
 
             [Install]
             WantedBy=multi-user.target
             SERVICE
             sudo_run install -m 644 "/tmp/$APP_NAME.service" "/etc/systemd/system/$APP_NAME.service"
+            sudo_run mkdir -p "/etc/$APP_NAME"
+            sudo_sh "if [ ! -f '/etc/$APP_NAME/$APP_NAME.env' ]; then printf 'ConnectionStrings__DefaultConnection=\n' > '/etc/$APP_NAME/$APP_NAME.env'; chmod 600 '/etc/$APP_NAME/$APP_NAME.env'; fi"
 
-            if [ "$USE_SHARED_DOMAIN" = "true" ]; then
+            if [ -n "$SHARED_SITE_FILE" ] && [ "$USE_SHARED_DOMAIN" = "true" ]; then
               SHARED_CONF="/etc/nginx/sites-available/$SHARED_SITE_FILE"
               ROUTES_DIR="/etc/nginx/shared-routes/$SHARED_DOMAIN"
               ROUTE_FILE="$ROUTES_DIR/$APP_NAME.conf"
-
-              if ! sudo_run test -f "$SHARED_CONF"; then
-                echo "ERROR: No existe la configuración base de Nginx: $SHARED_CONF"
-                exit 1
-              fi
 
               sudo_run mkdir -p "$ROUTES_DIR"
 
@@ -330,24 +240,67 @@ jobs:
 
               INCLUDE_LINE="include /etc/nginx/shared-routes/$SHARED_DOMAIN/*.conf;"
               sudo_sh "grep -Fq '$INCLUDE_LINE' '$SHARED_CONF' || sed -i '\$i\\    $INCLUDE_LINE' '$SHARED_CONF'"
+            fi
 
-            elif [ "$USE_CUSTOM_DOMAIN" = "true" ]; then
+            echo "[DEBUG] TLS_CERT_B64 length: ${#TLS_CERT_B64}"
+            echo "[DEBUG] TLS_KEY_B64  length: ${#TLS_KEY_B64}"
+
+            if [ "$USE_CUSTOM_DOMAIN" = "true" ]; then
+              DOMAIN_CONF="/etc/nginx/sites-available/$APP_NAME.conf"
+              DOMAIN_ENABLED="/etc/nginx/sites-enabled/$APP_NAME.conf"
+              SSL_CERT_DEFAULT="/etc/letsencrypt/live/$DOMAIN/fullchain.pem"
+              SSL_KEY_DEFAULT="/etc/letsencrypt/live/$DOMAIN/privkey.pem"
+              SSL_CERT="$SSL_CERT_DEFAULT"
+              SSL_KEY="$SSL_KEY_DEFAULT"
+
+              if [ -n "$TLS_CERT_B64" ] && [ -n "$TLS_KEY_B64" ]; then
+                sudo_run mkdir -p "/etc/ssl/localcerts/$DOMAIN"
+                SSL_CERT="/etc/ssl/localcerts/$DOMAIN/fullchain.pem"
+                SSL_KEY="/etc/ssl/localcerts/$DOMAIN/privkey.pem"
+                printf '%s' "$TLS_CERT_B64" | base64 -d > "/tmp/$DOMAIN.crt"
+                printf '%s' "$TLS_KEY_B64" | base64 -d > "/tmp/$DOMAIN.key"
+                test -s "/tmp/$DOMAIN.crt" || { echo "::error::Decoded TLS certificate is empty"; exit 1; }
+                test -s "/tmp/$DOMAIN.key" || { echo "::error::Decoded TLS private key is empty"; exit 1; }
+                sudo_run install -m 644 "/tmp/$DOMAIN.crt" "$SSL_CERT"
+                sudo_run install -m 600 "/tmp/$DOMAIN.key" "$SSL_KEY"
+                rm -f "/tmp/$DOMAIN.crt" "/tmp/$DOMAIN.key"
+
+                sudo_run openssl x509 -in "$SSL_CERT" -noout -subject -issuer -dates > /dev/null
+                sudo_run openssl rsa -in "$SSL_KEY" -check -noout > /dev/null
+
+                CERT_MODULUS="$(sudo_run openssl x509 -noout -modulus -in "$SSL_CERT" | openssl md5)"
+                KEY_MODULUS="$(sudo_run openssl rsa -noout -modulus -in "$SSL_KEY" | openssl md5)"
+                if [ "$CERT_MODULUS" != "$KEY_MODULUS" ]; then
+                  echo "::error::TLS certificate and private key do not match"
+                  exit 1
+                fi
+
+                echo "[INFO] TLS certs installed from GitHub secrets."
+              elif [ ! -f "$SSL_CERT" ] || [ ! -f "$SSL_KEY" ]; then
+                echo "[WARN] TLS certificate files not found. Generating temporary self-signed certificate."
+                echo "[WARN] Recommended: certbot --nginx -d $DOMAIN -d www.$DOMAIN"
+                sudo_run mkdir -p "/etc/ssl/localcerts/$DOMAIN"
+                SSL_CERT="/etc/ssl/localcerts/$DOMAIN/fullchain.pem"
+                SSL_KEY="/etc/ssl/localcerts/$DOMAIN/privkey.pem"
+                sudo_sh "if [ ! -f '$SSL_CERT' ] || [ ! -f '$SSL_KEY' ]; then openssl req -x509 -nodes -newkey rsa:2048 -days 365 -keyout '$SSL_KEY' -out '$SSL_CERT' -subj '/CN=$DOMAIN'; fi"
+              fi
+
+              sudo_run test -f "$SSL_CERT"
+              sudo_run test -f "$SSL_KEY"
+
               cat > "/tmp/$APP_NAME.nginx.conf" <<NGINX
               server {
                   listen 80;
                   server_name $DOMAIN www.$DOMAIN;
-                  return 301 https://\$host\$request_uri;
+                  return 301 https://$DOMAIN\$request_uri;
               }
 
               server {
-                  listen 443 ssl;
+                  listen 443 ssl http2;
                   server_name $DOMAIN www.$DOMAIN;
 
-                  ssl_certificate $CERT_DIR/$CERT_CRT;
-                  ssl_certificate_key $CERT_DIR/$CERT_KEY;
-
-                  ssl_protocols TLSv1.2 TLSv1.3;
-                  ssl_prefer_server_ciphers on;
+                  ssl_certificate $SSL_CERT;
+                  ssl_certificate_key $SSL_KEY;
 
                   location / {
                       proxy_pass http://127.0.0.1:$APP_PORT;
@@ -356,11 +309,16 @@ jobs:
                       proxy_set_header X-Real-IP \$remote_addr;
                       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
                       proxy_set_header X-Forwarded-Proto \$scheme;
+                      proxy_set_header Upgrade \$http_upgrade;
+                      proxy_set_header Connection "keep-alive";
+                      proxy_cache_bypass \$http_upgrade;
                   }
               }
             NGINX
-              sudo_run install -m 644 "/tmp/$APP_NAME.nginx.conf" "/etc/nginx/sites-available/$APP_NAME"
-              sudo_run ln -sf "/etc/nginx/sites-available/$APP_NAME" "/etc/nginx/sites-enabled/$APP_NAME"
+
+              sudo_run install -m 644 "/tmp/$APP_NAME.nginx.conf" "$DOMAIN_CONF"
+              sudo_sh "ln -sf '$DOMAIN_CONF' '$DOMAIN_ENABLED'"
+              sudo_sh "if [ -f /etc/nginx/sites-enabled/default ]; then rm -f /etc/nginx/sites-enabled/default; fi"
             fi
 
             sudo_run systemctl daemon-reload
@@ -369,7 +327,7 @@ jobs:
             sudo_run systemctl restart nginx
 
       - name: Copy published files to VPS
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.SSH_HOST }}
           username: ${{ env.SSH_USER }}
@@ -378,44 +336,6 @@ jobs:
           source: "publish/*"
           target: "${{ env.TARGET_DIR }}"
           strip_components: 1
-
-      - name: Copy certificate files to VPS (only custom domain)
-        if: env.USE_CUSTOM_DOMAIN == 'true'
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.SSH_HOST }}
-          username: ${{ env.SSH_USER }}
-          password: ${{ env.SSH_PASSWORD }}
-          port: ${{ env.SSH_PORT }}
-          source: "certs/*"
-          target: "/home/${{ env.SSH_USER }}/certs_tmp"
-          strip_components: 1
-
-      - name: Install certificates on VPS (only custom domain)
-        if: env.USE_CUSTOM_DOMAIN == 'true'
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ env.SSH_HOST }}
-          username: ${{ env.SSH_USER }}
-          password: ${{ env.SSH_PASSWORD }}
-          port: ${{ env.SSH_PORT }}
-          script: |
-            SUDO_PASSWORD="$(cat <<'__SUDO_PASS__'
-            ${{ env.SSH_PASSWORD }}
-            __SUDO_PASS__
-            )"
-
-            if [ "$(id -u)" -eq 0 ]; then
-              mkdir -p "${{ env.CERT_DIR }}"
-              cp -f /home/${{ env.SSH_USER }}/certs_tmp/* "${{ env.CERT_DIR }}/" || true
-              chown root:root "${{ env.CERT_DIR }}"/* || true
-              chmod 600 "${{ env.CERT_DIR }}"/* || true
-            else
-              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' mkdir -p "${{ env.CERT_DIR }}"
-              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' cp -f /home/${{ env.SSH_USER }}/certs_tmp/* "${{ env.CERT_DIR }}/" || true
-              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' chown root:root "${{ env.CERT_DIR }}"/* || true
-              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' chmod 600 "${{ env.CERT_DIR }}"/* || true
-            fi
 
       - name: Restart ASP.NET Core service
         uses: appleboy/ssh-action@v1
@@ -429,22 +349,42 @@ jobs:
             ${{ env.SSH_PASSWORD }}
             __SUDO_PASS__
             )"
-            OAUTH_ENV_FILE="/etc/${{ env.APP_NAME }}/${{ env.APP_NAME }}.env"
 
             if [ "$(id -u)" -eq 0 ]; then
-              if [ -f "$OAUTH_ENV_FILE" ]; then
-                chmod 600 "$OAUTH_ENV_FILE"
-              fi
-              systemctl daemon-reload
               systemctl restart "${{ env.APP_NAME }}.service"
-              systemctl --no-pager --full status "${{ env.APP_NAME }}.service"
-              nginx -t
-              systemctl reload nginx
+              nginx -t && systemctl reload nginx
             else
-              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' sh -c "if [ -f '$OAUTH_ENV_FILE' ]; then chmod 600 '$OAUTH_ENV_FILE'; fi"
-              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl daemon-reload
               printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl restart "${{ env.APP_NAME }}.service"
-              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl --no-pager --full status "${{ env.APP_NAME }}.service"
               printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' nginx -t
               printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' systemctl reload nginx
             fi
+
+      - name: Verify installed certificate on VPS
+        if: env.USE_CUSTOM_DOMAIN == 'true'
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USER }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
+          script: |
+            SUDO_PASSWORD="$(cat <<'__SUDO_PASS__'
+            ${{ env.SSH_PASSWORD }}
+            __SUDO_PASS__
+            )"
+
+            CERT_PATH="/etc/ssl/localcerts/${{ env.DOMAIN }}/fullchain.pem"
+
+            if [ "$(id -u)" -eq 0 ]; then
+              openssl x509 -in "$CERT_PATH" -noout -subject -issuer -dates
+            else
+              printf '%s\n' "$SUDO_PASSWORD" | sudo -S -p '' openssl x509 -in "$CERT_PATH" -noout -subject -issuer -dates
+            fi
+
+      - name: Verify public certificate
+        if: env.USE_CUSTOM_DOMAIN == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          openssl s_client -connect "${{ env.DOMAIN }}:443" -servername "${{ env.DOMAIN }}" </dev/null 2>/dev/null \
+            | openssl x509 -noout -subject -issuer -dates

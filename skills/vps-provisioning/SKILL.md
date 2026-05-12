@@ -59,9 +59,13 @@ Before starting, collect these values. If any are missing, stop and record a `BL
 | `{{ROUTE_PREFIX}}` | URL prefix under shared domain | `/purewipe` |
 | `{{USE_CUSTOM_DOMAIN}}` | Topology B — dedicated domain | `true` or `false` |
 | `{{DOMAIN}}` | Custom domain (Topology B only) | `purewipe.com` |
-| `{{CERT_DIR}}` | SSL cert directory (Topology B only) | `/etc/ssl/certs/purewipe` |
-| `{{CERT_CRT}}` | SSL cert filename (Topology B only) | `SSL1234.pem` |
-| `{{CERT_KEY}}` | SSL key filename (Topology B only) | `SSL1234.priv` |
+
+**Collected from GitHub Secrets (required for Topology B):**
+
+| Variable | Description | Example |
+|---|---|---|
+| `TLS_CERT_B64` | TLS cert PEM content encoded with base64 | `LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0t...` |
+| `TLS_KEY_B64` | TLS private key PEM content encoded with base64 | `LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0t...` |
 
 Note: `USE_SHARED_DOMAIN` and `USE_CUSTOM_DOMAIN` are mutually exclusive. Set one to `true` and the other to `false`.  
 If both are `false`, record `BLOCKER: no topology selected`.
@@ -80,7 +84,7 @@ Read:
 - `PROJECT_ROADMAP-{project-name}.md` → `target_framework`, `Stack Decision`
 - Confirm `@Auditor` GO signal is present
 
-Resolve all 8 input variables. Record any missing ones as `BLOCKER` with:
+Resolve all required input variables. Record any missing ones as `BLOCKER` with:
 ```
 BLOCKER: {{VARIABLE_NAME}} not found — operator must supply before vps-provisioning can continue.
 ```
@@ -88,7 +92,8 @@ BLOCKER: {{VARIABLE_NAME}} not found — operator must supply before vps-provisi
 Also validate topology consistency before generating artifacts:
 - Exactly one of `USE_SHARED_DOMAIN` / `USE_CUSTOM_DOMAIN` must be `true`.
 - Shared topology requires: `SHARED_DOMAIN`, `SHARED_SITE_FILE`, `ROUTE_PREFIX`.
-- Custom topology requires: `DOMAIN`, `CERT_DIR`, `CERT_CRT`, `CERT_KEY`.
+- Custom topology requires: `DOMAIN`.
+- If custom topology is selected, GitHub Secrets must include: `TLS_CERT_B64` and `TLS_KEY_B64`.
 - If invalid, stop with `BLOCKER: invalid topology configuration`.
 
 ### Step 2 — Generate Nginx Config
@@ -149,16 +154,16 @@ Apply all token substitutions from the inputs table above. Auto-resolved values:
 - `{{DOTNET_RUNTIME_MAJOR}}` → same as above without `.x` (e.g., `9.0`)
 
 Topology rules:
-- If `USE_SHARED_DOMAIN=true`: set `ROUTE_PREFIX`, `SHARED_DOMAIN`, `SHARED_SITE_FILE`; set `USE_CUSTOM_DOMAIN=false`; leave `DOMAIN`/`CERT_*` as empty strings.
-- If `USE_CUSTOM_DOMAIN=true`: set `DOMAIN`, `CERT_DIR`, `CERT_CRT`, `CERT_KEY`; set `USE_SHARED_DOMAIN=false`; leave `SHARED_DOMAIN`/`ROUTE_PREFIX` as empty strings.
+- If `USE_SHARED_DOMAIN=true`: set `ROUTE_PREFIX`, `SHARED_DOMAIN`, `SHARED_SITE_FILE`; set `USE_CUSTOM_DOMAIN=false`; leave `DOMAIN` as empty string.
+- If `USE_CUSTOM_DOMAIN=true`: set `DOMAIN`; set `USE_SHARED_DOMAIN=false`; leave `SHARED_DOMAIN`/`ROUTE_PREFIX` as empty strings.
 
 **GitHub credentials/config required** — record in `deploy/README.md` and instruct the operator to set them in repo Settings → Secrets and variables → Actions:
 
 | Type | Name | Value | Required |
 |---|---|---|---|
 | Secret | `PASSWORD` | SSH password (also used for sudo escalation) | always |
-| Secret | `DECAP_GITHUB_CLIENT_ID` | GitHub OAuth ClientId for Decap backend callback | always |
-| Secret | `DECAP_GITHUB_CLIENT_SECRET` | GitHub OAuth ClientSecret for Decap backend callback | always |
+| Secret | `TLS_CERT_B64` | Base64-encoded PEM certificate content | custom-domain only |
+| Secret | `TLS_KEY_B64` | Base64-encoded PEM private key content | custom-domain only |
 | Variable (preferred) or Secret | `SERVER_IP` | VPS IP address or hostname | always |
 | Variable (preferred) or Secret | `USERNAME` | SSH user with sudo rights | always |
 | Variable (preferred) or Secret | `PORT` | SSH port | optional — defaults to 22 |
@@ -177,7 +182,6 @@ They are collected in Orchestrator VPS intake (`current_state-{project-name}.jso
 | `TARGET_DIR` | hub state + workflow template | VPS deploy path |
 | `USE_CUSTOM_DOMAIN` | hub state + workflow template | topology flag |
 | `DOMAIN` | hub state + workflow template | custom domain |
-| `CERT_DIR`, `CERT_CRT`, `CERT_KEY` | hub state + workflow template | custom-domain cert paths/files |
 
 Optional: teams may store non-secret values as GitHub Variables (`vars.*`) if they prefer runtime configurability,
 but WFO default is deterministic template substitution from state.
@@ -186,7 +190,7 @@ but WFO default is deterministic template substitution from state.
 
 > ⚠️ The PASSWORD secret is used for SSH auth AND sudo escalation inside the provisioning script. The deploy user must have sudo rights on the VPS. If passwordless sudo is configured, the PASSWORD secret is still required for SSH auth.
 
-> ⚠️ Decap OAuth secrets are persisted into `/etc/{app-name}/{app-name}.env` as `GitHub__ClientId` and `GitHub__ClientSecret` by the deploy workflow. The systemd unit must load this file via `EnvironmentFile=-/etc/{app-name}/{app-name}.env`.
+> ⚠️ For custom domains, TLS secrets are decoded on the VPS into `/etc/ssl/localcerts/{domain}/fullchain.pem` and `/etc/ssl/localcerts/{domain}/privkey.pem`. The workflow validates file integrity and cert/key modulus match before reloading nginx.
 
 Automation note:
 - The deploy workflow enforces this operational sequence automatically on VPS:
@@ -274,15 +278,15 @@ sudo systemctl start {project-name}
 | `SERVER_IP` (Variable preferida, o Secret) | VPS IP o hostname |
 | `USERNAME` (Variable preferida, o Secret) | SSH deploy user (non-root) |
 | `PASSWORD` (Secret obligatorio) | SSH password (también para sudo) |
-| `DECAP_GITHUB_CLIENT_ID` (Secret obligatorio) | GitHub OAuth ClientId para Decap |
-| `DECAP_GITHUB_CLIENT_SECRET` (Secret obligatorio) | GitHub OAuth ClientSecret para Decap |
+| `TLS_CERT_B64` (Secret obligatorio en dominio dedicado) | Certificado TLS PEM en base64 |
+| `TLS_KEY_B64` (Secret obligatorio en dominio dedicado) | Clave privada TLS PEM en base64 |
 | `PORT` (Variable preferida, o Secret) | SSH port (opcional, default 22) |
 
 ## Not GitHub Secrets (context values)
 | Value | Source |
 |---|---|
 | `SHARED_DOMAIN`, `SHARED_SITE_FILE`, `ROUTE_PREFIX` | Orchestrator VPS intake (`vps_config`) |
-| `DOMAIN`, `CERT_DIR`, `CERT_CRT`, `CERT_KEY` | Orchestrator VPS intake (`vps_config`) |
+| `DOMAIN` | Orchestrator VPS intake (`vps_config`) |
 | `TARGET_DIR`, `APP_PORT` | Orchestrator VPS intake (`vps_config`) |
 
 These are deployment context values, not credentials. WFO writes them into generated files via token substitution.
@@ -370,7 +374,8 @@ Update `current_state-{project-name}.json`:
 
 - [ ] `deploy/nginx-{project-name}.conf` exists with all 4 substitutions applied
 - [ ] `deploy/{project-name}.service` exists with `User` set to non-root
-- [ ] `.github/workflows/deploy.yml` exists with all 4 secrets referenced (not hard-coded)
+- [ ] `.github/workflows/deploy.yml` exists with required secrets referenced (not hard-coded)
+- [ ] If custom domain topology: workflow validates `TLS_CERT_B64` + `TLS_KEY_B64` and verifies public cert after deploy
 - [ ] `deploy/provision.sh` exists and is executable
 - [ ] `deploy/README.md` exists with full runbook and secrets table
 - [ ] If subpath topology: `UsePathBase()` present in `Program.cs` or BLOCKING task created
